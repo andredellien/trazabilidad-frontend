@@ -31,6 +31,9 @@ function ProcesoTransformacion() {
 		navigate(`/proceso/${idLote}/maquina/${numero}`);
 	};
 
+	const totalCompletados = Object.values(formularios).filter(Boolean).length;
+	const procesoListo = totalCompletados === 12;
+
 	const finalizarProceso = async () => {
 		try {
 			const res = await fetch(
@@ -41,48 +44,64 @@ function ProcesoTransformacion() {
 			alert(`Proceso finalizado: ${data.message}\nMotivo: ${data.motivo}`);
 			navigate(`/proceso/${idLote}/resumen`);
 		} catch (error) {
-			console.error("Error al finalizar el proceso:", error);
-			alert("Ocurrió un error al finalizar el proceso.");
+			alert("Error al finalizar el proceso.");
+			console.error(error);
 		}
 	};
 
-	const procesoListo =
-		Object.keys(formularios).length === 12 &&
-		Object.values(formularios).every((f) => f === true);
-
 	return (
-		<div className="p-4">
-			<h2 className="text-xl font-bold mb-4">
-				Proceso de Transformación – Lote #{idLote}
-			</h2>
-			<div className="flex flex-wrap justify-center">
-				{maquinas.map((maquina, index) => {
-					const completada = formularios[maquina.numero];
-					const bloqueada =
-						index > 0 && !formularios[maquinas[index - 1].numero];
+		<div className="min-h-screen  py-10 px-4">
+			<div className="max-w-6xl mx-auto">
+				<header className="text-center mb-10">
+					<h2 className="text-3xl font-extrabold text-gray-800">
+						Proceso de Transformación – Lote #{idLote}
+					</h2>
+					<p className="text-gray-500 mt-2">
+						Completa cada paso del proceso en orden para poder certificar el
+						lote.
+					</p>
+					<div className="mt-4">
+						<span className="text-sm text-gray-600">
+							Progreso: {totalCompletados} / 12 máquinas completadas
+						</span>
+						<div className="h-2 mt-1 bg-gray-200 rounded">
+							<div
+								className="h-full bg-[#007c64] rounded transition-all duration-300"
+								style={{ width: `${(totalCompletados / 12) * 100}%` }}
+							></div>
+						</div>
+					</div>
+				</header>
 
-					return (
-						<MaquinaCard
-							key={maquina.numero}
-							maquina={maquina}
-							completada={completada}
-							bloqueada={bloqueada}
-							onClick={() => handleClick(maquina.numero)}
-						/>
-					);
-				})}
-			</div>
+				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+					{maquinas.map((maquina, index) => {
+						const completada = formularios[maquina.numero];
+						const bloqueada =
+							index > 0 && !formularios[maquinas[index - 1].numero];
 
-			{procesoListo && (
-				<div className="mt-6 text-center">
-					<button
-						onClick={finalizarProceso}
-						className="bg-green-600 text-white px-6 py-3 rounded-md shadow hover:bg-green-700 transition"
-					>
-						✅ Finalizar Proceso
-					</button>
+						return (
+							<MaquinaCard
+								key={maquina.numero}
+								maquina={maquina}
+								completada={completada}
+								bloqueada={bloqueada}
+								onClick={() => handleClick(maquina.numero)}
+							/>
+						);
+					})}
 				</div>
-			)}
+
+				{procesoListo && (
+					<div className="text-center mt-10">
+						<button
+							onClick={finalizarProceso}
+							className="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-700 transition"
+						>
+							✅ Finalizar Proceso
+						</button>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }

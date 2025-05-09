@@ -21,6 +21,10 @@
 	color: #fff;
 }
 
+.border-green-theme {
+	border: #007c64;
+}
+
 .mp-table th,
 .mp-table td {
 	padding: 12px 16px;

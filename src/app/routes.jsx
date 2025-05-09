@@ -10,6 +10,7 @@ import RequireAuth from "../shared/guards/RequireAuth";
 import ProcesoTransformacion from "../features/ProcesoTransformacion/ProcesoTransformacion";
 import FormularioMaquina from "../features/ProcesoTransformacion/FormularioMaquina";
 import SeleccionarLote from "../features/ProcesoTransformacion/SeleccionarLote";
+import Layout from "../shared/components/layout";
 
 const AppRoutes = () => {
 	return (
@@ -23,50 +24,59 @@ const AppRoutes = () => {
 				{/* ------------- RUTAS PROTEGIDAS ------------- */}
 
 				<Route
-					path="/dashboard"
+					path="/"
 					element={
 						<RequireAuth>
-							<DashboardPage />
+							<Layout />
 						</RequireAuth>
 					}
-				/>
-				<Route
-					path="/materia-prima"
-					element={
-						<RequireAuth>
-							<MateriaPrimaPage />
-						</RequireAuth>
-					}
-				/>
-				<Route
-					path="/gestion-lotes"
-					element={
-						<RequireAuth>
-							<LotePage />
-						</RequireAuth>
-					}
-				/>
-				<Route
-					path="/codigo-qr"
-					element={
-						<RequireAuth>
-							<CodigoQRPage />
-						</RequireAuth>
-					}
-				/>
-				<Route
-					path="/proceso/:idLote"
-					element={
-						<RequireAuth>
-							<ProcesoTransformacion />
-						</RequireAuth>
-					}
-				/>
-				<Route
-					path="/proceso/:idLote/maquina/:numeroMaquina"
-					element={<FormularioMaquina />}
-				/>
-				<Route path="/seleccionar-lote" element={<SeleccionarLote />} />
+				>
+					<Route
+						path="/dashboard"
+						element={
+							<RequireAuth>
+								<DashboardPage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/materia-prima"
+						element={
+							<RequireAuth>
+								<MateriaPrimaPage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/gestion-lotes"
+						element={
+							<RequireAuth>
+								<LotePage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/codigo-qr"
+						element={
+							<RequireAuth>
+								<CodigoQRPage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/proceso/:idLote"
+						element={
+							<RequireAuth>
+								<ProcesoTransformacion />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/proceso/:idLote/maquina/:numeroMaquina"
+						element={<FormularioMaquina />}
+					/>
+					<Route path="/seleccionar-lote" element={<SeleccionarLote />} />
+				</Route>
 			</Routes>
 		</BrowserRouter>
 	);

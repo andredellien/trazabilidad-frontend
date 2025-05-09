@@ -20,7 +20,7 @@ function SeleccionarLote() {
 	};
 
 	return (
-		<div className="min-h-screen bg-gray-50 p-6">
+		<div className="min-h-screen  p-6">
 			<div className="max-w-6xl mx-auto">
 				<header className="mb-8 text-center">
 					<h1 className="text-3xl font-extrabold text-gray-800">

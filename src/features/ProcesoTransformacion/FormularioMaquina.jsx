@@ -15,7 +15,6 @@ function FormularioMaquina() {
 			const maquinaSeleccionada = data[numeroMaquina];
 			setMaquina(maquinaSeleccionada);
 
-			// Inicializar valores vacíos
 			const iniciales = {};
 			for (let varName in maquinaSeleccionada.variables) {
 				iniciales[varName] = "";
@@ -29,7 +28,6 @@ function FormularioMaquina() {
 		const nuevo = { ...valores, [nombre]: valor };
 		setValores(nuevo);
 
-		// Validar rango
 		const regla = maquina.variables[nombre];
 		const fueraDeRango =
 			valor === "" ? false : valor < regla.min || valor > regla.max;
@@ -53,46 +51,56 @@ function FormularioMaquina() {
 		}
 	};
 
-	if (!maquina) return <p>Cargando...</p>;
+	if (!maquina) return <p className="text-center mt-10">Cargando...</p>;
 
 	return (
-		<div className="p-4 max-w-xl mx-auto">
-			<h2 className="text-2xl font-bold mb-4">{maquina.nombre}</h2>
-			<img
-				src={maquina.imagen}
-				alt={maquina.nombre}
-				className="rounded mb-4 w-full"
-			/>
+		<div className="min-h-screen bg-gray-50 p-6 flex justify-center items-center">
+			<div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-xl">
+				<h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
+					{maquina.nombre}
+				</h2>
+				<img
+					src={maquina.imagen}
+					alt={maquina.nombre}
+					className="w-full h-48 object-contain mb-6"
+				/>
 
-			<form onSubmit={handleSubmit} className="space-y-4">
-				{Object.entries(maquina.variables).map(([nombre, rango]) => (
-					<div key={nombre}>
-						<label className="block font-semibold mb-1">
-							{nombre} ({rango.min} – {rango.max})
-						</label>
-						<input
-							type="number"
-							step="any"
-							required
-							className={`w-full border p-2 rounded ${
-								errores[nombre] ? "border-red-500" : "border-gray-300"
-							}`}
-							value={valores[nombre]}
-							onChange={(e) => handleChange(nombre, parseFloat(e.target.value))}
-						/>
-						{errores[nombre] && (
-							<p className="text-red-600 text-sm">Valor fuera de rango</p>
-						)}
-					</div>
-				))}
+				<form onSubmit={handleSubmit} className="space-y-5">
+					{Object.entries(maquina.variables).map(([nombre, rango]) => (
+						<div key={nombre}>
+							<label className="block font-medium text-gray-700 mb-1">
+								{nombre} ({rango.min} – {rango.max})
+							</label>
+							<input
+								type="number"
+								step="any"
+								required
+								className={`w-full border p-2 rounded-md outline-none focus:ring-2 transition ${
+									errores[nombre]
+										? "border-red-500 focus:ring-red-300"
+										: "border-gray-300 focus:ring-[#007c64]"
+								}`}
+								value={valores[nombre]}
+								onChange={(e) =>
+									handleChange(nombre, parseFloat(e.target.value))
+								}
+							/>
+							{errores[nombre] && (
+								<p className="text-sm text-red-600 mt-1">
+									Valor fuera de rango permitido.
+								</p>
+							)}
+						</div>
+					))}
 
-				<button
-					type="submit"
-					className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-				>
-					Guardar
-				</button>
-			</form>
+					<button
+						type="submit"
+						className="w-full bg-[#007c64] text-white py-2 px-4 rounded-md hover:bg-[#006554] transition"
+					>
+						Guardar y volver
+					</button>
+				</form>
+			</div>
 		</div>
 	);
 }
