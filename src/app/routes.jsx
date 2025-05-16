@@ -11,6 +11,14 @@ import ProcesoTransformacion from "../features/ProcesoTransformacion/ProcesoTran
 import FormularioMaquina from "../features/ProcesoTransformacion/FormularioMaquina";
 import SeleccionarLote from "../features/ProcesoTransformacion/SeleccionarLote";
 import Layout from "../shared/components/layout";
+import Certificados from "../features/certificados/Certificados";
+import CertificadoDetalle from "../features/certificados/CertificadoDetalle";
+import CertificadoQR from "../features/certificados/CertificadoQR";
+import CrearProceso from "../features/Proceso/CrearProceso";
+import ListaProcesos from "../features/Proceso/ListaProcesos";
+import Maquinas from "../features/Maquinas/maquinas";
+import EditarProceso from "../features/Proceso/EditarProceso";
+import ProcesoPDF from "../features/Proceso/ProcesoPDF";
 
 const AppRoutes = () => {
 	return (
@@ -76,6 +84,14 @@ const AppRoutes = () => {
 						element={<FormularioMaquina />}
 					/>
 					<Route path="/seleccionar-lote" element={<SeleccionarLote />} />
+					<Route path="/certificados" element={<Certificados />} />
+					<Route path="/certificado/:idLote" element={<CertificadoDetalle />} />
+					<Route path="/certificado/:idLote/qr" element={<CertificadoQR />} />
+					<Route path="/procesos/crear" element={<CrearProceso />} />
+					<Route path="/procesos" element={<ListaProcesos />} />
+					<Route path="/maquinas" element={<Maquinas />} />
+					<Route path="/procesos/:id/editar" element={<EditarProceso />} />
+					<Route path="/procesos/:id/pdf" element={<ProcesoPDF />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>

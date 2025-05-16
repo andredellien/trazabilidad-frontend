@@ -1,5 +1,12 @@
 @import "tailwindcss";
 
+.pdf-export-content * {
+	color: #000 !important;
+	background-color: #fff !important;
+	box-shadow: none !important;
+	border-color: #ccc !important;
+}
+
 * {
 	font-family: sans-serif;
 }

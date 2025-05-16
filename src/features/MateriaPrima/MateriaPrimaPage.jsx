@@ -1,16 +1,35 @@
-import React from "react";
+import { useEffect, useState } from "react";
 import MateriaPrimaForm from "./Components/MateriaPrimaForm";
 import MateriaPrimaList from "./Components/MateriaPrimaList";
+import { getAllMateriasPrimas } from "./services/materiaPrima.service";
 
-const MateriaPrimaPage = () => {
+export default function MateriaPrimaPage() {
+	const [materias, setMaterias] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+
+	const fetchMaterias = async () => {
+		setLoading(true);
+		try {
+			const datos = await getAllMateriasPrimas();
+			setMaterias(datos);
+			setError(null);
+		} catch (err) {
+			console.error(err);
+			setError("Error al obtener las materias primas");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchMaterias();
+	}, []);
+
 	return (
-		<div className="materia-container">
-			<h1>Recepción de Materia Prima</h1>
-			<MateriaPrimaForm />
-			<h1>Listado de Materias Prima creeadas</h1>
-			<MateriaPrimaList></MateriaPrimaList>
-		</div>
+		<>
+			<MateriaPrimaForm onCreated={fetchMaterias} />
+			<MateriaPrimaList materias={materias} loading={loading} error={error} />
+		</>
 	);
-};
-
-export default MateriaPrimaPage;
+}

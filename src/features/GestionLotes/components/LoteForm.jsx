@@ -2,7 +2,7 @@ import { useState } from "react";
 import useCreateLote from "../hooks/useCreateLote";
 import useMateriasPrimas from "../../materiaPrima/hooks/useMateriasPrimas";
 
-export default function LoteForm() {
+export default function LoteForm({ onCreated }) {
 	const [form, setForm] = useState({
 		Nombre: "",
 		FechaCreacion: "",
@@ -52,11 +52,15 @@ export default function LoteForm() {
 				Estado: "Pendiente",
 				MateriasPrimas: [],
 			});
+			if (typeof onCreated === "function") onCreated(); // ✅ actualiza la lista
 		}
 	};
 
 	return (
-		<div className="mp-form-card">
+		<div
+			className="mp-form-card"
+			style={{ maxWidth: "840px", margin: "40px auto" }}
+		>
 			<h2 className="mp-heading">Crear Lote</h2>
 
 			<form onSubmit={onSubmit} className="mp-form">
@@ -129,7 +133,7 @@ export default function LoteForm() {
 									}
 									required
 									className="mp-input"
-									style={{ width: "50px" }}
+									style={{ width: "90px" }}
 								/>
 								<button
 									type="button"

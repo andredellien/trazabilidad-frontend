@@ -1,14 +1,9 @@
-import useMateriasPrimas from "../hooks/useMateriasPrimas";
-
-/**
- * Tabla moderna de Materias Primas (CSS vanilla).
- * Utiliza clases .mp-table* — define los estilos en tu hoja global o módulo CSS.
- */
-export default function MateriaPrimaList() {
-	const { data: materias, loading, error } = useMateriasPrimas();
-
+export default function MateriaPrimaList({ materias, loading, error }) {
 	if (loading) return <p>Cargando materias primas…</p>;
 	if (error) return <p className="mp-error">{error}</p>;
+
+	if (!materias || materias.length === 0)
+		return <p>No hay materias primas registradas.</p>;
 
 	return (
 		<div className="mp-table-wrapper">

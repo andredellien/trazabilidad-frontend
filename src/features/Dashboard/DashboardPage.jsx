@@ -1,64 +1,50 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import LoteList from "../GestionLotes/components/LoteList.jsx";
-import { useNavigate } from "react-router-dom";
+import LoteEstadoChart from "../GestionLotes/components/LoteEstadoChart.jsx";
 import useAuth from "../Auth/hooks/useAuth.js";
+import { getAllLotes } from "../GestionLotes/services/lotes.service.js";
 
 const DashboardPage = () => {
-	const navigate = useNavigate();
 	const { logout } = useAuth();
 
-	const cards = [
-		{
-			title: "Recepción de Materia Prima",
-			description: "Registra la entrada de materia prima al sistema",
-			buttonText: "Administrar",
-			onClick: () => navigate("/materia-prima"),
-		},
-		{
-			title: "Gestión de Lotes",
-			description: "Administra los lotes de producción",
-			buttonText: "Administrar",
-			onClick: () => navigate("/gestion-lotes"),
-		},
-		{
-			title: "Códigos QR",
-			description: "Ver o descargar códigos QR existentes",
-			buttonText: "Entrar para ver",
-			secondaryButton: "Descargar",
-			onClick: () => navigate("/codigo-qr"),
-		},
-		{
-			title: "Certificados de Calidad",
-			description: "Consulta y descarga certificados de calidad",
-			buttonText: "Ver Certificados",
-			onClick: () => navigate("/certificados"),
-		},
-	];
+	const [lotes, setLotes] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
+
+	const fetchLotes = async () => {
+		setLoading(true);
+		try {
+			const data = await getAllLotes();
+			setLotes(data);
+			setError(null);
+		} catch (e) {
+			console.error(e);
+			setError("Error al cargar los lotes");
+		} finally {
+			setLoading(false);
+		}
+	};
+
+	useEffect(() => {
+		fetchLotes();
+	}, []);
 
 	return (
 		<div className="dashboard-container">
 			<div className="header">
 				<h1 className="dashboard-title">Panel de Control</h1>
 				<button onClick={logout} className="sign-out-button">
-					Cerrar Sesion
+					Cerrar Sesión
 				</button>
 			</div>
 
-			<div className="dashboard-grid">
-				{cards.map((card, i) => (
-					<div key={i} className="dashboard-card">
-						<h3>{card.title}</h3>
-						<p>{card.description}</p>
-						<button onClick={card.onClick}>{card.buttonText}</button>
-						{card.secondaryButton && (
-							<button className="secondary">{card.secondaryButton}</button>
-						)}
-					</div>
-				))}
+			<div>
+				<h2 className="dashboard-subtitle">Reporte de Estado de Lotes</h2>
+				<LoteEstadoChart />
 			</div>
 
 			<h2 className="dashboard-subtitle">Últimos Lotes Creados</h2>
-			<LoteList />
+			<LoteList lotes={lotes} loading={loading} error={error} />
 		</div>
 	);
 };

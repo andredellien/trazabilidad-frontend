@@ -1,6 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { FiHome, FiPackage, FiBox, FiUsers, FiMenu } from "react-icons/fi";
+import {
+	FiHome,
+	FiPackage,
+	FiBox,
+	FiUsers,
+	FiMenu,
+	FiClipboard,
+	FiTool,
+} from "react-icons/fi";
 
 export default function Sidebar({ onCollapse }) {
 	const { pathname } = useLocation();
@@ -8,10 +16,16 @@ export default function Sidebar({ onCollapse }) {
 
 	const links = [
 		{ to: "/dashboard", label: "Inicio", icon: <FiHome /> },
-		{ to: "/gestion-lotes", label: "Lotes", icon: <FiBox /> },
 		{ to: "/materia-prima", label: "Materias Primas", icon: <FiPackage /> },
-		{ to: "/codigo-qr", label: "Codigos Qr", icon: <FiUsers /> },
-		{ to: "/seleccionar-lote", label: "Procesos", icon: <FiUsers /> },
+		{ to: "/gestion-lotes", label: "Lotes", icon: <FiBox /> },
+		{ to: "/maquinas", label: "Maquinas", icon: <FiTool /> },
+		{ to: "/procesos", label: "Procesos", icon: <FiBox /> },
+		{ to: "/seleccionar-lote", label: "Certificar Lote", icon: <FiUsers /> },
+		{
+			to: "/certificados",
+			label: "Certificados",
+			icon: <FiClipboard />,
+		},
 	];
 
 	const toggleSidebar = () => {

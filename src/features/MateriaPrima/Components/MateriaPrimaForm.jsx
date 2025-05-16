@@ -5,7 +5,7 @@ import useCreateMateriaPrima from "../hooks/useCreateMateriaPrima";
  * Formulario de registro de Materia Prima (sin Tailwind)
  * Usa clases CSS vanilla — agrega los estilos en tu hoja global o módulo CSS.
  */
-export default function MateriaPrimaForm() {
+export default function MateriaPrimaForm({ onCreated }) {
 	const [form, setForm] = useState({
 		Nombre: "",
 		FechaRecepcion: "",
@@ -23,6 +23,7 @@ export default function MateriaPrimaForm() {
 		await handleCreate({ ...form, Cantidad: parseFloat(form.Cantidad) });
 		if (!error) {
 			setForm({ Nombre: "", FechaRecepcion: "", Proveedor: "", Cantidad: "" });
+			if (typeof onCreated === "function") onCreated(); // recarga la lista
 		}
 	};
 
