@@ -1,4 +1,8 @@
-export default function MateriaPrimaList({ materias, loading, error }) {
+import useMateriasPrimas from "../hooks/useMateriasPrimas";
+
+export default function MateriaPrimaList() {
+	const { data: materias, loading, error } = useMateriasPrimas();
+
 	if (loading) return <p>Cargando materias primas…</p>;
 	if (error) return <p className="mp-error">{error}</p>;
 

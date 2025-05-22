@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useCreateLote from "../hooks/useCreateLote";
-import useMateriasPrimas from "../../materiaPrima/hooks/useMateriasPrimas";
+import useMateriasPrimas from "../../MateriaPrima/hooks/useMateriasPrimas";
 
 export default function LoteForm({ onCreated }) {
 	const [form, setForm] = useState({

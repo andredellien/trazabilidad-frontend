@@ -1,7 +1,11 @@
+import useLotes from "../hooks/useLotes";
+
 /**
  * Tabla de lotes con materias primas y cantidades
  */
-export default function LoteList({ lotes, loading, error }) {
+export default function LoteList() {
+	const { data: lotes, loading, error } = useLotes();
+
 	if (loading) return <p>Cargando lotes…</p>;
 	if (error) return <p className="mp-error">{error}</p>;
 

@@ -13,6 +13,8 @@ export default function useCreateLote() {
 		try {
 			await createLote(form);
 			setOk(true);
+			// Disparamos un evento personalizado que LoteList puede escuchar
+			window.dispatchEvent(new CustomEvent('lote-created'));
 		} catch (e) {
 			setError(e.response?.data?.message || "Error");
 		} finally {

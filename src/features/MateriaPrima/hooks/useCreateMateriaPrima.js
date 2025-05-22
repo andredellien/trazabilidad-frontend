@@ -2,23 +2,24 @@ import { useState } from "react";
 import { createMateriaPrima } from "../services/materiaPrima.service";
 
 export default function useCreateMateriaPrima() {
-	const [loading, setLoading] = useState(false);
+	const [loading, setLoad] = useState(false);
 	const [error, setError] = useState(null);
-	const [success, setSuccess] = useState(false);
+	const [success, setOk] = useState(false);
 
-	async function handleCreate(formValues) {
-		setLoading(true);
+	async function handleCreate(form) {
+		setLoad(true);
 		setError(null);
-		setSuccess(false);
+		setOk(false);
 		try {
-			await createMateriaPrima(formValues);
-			setSuccess(true);
-		} catch (err) {
-			setError(err.response?.data?.message || "Error de red");
+			await createMateriaPrima(form);
+			setOk(true);
+			// Disparamos un evento personalizado que MateriaPrimaList puede escuchar
+			window.dispatchEvent(new CustomEvent('materia-prima-created'));
+		} catch (e) {
+			setError(e.response?.data?.message || "Error");
 		} finally {
-			setLoading(false);
+			setLoad(false);
 		}
 	}
-
 	return { handleCreate, loading, error, success };
 }
