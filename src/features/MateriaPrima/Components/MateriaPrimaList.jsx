@@ -9,6 +9,11 @@ export default function MateriaPrimaList() {
 	if (!materias || materias.length === 0)
 		return <p>No hay materias primas registradas.</p>;
 
+	// Sort materials from newest to oldest
+	const sortedMaterias = [...materias].sort((a, b) => 
+		new Date(b.FechaRecepcion) - new Date(a.FechaRecepcion)
+	);
+
 	return (
 		<div className="mp-table-wrapper">
 			<table className="mp-table">
@@ -22,7 +27,7 @@ export default function MateriaPrimaList() {
 					</tr>
 				</thead>
 				<tbody>
-					{materias.map((m) => (
+					{sortedMaterias.map((m) => (
 						<tr key={m.IdMateriaPrima}>
 							<td>{m.IdMateriaPrima}</td>
 							<td>{m.Nombre}</td>

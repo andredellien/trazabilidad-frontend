@@ -61,6 +61,16 @@ export default function CrearProceso() {
 		]);
 	};
 
+	const eliminarMaquina = (index) => {
+		const nuevas = maquinasSeleccionadas.filter((_, i) => i !== index);
+		// Reordenar los números de las máquinas restantes
+		const reordenadas = nuevas.map((m, i) => ({
+			...m,
+			numero: i + 1
+		}));
+		setMaquinasSeleccionadas(reordenadas);
+	};
+
 	const actualizarVariable = (iMaquina, iVar, campo, valor) => {
 		const nuevas = [...maquinasSeleccionadas];
 		nuevas[iMaquina].variables[iVar][campo] = valor;
@@ -197,18 +207,27 @@ export default function CrearProceso() {
 			{/* Máquinas seleccionadas */}
 			{maquinasSeleccionadas.map((m, i) => (
 				<div key={m.IdMaquina} className="mb-6 border-t pt-4">
-					<div className="flex items-center gap-4 mb-2">
-						<img
-							src={m.ImagenUrl}
-							alt={m.Nombre}
-							className="w-24 h-24 object-contain border rounded"
-						/>
-						<div>
-							<h4 className="font-semibold text-gray-800">
-								#{i + 1} – {m.Nombre}
-							</h4>
-							<p className="text-sm text-gray-400">ID: {m.IdMaquina}</p>
+					<div className="flex items-center justify-between gap-4 mb-2">
+						<div className="flex items-center gap-4">
+							<img
+								src={m.ImagenUrl}
+								alt={m.Nombre}
+								className="w-24 h-24 object-contain border rounded"
+							/>
+							<div>
+								<h4 className="font-semibold text-gray-800">
+									#{i + 1} – {m.Nombre}
+								</h4>
+								<p className="text-sm text-gray-400">ID: {m.IdMaquina}</p>
+							</div>
 						</div>
+						<button
+							onClick={() => eliminarMaquina(i)}
+							className="text-red-600 hover:text-red-800 p-4 bg-gray-100 hover:bg-gray-200 "
+							title="Eliminar máquina"
+						>
+							🗑️ 
+						</button>
 					</div>
 
 					<h5 className="text-sm font-medium text-gray-600 mb-1">

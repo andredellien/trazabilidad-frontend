@@ -3,6 +3,7 @@ import LoteList from "../GestionLotes/components/LoteList.jsx";
 import LoteEstadoChart from "../GestionLotes/components/LoteEstadoChart.jsx";
 import useAuth from "../Auth/hooks/useAuth.js";
 import { getAllLotes } from "../GestionLotes/services/lotes.service.js";
+import { DonutChartFillableHalf } from "../../shared/components/chart.js";
 
 const DashboardPage = () => {
 	const { logout } = useAuth();

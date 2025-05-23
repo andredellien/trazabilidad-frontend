@@ -11,6 +11,11 @@ export default function LoteList() {
 
 	if (!lotes || lotes.length === 0) return <p>No hay lotes registrados.</p>;
 
+	// Sort lots from newest to oldest
+	const sortedLotes = [...lotes].sort((a, b) => 
+		new Date(b.FechaCreacion) - new Date(a.FechaCreacion)
+	);
+
 	const getEstadoBadge = (estado) => {
 		switch (estado.toLowerCase()) {
 			case "certificado":
@@ -49,7 +54,7 @@ export default function LoteList() {
 					</tr>
 				</thead>
 				<tbody>
-					{lotes.map((l) => (
+					{sortedLotes.map((l) => (
 						<tr key={l.IdLote} className="border-b hover:bg-gray-50">
 							<td className="p-2">{l.IdLote}</td>
 							<td className="p-2">{l.Nombre}</td>
