@@ -9,12 +9,14 @@ import {
 	FiClipboard,
 	FiTool,
 } from "react-icons/fi";
+import useUser from "../../features/Auth/hooks/useUser";
 
 export default function Sidebar({ onCollapse }) {
 	const { pathname } = useLocation();
 	const [collapsed, setCollapsed] = useState(false);
+	const { user, loading: loadingUser } = useUser();
 
-	const links = [
+	const baseLinks = [
 		{ to: "/dashboard", label: "Inicio", icon: <FiHome /> },
 		{ to: "/materia-prima", label: "Materias Primas", icon: <FiPackage /> },
 		{ to: "/gestion-lotes", label: "Lotes", icon: <FiBox /> },
@@ -27,6 +29,11 @@ export default function Sidebar({ onCollapse }) {
 			icon: <FiClipboard />,
 		},
 	];
+
+	// Add Users link only for admin users
+	const links = user?.Cargo === "admin" 
+		? [...baseLinks, { to: "/usuarios", label: "Usuarios", icon: <FiUsers /> }]
+		: baseLinks;
 
 	const toggleSidebar = () => {
 		const newCollapsed = !collapsed;

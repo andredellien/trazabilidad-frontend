@@ -196,7 +196,24 @@
 
 .header {
 	display: flex;
-	justify-content: center;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 2rem;
+}
+
+.user-info {
+	margin-top: 0.5rem;
+}
+
+.user-name {
+	font-size: 0.875rem;
+	font-weight: 500;
+	color: #1f2937;
+}
+
+.user-role {
+	font-size: 0.75rem;
+	color: #6b7280;
 }
 
 .mp-small {
