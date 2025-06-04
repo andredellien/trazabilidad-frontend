@@ -35,11 +35,15 @@ const DashboardPage = () => {
 		<div className="dashboard-container">
 			<div className="header">
 				<div>
-					<h1 className="dashboard-title">Panel de Control</h1>
 					{!loadingUser && user && (
 						<div className="user-info">
-							<p className="user-name">{user.Nombre}</p>
-							<p className="user-role">{user.Cargo}</p>
+							<div className="user-avatar">
+								{user.Nombre.charAt(0).toUpperCase()}
+							</div>
+							<div className="user-details">
+								<p className="user-name">{user.Nombre}</p>
+								<p className="user-role">{user.Cargo}</p>
+							</div>
 						</div>
 					)}
 				</div>
