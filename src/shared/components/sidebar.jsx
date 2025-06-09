@@ -20,8 +20,6 @@ export default function Sidebar({ onCollapse }) {
 		{ to: "/dashboard", label: "Inicio", icon: <FiHome /> },
 		{ to: "/materia-prima", label: "Materias Primas", icon: <FiPackage /> },
 		{ to: "/gestion-lotes", label: "Lotes", icon: <FiBox /> },
-		{ to: "/maquinas", label: "Maquinas", icon: <FiTool /> },
-		{ to: "/procesos", label: "Procesos", icon: <FiBox /> },
 		{ to: "/seleccionar-lote", label: "Certificar Lote", icon: <FiUsers /> },
 		{
 			to: "/certificados",
@@ -32,7 +30,7 @@ export default function Sidebar({ onCollapse }) {
 
 	// Add Users link only for admin users
 	const links = user?.Cargo === "admin" 
-		? [...baseLinks, { to: "/usuarios", label: "Usuarios", icon: <FiUsers /> }]
+		? [...baseLinks, { to: "/maquinas", label: "Maquinas", icon: <FiTool /> }, { to: "/procesos", label: "Procesos", icon: <FiBox /> }, { to: "/usuarios", label: "Usuarios", icon: <FiUsers /> },]
 		: baseLinks;
 
 	const toggleSidebar = () => {

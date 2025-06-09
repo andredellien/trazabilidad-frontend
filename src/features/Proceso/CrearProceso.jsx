@@ -37,9 +37,9 @@ export default function CrearProceso() {
 					ImagenUrl: m.Imagen,
 					numero: i + 1,
 					variables: m.variables.map((v) => ({
-						nombre: v.Nombre,
-						min: v.ValorMin,
-						max: v.ValorMax,
+						nombre: v.nombre || v.Nombre,
+						min: v.min || v.ValorMin,
+						max: v.max || v.ValorMax,
 					})),
 				}));
 
@@ -139,12 +139,15 @@ export default function CrearProceso() {
 		if (!validarProceso()) return;
 		const payload = {
 			nombre: nombreProceso,
-			maquinas: maquinasSeleccionadas.map((m, i) => ({
-				idMaquina: m.IdMaquina,
-				numero: i + 1,
+			maquinas: maquinasSeleccionadas.map((m) => ({
+				numero: m.numero,
 				nombre: m.Nombre,
 				imagen: m.ImagenUrl,
-				variables: m.variables,
+				variables: m.variables.map(v => ({
+					nombre: v.nombre,
+					min: parseFloat(v.min),
+					max: parseFloat(v.max)
+				}))
 			})),
 		};
 

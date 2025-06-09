@@ -137,7 +137,7 @@ export default function ProcesoPDF() {
 							>
 								{m.variables.map((v, i) => (
 									<li key={i}>
-										{v.Nombre}: {v.ValorMin} – {v.ValorMax}
+										{v.nombre}: {v.min} – {v.max}
 									</li>
 								))}
 							</ul>

@@ -141,9 +141,9 @@ export default function ListaProcesos() {
 												<ul className="text-sm text-gray-600 mt-1 list-disc ml-5">
 													{m.variables.map((v, i) => (
 														<li key={i}>
-															{v.Nombre}{" "}
+															{v.nombre}{" "}
 															<span className="text-gray-500">
-																({v.ValorMin} – {v.ValorMax})
+																({v.min} – {v.max})
 															</span>
 														</li>
 													))}

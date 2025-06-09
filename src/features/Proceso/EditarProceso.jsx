@@ -18,9 +18,9 @@ export default function EditarProceso() {
 					numero: i + 1,
 					variables: Array.isArray(m.variables)
 						? m.variables.map((v) => ({
-								nombre: v.Nombre,
-								min: v.ValorMin,
-								max: v.ValorMax,
+								nombre: v.nombre || v.Nombre,
+								min: v.min || v.ValorMin,
+								max: v.max || v.ValorMax,
 						  }))
 						: [],
 				}));
@@ -39,6 +39,12 @@ export default function EditarProceso() {
 	const actualizarVariable = (iMaquina, iVar, campo, valor) => {
 		const nuevas = [...maquinas];
 		nuevas[iMaquina].variables[iVar][campo] = valor;
+		setMaquinas(nuevas);
+	};
+
+	const eliminarVariable = (iMaquina, iVar) => {
+		const nuevas = [...maquinas];
+		nuevas[iMaquina].variables = nuevas[iMaquina].variables.filter((_, i) => i !== iVar);
 		setMaquinas(nuevas);
 	};
 
@@ -175,7 +181,7 @@ export default function EditarProceso() {
 						Variables estándar:
 					</h5>
 					{m.variables.map((v, j) => (
-						<div key={j} className="grid grid-cols-3 gap-2 mb-2">
+						<div key={j} className="grid grid-cols-4 gap-2 mb-2">
 							<input
 								type="text"
 								placeholder="Nombre"
@@ -203,6 +209,13 @@ export default function EditarProceso() {
 									actualizarVariable(i, j, "max", parseFloat(e.target.value))
 								}
 							/>
+							<button
+								onClick={() => eliminarVariable(i, j)}
+								className="text-red-600 hover:text-red-800 p-1 bg-gray-100 hover:bg-gray-200 rounded"
+								title="Eliminar variable"
+							>
+								🗑️
+							</button>
 						</div>
 					))}
 
