@@ -1,141 +1,125 @@
-import React, { useState } from "react";
+import React from "react";
+import useOperadores from "./hooks/useOperadores";
 import useAuth from "../Auth/hooks/useAuth";
-import useUser from "../Auth/hooks/useUser";
+import OperadoresList from "./components/OperadoresList";
 
 export default function UsuariosPage() {
-	const { register } = useAuth();
-	const { user, loading: loadingUser } = useUser();
-	const [form, setForm] = useState({
-		Nombre: "",
-		Usuario: "",
-		Password: "",
-		Confirm: "",
-	});
-	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState(null);
-	const [success, setSuccess] = useState(false);
-
-	const handleChange = (e) => {
-		setForm({ ...form, [e.target.name]: e.target.value });
-	};
+	const { user } = useAuth();
+	const { createUser, error, loading, fetchOperadores, operadores, maquinas, asignarMaquinas } = useOperadores();
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
-		if (form.Password !== form.Confirm) {
-			setError("Las contraseñas no coinciden");
+		const formData = new FormData(e.target);
+		const data = {
+			Nombre: formData.get("nombre"),
+			Cargo: "operador",
+			Usuario: formData.get("usuario"),
+			Password: formData.get("password"),
+		};
+
+		if (data.Password !== formData.get("confirmPassword")) {
+			alert("Las contraseñas no coinciden");
 			return;
 		}
 
-		setLoading(true);
-		setError(null);
-		setSuccess(false);
-
 		try {
-			await register({
-				Nombre: form.Nombre,
-				Usuario: form.Usuario,
-				Password: form.Password,
-				Cargo: "operador", // Automatically set to "operador"
-			});
-			setSuccess(true);
-			setForm({
-				Nombre: "",
-				Usuario: "",
-				Password: "",
-				Confirm: "",
-			});
-		} catch (err) {
-			setError(err.response?.data?.message || "Error al crear el usuario");
-		} finally {
-			setLoading(false);
+			await createUser(data);
+			e.target.reset();
+			await fetchOperadores();
+		} catch (error) {
+			console.error("Error al crear usuario:", error);
 		}
 	};
 
-	if (loadingUser) {
-		return <div className="mp-form-wrapper">Cargando...</div>;
-	}
-
-	if (!user || user.Cargo !== "admin") {
-		return (
-			<div className="mp-form-wrapper">
-				<div className="mp-form-card">
-					<p className="mp-error">No tienes permisos para acceder a esta sección.</p>
-				</div>
-			</div>
-		);
-	}
-
 	return (
-		<div className="mp-form-wrapper" style={{ maxWidth: 480 }}>
-			<div className="mp-form-card">
-				<h2 className="mp-heading">Crear Usuario Operador</h2>
+		<div className="container mx-auto px-4 py-8">
+			<div className="space-y-8">
+				{/* Formulario de creación */}
+				<div className="bg-white shadow rounded-lg p-6">
+					<h2 className="text-lg font-medium text-gray-900 mb-6">Crear Nuevo Operador</h2>
+					<form onSubmit={handleSubmit} className="space-y-4">
+						<div>
+							<label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
+								Nombre
+							</label>
+							<input
+								type="text"
+								name="nombre"
+								id="nombre"
+								required
+								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							/>
+						</div>
 
-				{error && <p className="mp-error">{error}</p>}
-				{success && <p className="mp-success">Usuario creado correctamente.</p>}
+						<div>
+							<label htmlFor="usuario" className="block text-sm font-medium text-gray-700">
+								Usuario
+							</label>
+							<input
+								type="text"
+								name="usuario"
+								id="usuario"
+								required
+								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							/>
+						</div>
 
-				<form onSubmit={handleSubmit} className="mp-form">
-					<div className="mp-field">
-						<label className="mp-label" htmlFor="Nombre">
-							Nombre completo
-						</label>
-						<input
-							id="Nombre"
-							name="Nombre"
-							value={form.Nombre}
-							onChange={handleChange}
-							className="mp-input"
-							required
-						/>
-					</div>
+						<div>
+							<label htmlFor="password" className="block text-sm font-medium text-gray-700">
+								Contraseña
+							</label>
+							<input
+								type="password"
+								name="password"
+								id="password"
+								required
+								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							/>
+						</div>
 
-					<div className="mp-field">
-						<label className="mp-label" htmlFor="Usuario">
-							Usuario
-						</label>
-						<input
-							id="Usuario"
-							name="Usuario"
-							value={form.Usuario}
-							onChange={handleChange}
-							className="mp-input"
-							required
-						/>
-					</div>
+						<div>
+							<label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+								Confirmar Contraseña
+							</label>
+							<input
+								type="password"
+								name="confirmPassword"
+								id="confirmPassword"
+								required
+								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+							/>
+						</div>
 
-					<div className="mp-field">
-						<label className="mp-label" htmlFor="Password">
-							Contraseña
-						</label>
-						<input
-							id="Password"
-							name="Password"
-							type="password"
-							value={form.Password}
-							onChange={handleChange}
-							className="mp-input"
-							required
-						/>
-					</div>
+						<div className="pt-4">
+							<button
+								type="submit"
+								disabled={loading}
+								className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+							>
+								{loading ? "Creando..." : "Crear Operador"}
+							</button>
+						</div>
 
-					<div className="mp-field">
-						<label className="mp-label" htmlFor="Confirm">
-							Confirmar contraseña
-						</label>
-						<input
-							id="Confirm"
-							name="Confirm"
-							type="password"
-							value={form.Confirm}
-							onChange={handleChange}
-							className="mp-input"
-							required
-						/>
-					</div>
+						{error && (
+							<div className="rounded-md bg-red-50 p-4">
+								<div className="flex">
+									<div className="ml-3">
+										<h3 className="text-sm font-medium text-red-800">{error}</h3>
+									</div>
+								</div>
+							</div>
+						)}
+					</form>
+				</div>
 
-					<button type="submit" className="mp-button" disabled={loading}>
-						{loading ? "Creando..." : "Crear usuario"}
-					</button>
-				</form>
+				{/* Lista de operadores */}
+				<OperadoresList 
+					operadores={operadores}
+					maquinas={maquinas}
+					loading={loading}
+					error={error}
+					asignarMaquinas={asignarMaquinas}
+				/>
 			</div>
 		</div>
 	);

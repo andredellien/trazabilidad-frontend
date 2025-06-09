@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MaquinaCard from "./components/MaquinaCard";
 import { obtenerEstadoFormulario } from "./services/procesoService";
+import api from "../../shared/services/api";
 
 function ProcesoTransformacion() {
 	const { idLote } = useParams();
@@ -15,14 +16,18 @@ function ProcesoTransformacion() {
 	// ✅ Cargar lote y procesos
 	useEffect(() => {
 		const cargar = async () => {
-			const loteRes = await fetch(`http://localhost:3000/api/lote/${idLote}`);
-			const loteData = await loteRes.json();
-			setLote(loteData);
+			try {
+				const loteRes = await api.get(`/lote/${idLote}`);
+				const loteData = loteRes.data;
+				setLote(loteData);
 
-			if (!loteData.IdProceso) {
-				const resProcesos = await fetch("http://localhost:3000/api/procesos");
-				const lista = await resProcesos.json();
-				setProcesos(lista);
+				if (!loteData.IdProceso) {
+					const resProcesos = await api.get("/procesos");
+					setProcesos(resProcesos.data);
+				}
+			} catch (error) {
+				console.error("Error al cargar datos:", error);
+				alert("Error al cargar los datos del lote");
 			}
 		};
 		cargar();
@@ -32,19 +37,22 @@ function ProcesoTransformacion() {
 	useEffect(() => {
 		const cargarMaquinas = async () => {
 			if (!lote?.IdProceso) return;
-			const res = await fetch(
-				`http://localhost:3000/api/proceso-transformacion/lote/${idLote}`
-			);
-			const data = await res.json();
+			try {
+				const res = await api.get(`/proceso-transformacion/lote/${idLote}`);
+				const data = res.data;
 
-			const completados = {};
-			for (const maquina of data) {
-				const form = await obtenerEstadoFormulario(idLote, maquina.Numero);
-				completados[maquina.Numero] = !!form;
+				const completados = {};
+				for (const maquina of data) {
+					const form = await obtenerEstadoFormulario(idLote, maquina.Numero);
+					completados[maquina.Numero] = !!form;
+				}
+
+				setMaquinas(data);
+				setFormularios(completados);
+			} catch (error) {
+				console.error("Error al cargar máquinas:", error);
+				alert("Error al cargar las máquinas del proceso");
 			}
-
-			setMaquinas(data);
-			setFormularios(completados);
 		};
 		cargarMaquinas();
 	}, [lote, idLote]);
@@ -54,15 +62,17 @@ function ProcesoTransformacion() {
 		const idProceso = parseInt(e.target.value);
 		if (!idProceso) return;
 
-		const res = await fetch(`http://localhost:3000/api/lote/${idLote}`, {
-			method: "PUT",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ ...lote, IdProceso: idProceso }),
-		});
+		try {
+			const res = await api.put(`/lote/${idLote}`, {
+				...lote,
+				IdProceso: idProceso,
+			});
 
-		if (res.ok) {
-			setLote({ ...lote, IdProceso: idProceso });
-		} else {
+			if (res.status === 200) {
+				setLote({ ...lote, IdProceso: idProceso });
+			}
+		} catch (error) {
+			console.error("Error al asignar proceso:", error);
 			alert("Error al asignar proceso");
 		}
 	};
@@ -76,16 +86,13 @@ function ProcesoTransformacion() {
 
 	const finalizarProceso = async () => {
 		try {
-			const res = await fetch(
-				`http://localhost:3000/api/proceso-evaluacion/finalizar/${idLote}`,
-				{ method: "POST" }
-			);
-			const data = await res.json();
+			const res = await api.post(`/proceso-evaluacion/finalizar/${idLote}`);
+			const data = res.data;
 			alert(`Proceso finalizado: ${data.message}\nMotivo: ${data.motivo}`);
 			navigate(`/certificado/${idLote}`);
 		} catch (error) {
+			console.error("Error al finalizar proceso:", error);
 			alert("Error al finalizar el proceso.");
-			console.error(error);
 		}
 	};
 

@@ -1,18 +1,17 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./shared/components/layout";
 import DashboardPage from "./features/Dashboard/DashboardPage";
-import LoginPage from "./features/Auth/LoginPage";
+import LoginForm from "./features/Auth/components/LoginForm";
 import ProtectedRoute from "./shared/components/ProtectedRoute";
 
 function App() {
 	return (
 		<BrowserRouter>
 			<Routes>
-				<Route path="/login" element={<LoginPage />} />
+				<Route path="/" element={<LoginForm />} />
 				<Route element={<ProtectedRoute />}>
 					<Route element={<Layout />}>
-						<Route path="/" element={<DashboardPage />} />
-						
+						<Route path="/dashboard" element={<DashboardPage />} />
 					</Route>
 				</Route>
 			</Routes>

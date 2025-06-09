@@ -8,19 +8,17 @@
 import axios from "axios";
 
 // ─────────────────────────────────────────────────────────────
-// 1) BASE URL
+// 1) BASE URL
 //    • En desarrollo usa localhost:3000
-//    • En producción pon REACT_APP_API_URL en tu .env.prod
+//    • En producción pon VITE_API_URL en tu .env
 // ─────────────────────────────────────────────────────────────
-const baseURL =
-	// quita barras finales
-	"http://localhost:3000";
+const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 // La API back‑end expone todos los endpoints bajo /api
 // Ej.: http://localhost:3000/api/lote
 const api = axios.create({
 	baseURL: `${baseURL}/api`,
-	timeout: 15000, // 15 segundos
+	timeout: 15000, // 15 segundos
 	headers: { "Content-Type": "application/json" },
 });
 

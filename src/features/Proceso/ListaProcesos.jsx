@@ -10,7 +10,9 @@ export default function ListaProcesos() {
 		const cargar = async () => {
 			const res = await fetch("http://localhost:3000/api/procesos");
 			const data = await res.json();
-			setProcesos(data);
+			// Sort processes in reverse order by ID
+			const sortedData = data.sort((a, b) => b.IdProceso - a.IdProceso);
+			setProcesos(sortedData);
 		};
 		cargar();
 	}, []);

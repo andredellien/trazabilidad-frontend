@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import api from "../../shared/services/api";
 
 function FormularioMaquina() {
 	const { idLote, numeroMaquina } = useParams();
@@ -11,10 +12,7 @@ function FormularioMaquina() {
 	useEffect(() => {
 		const cargar = async () => {
 			try {
-				const res = await fetch(
-					`http://localhost:3000/api/proceso-transformacion/lote/${idLote}`
-				);
-				const data = await res.json();
+				const { data } = await api.get(`/proceso-transformacion/lote/${idLote}`);
 				const m = data.find((m) => m.Numero === parseInt(numeroMaquina));
 				if (!m) {
 					alert("Máquina no encontrada");
@@ -52,20 +50,15 @@ function FormularioMaquina() {
 	const handleSubmit = async (e) => {
 		e.preventDefault();
 
-		const res = await fetch(
-			`http://localhost:3000/api/proceso-transformacion/${idLote}/maquina/${numeroMaquina}`,
-			{
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(valores),
-			}
-		);
-		const data = await res.json();
-		if (res.ok) {
+		try {
+			const { data } = await api.post(
+				`/proceso-transformacion/${idLote}/maquina/${numeroMaquina}`,
+				valores
+			);
 			alert(data.message + (data.cumple ? " ✅" : " ❌ No cumple estándares"));
 			navigate(`/proceso/${idLote}`);
-		} else {
-			alert(data.message || "Error al guardar");
+		} catch (error) {
+			alert(error.response?.data?.message || "Error al guardar");
 		}
 	};
 
