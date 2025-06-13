@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllCertificados } from "./services/certificados.service";
 
 export default function Certificados() {
 	const [lotes, setLotes] = useState([]);
@@ -7,12 +8,13 @@ export default function Certificados() {
 
 	useEffect(() => {
 		const cargar = async () => {
-			const res = await fetch("http://localhost:3000/api/lote");
-			const data = await res.json();
-			const certificados = data.filter(
-				(lote) => lote.Estado.toLowerCase() === "certificado"
-			);
-			setLotes(certificados);
+			try {
+				const data = await getAllCertificados();
+				setLotes(data);
+			} catch (error) {
+				console.error("Error al cargar certificados:", error);
+				alert("Error al cargar los certificados");
+			}
 		};
 		cargar();
 	}, []);

@@ -79,8 +79,12 @@ export default function LoteForm({ onCreated }) {
 				</div>
 
 				<div className="mp-field">
-					<label className="mp-label">Agregar materia prima</label>
+					<label className="mp-label" htmlFor="materiaPrima">
+						Agregar materia prima
+					</label>
 					<select
+						id="materiaPrima"
+						aria-label="Agregar materia prima"
 						onChange={onAgregarMateria}
 						disabled={loadingMaterias}
 						className="mp-input"

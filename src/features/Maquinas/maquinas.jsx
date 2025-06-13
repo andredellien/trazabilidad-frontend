@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi"; // para ícono visual
+import { getAllMaquinas, createMaquina } from "./services/maquinas.service";
+import api from "../../shared/services/api";
 
 export default function Maquinas() {
 	const [maquinas, setMaquinas] = useState([]);
@@ -13,9 +15,13 @@ export default function Maquinas() {
 	}, []);
 
 	const cargarMaquinas = async () => {
-		const res = await fetch("http://localhost:3000/api/maquinas");
-		const data = await res.json();
-		setMaquinas(data);
+		try {
+			const data = await getAllMaquinas();
+			setMaquinas(data);
+		} catch (error) {
+			console.error("Error al cargar máquinas:", error);
+			alert("Error al cargar las máquinas");
+		}
 	};
 
 	const subirImagen = async () => {
@@ -24,32 +30,34 @@ export default function Maquinas() {
 		formData.append("imagen", imagen);
 		setCargando(true);
 
-		const res = await fetch("http://localhost:3000/api/maquinas/upload", {
-			method: "POST",
-			body: formData,
-		});
-		const data = await res.json();
-		setImagenUrl(data.imageUrl);
-		setCargando(false);
+		try {
+			const response = await api.post("/maquinas/upload", formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			});
+			setImagenUrl(response.data.imageUrl);
+		} catch (error) {
+			console.error("Error al subir imagen:", error);
+			alert("Error al subir la imagen");
+		} finally {
+			setCargando(false);
+		}
 	};
 
 	const guardarMaquina = async () => {
 		if (!nombre || !imagenUrl) return alert("Completa todos los campos");
 
-		const res = await fetch("http://localhost:3000/api/maquinas", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ nombre, imagenUrl }),
-		});
-		const data = await res.json();
-		if (res.ok) {
+		try {
+			await createMaquina({ nombre, imagenUrl });
 			alert("Máquina guardada ✅");
 			setNombre("");
 			setImagen(null);
 			setImagenUrl("");
 			cargarMaquinas();
-		} else {
-			alert("❌ " + data.message);
+		} catch (error) {
+			console.error("Error al guardar máquina:", error);
+			alert("Error al guardar la máquina");
 		}
 	};
 

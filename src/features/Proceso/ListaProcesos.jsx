@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllProcesos, getProcesoById, deleteProceso } from "./services/proceso.service";
 
 export default function ListaProcesos() {
 	const [procesos, setProcesos] = useState([]);
@@ -8,11 +9,15 @@ export default function ListaProcesos() {
 
 	useEffect(() => {
 		const cargar = async () => {
-			const res = await fetch("http://localhost:3000/api/procesos");
-			const data = await res.json();
-			// Sort processes in reverse order by ID
-			const sortedData = data.sort((a, b) => b.IdProceso - a.IdProceso);
-			setProcesos(sortedData);
+			try {
+				const data = await getAllProcesos();
+				// Sort processes in reverse order by ID
+				const sortedData = data.sort((a, b) => b.IdProceso - a.IdProceso);
+				setProcesos(sortedData);
+			} catch (error) {
+				console.error("Error al cargar procesos:", error);
+				alert("Error al cargar los procesos");
+			}
 		};
 		cargar();
 	}, []);
@@ -23,9 +28,13 @@ export default function ListaProcesos() {
 			delete nuevos[id];
 			setDetalles(nuevos);
 		} else {
-			const res = await fetch(`http://localhost:3000/api/procesos/${id}`);
-			const data = await res.json();
-			setDetalles({ ...detalles, [id]: data });
+			try {
+				const data = await getProcesoById(id);
+				setDetalles({ ...detalles, [id]: data });
+			} catch (error) {
+				console.error("Error al cargar detalle:", error);
+				alert("Error al cargar el detalle del proceso");
+			}
 		}
 	};
 
@@ -36,17 +45,9 @@ export default function ListaProcesos() {
 		if (!confirmar) return;
 
 		try {
-			const res = await fetch(`http://localhost:3000/api/procesos/${id}`, {
-				method: "DELETE",
-			});
-			const data = await res.json();
-
-			if (res.ok) {
-				alert("Proceso eliminado ✅");
-				setProcesos((prev) => prev.filter((p) => p.IdProceso !== id));
-			} else {
-				alert("❌ " + data.message);
-			}
+			await deleteProceso(id);
+			alert("Proceso eliminado ✅");
+			setProcesos((prev) => prev.filter((p) => p.IdProceso !== id));
 		} catch (err) {
 			console.error("Error al eliminar:", err);
 			alert("Error al eliminar el proceso");

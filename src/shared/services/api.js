@@ -12,7 +12,7 @@ import axios from "axios";
 //    • En desarrollo usa localhost:3000
 //    • En producción pon VITE_API_URL en tu .env
 // ─────────────────────────────────────────────────────────────
-const baseURL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const baseURL = import.meta.env.VITE_API_URL;
 
 // La API back‑end expone todos los endpoints bajo /api
 // Ej.: http://localhost:3000/api/lote

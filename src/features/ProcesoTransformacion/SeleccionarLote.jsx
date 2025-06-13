@@ -1,16 +1,27 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { getAllLotes } from "../GestionLotes/services/lotes.service";
 
 function SeleccionarLote() {
 	const [lotes, setLotes] = useState([]);
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 	const navigate = useNavigate();
 
 	useEffect(() => {
 		const cargarLotes = async () => {
-			const res = await fetch("http://localhost:3000/api/lote");
-			const data = await res.json();
-			const pendientes = data.filter((lote) => lote.Estado === "Pendiente");
-			setLotes(pendientes);
+			setLoading(true);
+			try {
+				const data = await getAllLotes();
+				const pendientes = data.filter((lote) => lote.Estado === "Pendiente");
+				setLotes(pendientes);
+				setError(null);
+			} catch (err) {
+				console.error("Error al cargar lotes:", err);
+				setError("Error al cargar los lotes. Por favor, intente nuevamente.");
+			} finally {
+				setLoading(false);
+			}
 		};
 		cargarLotes();
 	}, []);
@@ -20,7 +31,7 @@ function SeleccionarLote() {
 	};
 
 	return (
-		<div className="min-h-screen  p-6">
+		<div className="min-h-screen p-6">
 			<div className="max-w-6xl mx-auto">
 				<header className="mb-8 text-center">
 					<h1 className="text-3xl font-extrabold text-gray-800">
@@ -31,7 +42,11 @@ function SeleccionarLote() {
 					</p>
 				</header>
 
-				{lotes.length === 0 ? (
+				{loading ? (
+					<p className="text-center text-gray-500">Cargando lotes...</p>
+				) : error ? (
+					<p className="text-center text-red-500">{error}</p>
+				) : lotes.length === 0 ? (
 					<p className="text-center text-gray-500">No hay lotes pendientes.</p>
 				) : (
 					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

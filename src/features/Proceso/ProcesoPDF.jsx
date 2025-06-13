@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { getProcesoById } from "./services/proceso.service";
 
 export default function ProcesoPDF() {
 	const { id } = useParams();
@@ -10,8 +11,7 @@ export default function ProcesoPDF() {
 
 	useEffect(() => {
 		const cargarProceso = async () => {
-			const res = await fetch(`http://localhost:3000/api/procesos/${id}`);
-			const data = await res.json();
+			const data = await getProcesoById(id);
 			setProceso(data);
 		};
 		cargarProceso();

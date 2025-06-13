@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getProcesoById, updateProceso } from "./services/proceso.service";
 
 export default function EditarProceso() {
 	const { id } = useParams();
@@ -10,8 +11,7 @@ export default function EditarProceso() {
 	useEffect(() => {
 		const cargarProceso = async () => {
 			try {
-				const res = await fetch(`http://localhost:3000/api/procesos/${id}`);
-				const data = await res.json();
+				const data = await getProcesoById(id);
 
 				const maquinasProcesadas = data.Maquinas.map((m, i) => ({
 					...m,
@@ -124,19 +124,9 @@ export default function EditarProceso() {
 		};
 
 		try {
-			const res = await fetch(`http://localhost:3000/api/procesos/${id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
-			});
-			const data = await res.json();
-
-			if (res.ok) {
-				alert("Proceso actualizado ✅");
-				navigate("/procesos");
-			} else {
-				alert("❌ " + data.message);
-			}
+			await updateProceso(id, payload);
+			alert("Proceso actualizado ✅");
+			navigate("/procesos");
 		} catch (error) {
 			console.error("Error al actualizar:", error);
 			alert("Error al guardar los cambios");

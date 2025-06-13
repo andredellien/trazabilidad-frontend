@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import api from "../../shared/services/api";
 
 export default function CertificadoDetalle() {
 	const { idLote } = useParams();
@@ -10,15 +11,17 @@ export default function CertificadoDetalle() {
 
 	useEffect(() => {
 		const cargar = async () => {
-			const loteRes = await fetch(`http://localhost:3000/api/lote/${idLote}`);
-			const loteData = await loteRes.json();
-			setLote(loteData);
-
-			const logRes = await fetch(
-				`http://localhost:3000/api/proceso-evaluacion/log/${idLote}`
-			);
-			const logData = await logRes.json();
-			setLog(logData);
+			try {
+				const [loteRes, logRes] = await Promise.all([
+					api.get(`/lote/${idLote}`),
+					api.get(`/proceso-evaluacion/log/${idLote}`)
+				]);
+				
+				setLote(loteRes.data);
+				setLog(logRes.data);
+			} catch (error) {
+				console.error("Error al cargar el certificado:", error);
+			}
 		};
 		cargar();
 	}, [idLote]);
