@@ -129,7 +129,8 @@ export default function EditarProceso() {
 			navigate("/procesos");
 		} catch (error) {
 			console.error("Error al actualizar:", error);
-			alert("Error al guardar los cambios");
+			const mensajeError = error.response?.data?.message || error.message || "Error al guardar los cambios";
+			alert(mensajeError);
 		}
 	};
 

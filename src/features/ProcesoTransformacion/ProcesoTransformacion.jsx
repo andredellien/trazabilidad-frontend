@@ -4,7 +4,7 @@ import MaquinaCard from "./components/MaquinaCard";
 import { obtenerEstadoFormulario } from "./services/procesoService";
 import api from "../../shared/services/api";
 
-function ProcesoTransformacion() {
+export function ProcesoTransformacion() {
 	const { idLote } = useParams();
 	const navigate = useNavigate();
 
@@ -12,22 +12,27 @@ function ProcesoTransformacion() {
 	const [procesos, setProcesos] = useState([]);
 	const [maquinas, setMaquinas] = useState([]);
 	const [formularios, setFormularios] = useState({});
+	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(true);
 
 	// ✅ Cargar lote y procesos
 	useEffect(() => {
 		const cargar = async () => {
 			try {
+				setLoading(true);
 				const loteRes = await api.get(`/lote/${idLote}`);
 				const loteData = loteRes.data;
 				setLote(loteData);
 
 				if (!loteData.IdProceso) {
 					const resProcesos = await api.get("/procesos");
-					setProcesos(resProcesos.data);
+					setProcesos(resProcesos.data || []);
 				}
 			} catch (error) {
 				console.error("Error al cargar datos:", error);
-				alert("Error al cargar los datos del lote");
+				setError("Error al cargar los datos del lote");
+			} finally {
+				setLoading(false);
 			}
 		};
 		cargar();
@@ -96,7 +101,9 @@ function ProcesoTransformacion() {
 		}
 	};
 
-	if (!lote) return <p className="p-4">Cargando lote...</p>;
+	if (loading) return <p className="p-4">Cargando...</p>;
+	if (error) return <p className="p-4 text-red-600">{error}</p>;
+	if (!lote) return <p className="p-4">No se encontró el lote</p>;
 
 	return (
 		<div className="min-h-screen py-10 px-4">
@@ -120,7 +127,7 @@ function ProcesoTransformacion() {
 								<option value="" disabled>
 									-- Escoge un proceso --
 								</option>
-								{procesos.map((p) => (
+								{Array.isArray(procesos) && procesos.map((p) => (
 									<option key={p.IdProceso} value={p.IdProceso}>
 										{p.Nombre}
 									</option>

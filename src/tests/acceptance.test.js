@@ -198,6 +198,7 @@ describe('Pruebas de Aceptación', () => {
           nombre: 'Proceso de prueba',
           maquinas: [
             {
+              IdMaquina: 1,
               numero: 1,
               nombre: 'Balanza',
               imagen: 'url1',

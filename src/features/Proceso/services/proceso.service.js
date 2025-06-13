@@ -16,8 +16,13 @@ export const createProceso = async (proceso) => {
 };
 
 export const updateProceso = async (id, proceso) => {
-    const response = await api.put(`/procesos/${id}`, proceso);
-    return response.data;
+    try {
+        const response = await api.put(`/procesos/${id}`, proceso);
+        return response.data;
+    } catch (error) {
+        // Propagar el mensaje de error del backend
+        throw error.response?.data || error;
+    }
 };
 
 export const deleteProceso = async (id) => {
