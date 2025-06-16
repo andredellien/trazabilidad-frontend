@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProcesoById, updateProceso } from "./services/proceso.service";
+import Modal from "../../shared/components/Modal";
 
 export default function EditarProceso() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const [nombreProceso, setNombreProceso] = useState("");
 	const [maquinas, setMaquinas] = useState([]);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info" });
 
 	useEffect(() => {
 		const cargarProceso = async () => {
@@ -29,7 +31,12 @@ export default function EditarProceso() {
 				setMaquinas(maquinasProcesadas);
 			} catch (error) {
 				console.error("Error al cargar proceso:", error);
-				alert("No se pudo cargar el proceso");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "No se pudo cargar el proceso",
+					type: "error"
+				});
 			}
 		};
 
@@ -56,27 +63,34 @@ export default function EditarProceso() {
 
 	const validarProceso = () => {
 		if (!nombreProceso.trim()) {
-			alert("⚠️ Debes ingresar un nombre para el proceso");
+			setModal({
+				isOpen: true,
+				title: "Error de validación",
+				message: "⚠️ Debes ingresar un nombre para el proceso",
+				type: "warning"
+			});
 			return false;
 		}
 
 		for (const [i, maquina] of maquinas.entries()) {
 			if (!maquina.variables || maquina.variables.length === 0) {
-				alert(
-					`⚠️ La máquina #${i + 1} (${
-						maquina.Nombre || maquina.nombre
-					}) no tiene variables`
-				);
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: `⚠️ La máquina #${i + 1} (${maquina.Nombre || maquina.nombre}) no tiene variables`,
+					type: "warning"
+				});
 				return false;
 			}
 
 			for (const [j, variable] of maquina.variables.entries()) {
 				if (!variable.nombre || variable.nombre.trim() === "") {
-					alert(
-						`⚠️ La variable #${j + 1} de la máquina ${
-							maquina.Nombre || maquina.nombre
-						} no tiene nombre`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable #${j + 1} de la máquina ${maquina.Nombre || maquina.nombre} no tiene nombre`,
+						type: "warning"
+					});
 					return false;
 				}
 
@@ -88,16 +102,22 @@ export default function EditarProceso() {
 					isNaN(variable.min) ||
 					isNaN(variable.max)
 				) {
-					alert(
-						`⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`,
+						type: "warning"
+					});
 					return false;
 				}
 
 				if (parseFloat(variable.min) > parseFloat(variable.max)) {
-					alert(
-						`⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`,
+						type: "warning"
+					});
 					return false;
 				}
 			}
@@ -125,17 +145,35 @@ export default function EditarProceso() {
 
 		try {
 			await updateProceso(id, payload);
-			alert("Proceso actualizado ✅");
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Proceso actualizado",
+				type: "success"
+			});
 			navigate("/procesos");
 		} catch (error) {
 			console.error("Error al actualizar:", error);
 			const mensajeError = error.response?.data?.message || error.message || "Error al guardar los cambios";
-			alert(mensajeError);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: mensajeError,
+				type: "error"
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white rounded shadow mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+			/>
+
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Editar proceso #{id}
 			</h2>

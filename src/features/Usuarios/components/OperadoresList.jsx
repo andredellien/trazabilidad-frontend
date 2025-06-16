@@ -25,7 +25,7 @@ export default function OperadoresList({ operadores, maquinas, loading, error, a
     if (loading) {
         return (
             <div className="flex items-center justify-center h-64">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-500"></div>
             </div>
         );
     }
@@ -101,7 +101,7 @@ export default function OperadoresList({ operadores, maquinas, loading, error, a
                             placeholder="Buscar operador..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                            className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-green-500 focus:border-green-500 sm:text-sm"
                         />
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                             <svg className="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -142,7 +142,7 @@ export default function OperadoresList({ operadores, maquinas, loading, error, a
                                                         key={maq.IdMaquina}
                                                         className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium cursor-pointer
                                                             ${selectedMaquinas[op.IdOperador]?.includes(maq.IdMaquina)
-                                                                ? 'bg-blue-100 text-blue-800'
+                                                                ? 'bg-green-100 text-green-800'
                                                                 : 'bg-gray-100 text-gray-800 hover:bg-gray-200'
                                                             }`}
                                                     >
@@ -159,13 +159,13 @@ export default function OperadoresList({ operadores, maquinas, loading, error, a
                                             <div className="flex gap-2 mt-2">
                                                 <button
                                                     onClick={() => handleMaquinaChange(op.IdOperador, selectedMaquinas[op.IdOperador] || [])}
-                                                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                    className="inline-flex items-center px-3 py-1 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                                 >
                                                     Guardar
                                                 </button>
                                                 <button
                                                     onClick={() => setEditingOperador(null)}
-                                                    className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                                    className="inline-flex items-center px-3 py-1 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
                                                 >
                                                     Cancelar
                                                 </button>
@@ -179,7 +179,7 @@ export default function OperadoresList({ operadores, maquinas, loading, error, a
                                                     return maquina ? (
                                                         <span
                                                             key={maqId}
-                                                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                                                            className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800"
                                                         >
                                                             {maquina.Nombre}
                                                         </span>
@@ -188,7 +188,7 @@ export default function OperadoresList({ operadores, maquinas, loading, error, a
                                             </div>
                                             <button
                                                 onClick={() => setEditingOperador(op.IdOperador)}
-                                                className="text-blue-600 hover:text-blue-900"
+                                                className="text-black-600 hover:text-black-900"
                                             >
                                                 <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />

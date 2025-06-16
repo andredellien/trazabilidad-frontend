@@ -5,8 +5,6 @@ import useMateriasPrimas from "../../MateriaPrima/hooks/useMateriasPrimas";
 export default function LoteForm({ onCreated }) {
 	const [form, setForm] = useState({
 		Nombre: "",
-		FechaCreacion: "",
-		Estado: "Pendiente",
 		MateriasPrimas: [],
 	});
 
@@ -44,15 +42,18 @@ export default function LoteForm({ onCreated }) {
 
 	const onSubmit = async (e) => {
 		e.preventDefault();
-		await handleCreate(form);
+		const formData = {
+			...form,
+			FechaCreacion: new Date().toISOString().split('T')[0],
+			Estado: "Pendiente"
+		};
+		await handleCreate(formData);
 		if (!error) {
 			setForm({
 				Nombre: "",
-				FechaCreacion: "",
-				Estado: "Pendiente",
 				MateriasPrimas: [],
 			});
-			if (typeof onCreated === "function") onCreated(); // ✅ actualiza la lista
+			if (typeof onCreated === "function") onCreated();
 		}
 	};
 
@@ -157,38 +158,6 @@ export default function LoteForm({ onCreated }) {
 						</div>
 					);
 				})}
-
-				<div className="mp-field">
-					<label className="mp-label" htmlFor="FechaCreacion">
-						Fecha creación *
-					</label>
-					<input
-						id="FechaCreacion"
-						name="FechaCreacion"
-						type="date"
-						value={form.FechaCreacion}
-						onChange={onChange}
-						required
-						className="mp-input"
-					/>
-				</div>
-
-				<div className="mp-field">
-					<label className="mp-label" htmlFor="Estado">
-						Estado
-					</label>
-					<select
-						id="Estado"
-						name="Estado"
-						value={form.Estado}
-						onChange={onChange}
-						className="mp-input"
-					>
-						<option>Pendiente</option>
-						<option>En curso</option>
-						<option>Terminado</option>
-					</select>
-				</div>
 
 				{error && <p className="mp-error">{error}</p>}
 				{success && <p className="mp-success">Lote creado correctamente.</p>}

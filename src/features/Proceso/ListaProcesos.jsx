@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getAllProcesos, getProcesoById, deleteProceso } from "./services/proceso.service";
+import Modal from "../../shared/components/Modal";
 
 export default function ListaProcesos() {
 	const [procesos, setProcesos] = useState([]);
 	const [detalles, setDetalles] = useState({});
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false, id: null });
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -16,7 +18,12 @@ export default function ListaProcesos() {
 				setProcesos(sortedData);
 			} catch (error) {
 				console.error("Error al cargar procesos:", error);
-				alert("Error al cargar los procesos");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "Error al cargar los procesos",
+					type: "error"
+				});
 			}
 		};
 		cargar();
@@ -33,29 +40,64 @@ export default function ListaProcesos() {
 				setDetalles({ ...detalles, [id]: data });
 			} catch (error) {
 				console.error("Error al cargar detalle:", error);
-				alert("Error al cargar el detalle del proceso");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "Error al cargar el detalle del proceso",
+					type: "error"
+				});
 			}
 		}
 	};
 
 	const eliminarProceso = async (id) => {
-		const confirmar = confirm(
-			"¿Estás seguro que deseas eliminar este proceso?"
-		);
-		if (!confirmar) return;
+		setModal({
+			isOpen: true,
+			title: "Confirmar eliminación",
+			message: "¿Estás seguro que deseas eliminar este proceso?",
+			type: "warning",
+			showConfirmButton: true,
+			id
+		});
+	};
 
+	const handleEliminar = async (id) => {
 		try {
 			await deleteProceso(id);
-			alert("Proceso eliminado ✅");
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Proceso eliminado",
+				type: "success",
+				showConfirmButton: false,
+				id: null
+			});
 			setProcesos((prev) => prev.filter((p) => p.IdProceso !== id));
 		} catch (err) {
 			console.error("Error al eliminar:", err);
-			alert("Error al eliminar el proceso");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al eliminar el proceso",
+				type: "error",
+				showConfirmButton: false,
+				id: null
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white shadow rounded mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false, id: null })}
+				onConfirm={() => handleEliminar(modal.id)}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
+
 			<div className="flex justify-between items-center mb-8">
 				<h2 className="text-3xl font-extrabold text-[#007c64]">
 					📂 Procesos de Transformación

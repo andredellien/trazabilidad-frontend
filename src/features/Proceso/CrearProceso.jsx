@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
 import { createProceso, getProcesoById } from "./services/proceso.service";
 import { getAllMaquinas } from "../Maquinas/services/maquinas.service";
+import Modal from "../../shared/components/Modal";
 
 export default function CrearProceso() {
 	const [searchParams] = useSearchParams();
@@ -11,6 +12,7 @@ export default function CrearProceso() {
 	const [maquinasDisponibles, setMaquinasDisponibles] = useState([]);
 	const [maquinasSeleccionadas, setMaquinasSeleccionadas] = useState([]);
 	const [error, setError] = useState(null);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info" });
 	const navigate = useNavigate();
 
 	// ✅ Cargar máquinas disponibles
@@ -51,7 +53,12 @@ export default function CrearProceso() {
 				setMaquinasSeleccionadas(maquinasProcesadas);
 			} catch (error) {
 				console.error("Error al duplicar proceso:", error);
-				alert("No se pudo duplicar el proceso");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "No se pudo duplicar el proceso",
+					type: "error"
+				});
 			}
 		};
 
@@ -96,19 +103,34 @@ export default function CrearProceso() {
 
 	const validarProceso = () => {
 		if (!nombreProceso.trim()) {
-			setError("⚠️ Debes ingresar un nombre para el proceso");
+			setModal({
+				isOpen: true,
+				title: "Error de validación",
+				message: "⚠️ Debes ingresar un nombre para el proceso",
+				type: "warning"
+			});
 			return false;
 		}
 
 		for (const [i, maquina] of maquinasSeleccionadas.entries()) {
 			if (!maquina.variables || maquina.variables.length === 0) {
-				setError(`⚠️ La máquina #${i + 1} (${maquina.Nombre}) no tiene variables`);
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: `⚠️ La máquina #${i + 1} (${maquina.Nombre}) no tiene variables`,
+					type: "warning"
+				});
 				return false;
 			}
 
 			for (const [j, variable] of maquina.variables.entries()) {
 				if (!variable.nombre || variable.nombre.trim() === "") {
-					setError(`⚠️ La variable #${j + 1} de la máquina ${maquina.Nombre} no tiene nombre`);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable #${j + 1} de la máquina ${maquina.Nombre} no tiene nombre`,
+						type: "warning"
+					});
 					return false;
 				}
 
@@ -120,12 +142,22 @@ export default function CrearProceso() {
 					isNaN(variable.min) ||
 					isNaN(variable.max)
 				) {
-					setError(`⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`,
+						type: "warning"
+					});
 					return false;
 				}
 
 				if (parseFloat(variable.min) > parseFloat(variable.max)) {
-					setError(`⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`,
+						type: "warning"
+					});
 					return false;
 				}
 			}
@@ -141,7 +173,12 @@ export default function CrearProceso() {
 		try {
 			// Validar que haya al menos una máquina seleccionada
 			if (maquinasSeleccionadas.length === 0) {
-				setError("⚠️ Debes seleccionar al menos una máquina");
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: "⚠️ Debes seleccionar al menos una máquina",
+					type: "warning"
+				});
 				return;
 			}
 
@@ -163,21 +200,36 @@ export default function CrearProceso() {
 
 			// Validaciones adicionales según el backend
 			if (!payload.nombre || !Array.isArray(payload.maquinas)) {
-				setError("⚠️ Datos incompletos: nombre y máquinas son requeridos");
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: "⚠️ Datos incompletos: nombre y máquinas son requeridos",
+					type: "warning"
+				});
 				return;
 			}
 
 			// Validar cada máquina según el backend
 			for (const maquina of payload.maquinas) {
 				if (!maquina.IdMaquina || !maquina.numero || !maquina.nombre || !maquina.imagen || !Array.isArray(maquina.variables)) {
-					setError(`⚠️ La máquina ${maquina.nombre} debe tener ID, número, nombre, imagen y variables`);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La máquina ${maquina.nombre} debe tener ID, número, nombre, imagen y variables`,
+						type: "warning"
+					});
 					return;
 				}
 
 				// Validar cada variable según el backend
 				for (const variable of maquina.variables) {
 					if (!variable.nombre || variable.min === undefined || variable.max === undefined) {
-						setError(`⚠️ La variable ${variable.nombre} debe tener nombre, min y max`);
+						setModal({
+							isOpen: true,
+							title: "Error de validación",
+							message: `⚠️ La variable ${variable.nombre} debe tener nombre, min y max`,
+							type: "warning"
+						});
 						return;
 					}
 				}
@@ -187,16 +239,35 @@ export default function CrearProceso() {
 			setError(null);
 			setNombreProceso("");
 			setMaquinasSeleccionadas([]);
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Proceso creado correctamente",
+				type: "success"
+			});
 			navigate("/procesos");
 		} catch (error) {
 			console.error("Error al guardar el proceso:", error);
 			const errorMessage = error.response?.data?.message || error.message;
-			setError(`❌ Error al guardar el proceso: ${errorMessage}`);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: `❌ Error al guardar el proceso: ${errorMessage}`,
+				type: "error"
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white rounded shadow mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+			/>
+
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Crear nuevo proceso
 			</h2>

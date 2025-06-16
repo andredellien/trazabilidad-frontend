@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../../shared/services/api";
+import Modal from "../../shared/components/Modal";
 
 function FormularioMaquina() {
 	const { idLote, numeroMaquina } = useParams();
@@ -8,6 +9,7 @@ function FormularioMaquina() {
 	const [valores, setValores] = useState({});
 	const [errores, setErrores] = useState({});
 	const navigate = useNavigate();
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	useEffect(() => {
 		const cargar = async () => {
@@ -15,8 +17,15 @@ function FormularioMaquina() {
 				const { data } = await api.get(`/proceso-transformacion/lote/${idLote}`);
 				const m = data.find((m) => m.Numero === parseInt(numeroMaquina));
 				if (!m) {
-					alert("Máquina no encontrada");
-					return navigate(`/proceso/${idLote}`);
+					setModal({
+						isOpen: true,
+						title: "Error",
+						message: "Máquina no encontrada",
+						type: "error",
+						showConfirmButton: true,
+						onConfirm: () => navigate(`/proceso/${idLote}`)
+					});
+					return;
 				}
 				setMaquina(m);
 
@@ -27,7 +36,14 @@ function FormularioMaquina() {
 				setValores(iniciales);
 			} catch (error) {
 				console.error("Error:", error);
-				alert("Error al cargar los datos de la máquina");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "Error al cargar los datos de la máquina",
+					type: "error",
+					showConfirmButton: true,
+					onConfirm: () => navigate(`/proceso/${idLote}`)
+				});
 			}
 		};
 		cargar();
@@ -55,10 +71,21 @@ function FormularioMaquina() {
 				`/proceso-transformacion/${idLote}/maquina/${numeroMaquina}`,
 				valores
 			);
-			alert(data.message + (data.cumple ? " ✅" : " ❌ No cumple estándares"));
-			navigate(`/proceso/${idLote}`);
+			setModal({
+				isOpen: true,
+				title: "Resultado",
+				message: data.message + (data.cumple ? " ✅" : " ❌ No cumple estándares"),
+				type: data.cumple ? "success" : "warning",
+				showConfirmButton: true,
+				onConfirm: () => navigate(`/proceso/${idLote}`)
+			});
 		} catch (error) {
-			alert(error.response?.data?.message || "Error al guardar");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: error.response?.data?.message || "Error al guardar",
+				type: "error"
+			});
 		}
 	};
 
@@ -66,6 +93,16 @@ function FormularioMaquina() {
 
 	return (
 		<div className="min-h-screen bg-gray-50 p-6 flex justify-center items-center">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				onConfirm={modal.onConfirm}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
+
 			<div className="bg-white rounded-xl shadow-lg p-8 w-full max-w-xl">
 				<h2 className="text-2xl font-bold text-gray-800 mb-4 text-center">
 					#{maquina.Numero} – {maquina.Nombre}

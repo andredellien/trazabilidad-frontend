@@ -1,11 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import useOperadores from "./hooks/useOperadores";
 import useAuth from "../Auth/hooks/useAuth";
 import OperadoresList from "./components/OperadoresList";
+import Modal from "../../shared/components/Modal";
 
 export default function UsuariosPage() {
 	const { user } = useAuth();
 	const { createUser, error, loading, fetchOperadores, operadores, maquinas, asignarMaquinas } = useOperadores();
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	const handleSubmit = async (e) => {
 		e.preventDefault();
@@ -18,7 +20,12 @@ export default function UsuariosPage() {
 		};
 
 		if (data.Password !== formData.get("confirmPassword")) {
-			alert("Las contraseñas no coinciden");
+			setModal({
+				isOpen: true,
+				title: "Error de validación",
+				message: "Las contraseñas no coinciden",
+				type: "error"
+			});
 			return;
 		}
 
@@ -26,90 +33,94 @@ export default function UsuariosPage() {
 			await createUser(data);
 			e.target.reset();
 			await fetchOperadores();
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Operador creado correctamente",
+				type: "success"
+			});
 		} catch (error) {
 			console.error("Error al crear usuario:", error);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al crear el operador",
+				type: "error"
+			});
 		}
 	};
 
 	return (
-		<div className="container mx-auto px-4 py-8">
+		<div className="container mx-auto px-4 ">
 			<div className="space-y-8">
 				{/* Formulario de creación */}
-				<div className="bg-white shadow rounded-lg p-6">
-					<h2 className="text-lg font-medium text-gray-900 mb-6">Crear Nuevo Operador</h2>
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div>
-							<label htmlFor="nombre" className="block text-sm font-medium text-gray-700">
-								Nombre
-							</label>
-							<input
-								type="text"
-								name="nombre"
-								id="nombre"
-								required
-								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-							/>
-						</div>
+				<div className="mp-form-wrapper">
+					<div className="mp-form-card">
+						<h2 className="mp-heading">Crear Nuevo Operador</h2>
+						<form onSubmit={handleSubmit} className="mp-form">
+							<div className="mp-field">
+								<label htmlFor="nombre" className="mp-label">
+									Nombre
+								</label>
+								<input
+									type="text"
+									name="nombre"
+									id="nombre"
+									required
+									className="mp-input"
+								/>
+							</div>
 
-						<div>
-							<label htmlFor="usuario" className="block text-sm font-medium text-gray-700">
-								Usuario
-							</label>
-							<input
-								type="text"
-								name="usuario"
-								id="usuario"
-								required
-								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-							/>
-						</div>
+							<div className="mp-field">
+								<label htmlFor="usuario" className="mp-label">
+									Usuario
+								</label>
+								<input
+									type="text"
+									name="usuario"
+									id="usuario"
+									required
+									className="mp-input"
+								/>
+							</div>
 
-						<div>
-							<label htmlFor="password" className="block text-sm font-medium text-gray-700">
-								Contraseña
-							</label>
-							<input
-								type="password"
-								name="password"
-								id="password"
-								required
-								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-							/>
-						</div>
+							<div className="mp-field">
+								<label htmlFor="password" className="mp-label">
+									Contraseña
+								</label>
+								<input
+									type="password"
+									name="password"
+									id="password"
+									required
+									className="mp-input"
+								/>
+							</div>
 
-						<div>
-							<label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-								Confirmar Contraseña
-							</label>
-							<input
-								type="password"
-								name="confirmPassword"
-								id="confirmPassword"
-								required
-								className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-							/>
-						</div>
+							<div className="mp-field">
+								<label htmlFor="confirmPassword" className="mp-label">
+									Confirmar Contraseña
+								</label>
+								<input
+									type="password"
+									name="confirmPassword"
+									id="confirmPassword"
+									required
+									className="mp-input"
+								/>
+							</div>
 
-						<div className="pt-4">
+							{error && <p className="mp-error">{error}</p>}
+
 							<button
 								type="submit"
 								disabled={loading}
-								className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50"
+								className="mp-button"
 							>
 								{loading ? "Creando..." : "Crear Operador"}
 							</button>
-						</div>
-
-						{error && (
-							<div className="rounded-md bg-red-50 p-4">
-								<div className="flex">
-									<div className="ml-3">
-										<h3 className="text-sm font-medium text-red-800">{error}</h3>
-									</div>
-								</div>
-							</div>
-						)}
-					</form>
+						</form>
+					</div>
 				</div>
 
 				{/* Lista de operadores */}
@@ -121,6 +132,15 @@ export default function UsuariosPage() {
 					asignarMaquinas={asignarMaquinas}
 				/>
 			</div>
+
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
 		</div>
 	);
 } 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi"; // para ícono visual
 import { getAllMaquinas, createMaquina } from "./services/maquinas.service";
 import api from "../../shared/services/api";
+import Modal from "../../shared/components/Modal";
 
 export default function Maquinas() {
 	const [maquinas, setMaquinas] = useState([]);
@@ -9,6 +10,7 @@ export default function Maquinas() {
 	const [imagen, setImagen] = useState(null);
 	const [imagenUrl, setImagenUrl] = useState("");
 	const [cargando, setCargando] = useState(false);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	useEffect(() => {
 		cargarMaquinas();
@@ -20,7 +22,12 @@ export default function Maquinas() {
 			setMaquinas(data);
 		} catch (error) {
 			console.error("Error al cargar máquinas:", error);
-			alert("Error al cargar las máquinas");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al cargar las máquinas",
+				type: "error"
+			});
 		}
 	};
 
@@ -39,30 +46,62 @@ export default function Maquinas() {
 			setImagenUrl(response.data.imageUrl);
 		} catch (error) {
 			console.error("Error al subir imagen:", error);
-			alert("Error al subir la imagen");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al subir la imagen",
+				type: "error"
+			});
 		} finally {
 			setCargando(false);
 		}
 	};
 
 	const guardarMaquina = async () => {
-		if (!nombre || !imagenUrl) return alert("Completa todos los campos");
+		if (!nombre || !imagenUrl) {
+			setModal({
+				isOpen: true,
+				title: "Campos incompletos",
+				message: "Por favor completa todos los campos",
+				type: "warning"
+			});
+			return;
+		}
 
 		try {
 			await createMaquina({ nombre, imagenUrl });
-			alert("Máquina guardada ✅");
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Máquina guardada",
+				type: "success"
+			});
 			setNombre("");
 			setImagen(null);
 			setImagenUrl("");
 			cargarMaquinas();
 		} catch (error) {
 			console.error("Error al guardar máquina:", error);
-			alert("Error al guardar la máquina");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al guardar la máquina",
+				type: "error"
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-5xl mx-auto p-6 bg-white shadow rounded mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
+
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Gestión de Máquinas
 			</h2>

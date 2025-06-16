@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import MaquinaCard from "./components/MaquinaCard";
 import { obtenerEstadoFormulario } from "./services/procesoService";
 import api from "../../shared/services/api";
+import Modal from "../../shared/components/Modal";
 
 export function ProcesoTransformacion() {
 	const { idLote } = useParams();
@@ -14,6 +15,7 @@ export function ProcesoTransformacion() {
 	const [formularios, setFormularios] = useState({});
 	const [error, setError] = useState(null);
 	const [loading, setLoading] = useState(true);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	// ✅ Cargar lote y procesos
 	useEffect(() => {
@@ -56,7 +58,12 @@ export function ProcesoTransformacion() {
 				setFormularios(completados);
 			} catch (error) {
 				console.error("Error al cargar máquinas:", error);
-				alert("Error al cargar las máquinas del proceso");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "Error al cargar las máquinas del proceso",
+					type: "error"
+				});
 			}
 		};
 		cargarMaquinas();
@@ -78,7 +85,12 @@ export function ProcesoTransformacion() {
 			}
 		} catch (error) {
 			console.error("Error al asignar proceso:", error);
-			alert("Error al asignar proceso");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al asignar proceso",
+				type: "error"
+			});
 		}
 	};
 
@@ -93,11 +105,23 @@ export function ProcesoTransformacion() {
 		try {
 			const res = await api.post(`/proceso-evaluacion/finalizar/${idLote}`);
 			const data = res.data;
-			alert(`Proceso finalizado: ${data.message}\nMotivo: ${data.motivo}`);
-			navigate(`/certificado/${idLote}`);
+			console.log(data)
+			setModal({
+				isOpen: true,
+				title: "Proceso Finalizado",
+				message: `Estado: ${data.message} <br> Motivo: ${data.motivo}`,
+				type: data.message === "Certificado" ? "success" : "warning",
+				showConfirmButton: true,
+				onConfirm: () => navigate(`/certificado/${idLote}`)
+			});
 		} catch (error) {
 			console.error("Error al finalizar proceso:", error);
-			alert("Error al finalizar el proceso.");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al finalizar el proceso",
+				type: "error"
+			});
 		}
 	};
 
@@ -107,6 +131,16 @@ export function ProcesoTransformacion() {
 
 	return (
 		<div className="min-h-screen py-10 px-4">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				onConfirm={modal.onConfirm}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
+
 			<div className="max-w-6xl mx-auto">
 				<header className="text-center mb-10">
 					<h2 className="text-3xl font-extrabold text-gray-800 mb-2">
