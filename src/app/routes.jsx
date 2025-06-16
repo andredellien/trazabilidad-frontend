@@ -19,6 +19,7 @@ import ListaProcesos from "../features/Proceso/ListaProcesos";
 import Maquinas from "../features/Maquinas/maquinas";
 import EditarProceso from "../features/Proceso/EditarProceso";
 import ProcesoPDF from "../features/Proceso/ProcesoPDF";
+import UsuariosPage from "../features/Usuarios/UsuariosPage";
 
 const AppRoutes = () => {
 	return (
@@ -76,6 +77,14 @@ const AppRoutes = () => {
 						element={
 							<RequireAuth>
 								<ProcesoTransformacion />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/usuarios"
+						element={
+							<RequireAuth>
+								<UsuariosPage />
 							</RequireAuth>
 						}
 					/>

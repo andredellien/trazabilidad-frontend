@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi"; // para ícono visual
+import { getAllMaquinas, createMaquina } from "./services/maquinas.service";
+import api from "../../shared/services/api";
+import Modal from "../../shared/components/Modal";
 
 export default function Maquinas() {
 	const [maquinas, setMaquinas] = useState([]);
@@ -7,15 +10,25 @@ export default function Maquinas() {
 	const [imagen, setImagen] = useState(null);
 	const [imagenUrl, setImagenUrl] = useState("");
 	const [cargando, setCargando] = useState(false);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	useEffect(() => {
 		cargarMaquinas();
 	}, []);
 
 	const cargarMaquinas = async () => {
-		const res = await fetch("http://localhost:3000/api/maquinas");
-		const data = await res.json();
-		setMaquinas(data);
+		try {
+			const data = await getAllMaquinas();
+			setMaquinas(data);
+		} catch (error) {
+			console.error("Error al cargar máquinas:", error);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al cargar las máquinas",
+				type: "error"
+			});
+		}
 	};
 
 	const subirImagen = async () => {
@@ -24,37 +37,71 @@ export default function Maquinas() {
 		formData.append("imagen", imagen);
 		setCargando(true);
 
-		const res = await fetch("http://localhost:3000/api/maquinas/upload", {
-			method: "POST",
-			body: formData,
-		});
-		const data = await res.json();
-		setImagenUrl(data.imageUrl);
-		setCargando(false);
+		try {
+			const response = await api.post("/maquinas/upload", formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			});
+			setImagenUrl(response.data.imageUrl);
+		} catch (error) {
+			console.error("Error al subir imagen:", error);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al subir la imagen",
+				type: "error"
+			});
+		} finally {
+			setCargando(false);
+		}
 	};
 
 	const guardarMaquina = async () => {
-		if (!nombre || !imagenUrl) return alert("Completa todos los campos");
+		if (!nombre || !imagenUrl) {
+			setModal({
+				isOpen: true,
+				title: "Campos incompletos",
+				message: "Por favor completa todos los campos",
+				type: "warning"
+			});
+			return;
+		}
 
-		const res = await fetch("http://localhost:3000/api/maquinas", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ nombre, imagenUrl }),
-		});
-		const data = await res.json();
-		if (res.ok) {
-			alert("Máquina guardada ✅");
+		try {
+			await createMaquina({ nombre, imagenUrl });
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Máquina guardada",
+				type: "success"
+			});
 			setNombre("");
 			setImagen(null);
 			setImagenUrl("");
 			cargarMaquinas();
-		} else {
-			alert("❌ " + data.message);
+		} catch (error) {
+			console.error("Error al guardar máquina:", error);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al guardar la máquina",
+				type: "error"
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-5xl mx-auto p-6 bg-white shadow rounded mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
+
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Gestión de Máquinas
 			</h2>

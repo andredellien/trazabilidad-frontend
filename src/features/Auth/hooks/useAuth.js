@@ -9,7 +9,7 @@ import api from "../../../shared/services/api";
 /**
  * Hook central de autenticación
  * • login       → guarda JWT, inyecta header y redirige
- * • register    → crea usuario y luego llama a login
+ * • register    → crea usuario
  * • logout      → limpia token y vuelve a raíz (/)
  */
 export default function useAuth() {
@@ -42,10 +42,12 @@ export default function useAuth() {
 		setError(null);
 		try {
 			await registerService(payload); // { message: 'Usuario registrado' }
-			await login(payload.Usuario, payload.Password);
+			return true;
 		} catch (err) {
 			setError(err.response?.data?.message || "Error al registrar");
-			setLoading(false); // login() maneja su propio loading
+			return false;
+		} finally {
+			setLoading(false);
 		}
 	}
 

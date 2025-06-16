@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Doughnut } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip } from "chart.js";
+import { getAllLotes } from "../services/lotes.service";
 
 ChartJS.register(ArcElement, Tooltip);
 
@@ -39,34 +40,51 @@ export default function LoteEstadoCards() {
 		pendiente: 0,
 		noCertificado: 0,
 	});
+	const [loading, setLoading] = useState(true);
+	const [error, setError] = useState(null);
 
 	useEffect(() => {
 		const cargar = async () => {
-			const res = await fetch("http://localhost:3000/api/lote");
-			const lotes = await res.json();
+			setLoading(true);
+			try {
+				const lotes = await getAllLotes();
+				const total = lotes.length || 1;
+				const estado = {
+					certificado: 0,
+					pendiente: 0,
+					noCertificado: 0,
+				};
 
-			const total = lotes.length || 1;
-			const estado = {
-				certificado: 0,
-				pendiente: 0,
-				noCertificado: 0,
-			};
+				for (let lote of lotes) {
+					const est = lote.Estado.toLowerCase();
+					if (est === "certificado") estado.certificado++;
+					else if (est === "pendiente") estado.pendiente++;
+					else if (est === "no certificado") estado.noCertificado++;
+				}
 
-			for (let lote of lotes) {
-				const est = lote.Estado.toLowerCase();
-				if (est === "certificado") estado.certificado++;
-				else if (est === "pendiente") estado.pendiente++;
-				else if (est === "no certificado") estado.noCertificado++;
+				setPorcentajes({
+					certificado: (estado.certificado / total) * 100,
+					pendiente: (estado.pendiente / total) * 100,
+					noCertificado: (estado.noCertificado / total) * 100,
+				});
+				setError(null);
+			} catch (err) {
+				console.error("Error al cargar estados:", err);
+				setError("Error al cargar los estados de los lotes");
+			} finally {
+				setLoading(false);
 			}
-
-			setPorcentajes({
-				certificado: (estado.certificado / total) * 100,
-				pendiente: (estado.pendiente / total) * 100,
-				noCertificado: (estado.noCertificado / total) * 100,
-			});
 		};
 		cargar();
 	}, []);
+
+	if (loading) {
+		return <div className="text-center text-gray-500">Cargando estadísticas...</div>;
+	}
+
+	if (error) {
+		return <div className="text-center text-red-500">{error}</div>;
+	}
 
 	return (
 		<div className="flex flex-wrap gap-4 justify-center items-center">

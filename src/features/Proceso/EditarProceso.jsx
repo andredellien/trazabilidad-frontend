@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { getProcesoById, updateProceso } from "./services/proceso.service";
+import Modal from "../../shared/components/Modal";
 
 export default function EditarProceso() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const [nombreProceso, setNombreProceso] = useState("");
 	const [maquinas, setMaquinas] = useState([]);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info" });
 
 	useEffect(() => {
 		const cargarProceso = async () => {
 			try {
-				const res = await fetch(`http://localhost:3000/api/procesos/${id}`);
-				const data = await res.json();
+				const data = await getProcesoById(id);
 
 				const maquinasProcesadas = data.Maquinas.map((m, i) => ({
 					...m,
 					numero: i + 1,
 					variables: Array.isArray(m.variables)
 						? m.variables.map((v) => ({
-								nombre: v.Nombre,
-								min: v.ValorMin,
-								max: v.ValorMax,
+								nombre: v.nombre || v.Nombre,
+								min: v.min || v.ValorMin,
+								max: v.max || v.ValorMax,
 						  }))
 						: [],
 				}));
@@ -29,7 +31,12 @@ export default function EditarProceso() {
 				setMaquinas(maquinasProcesadas);
 			} catch (error) {
 				console.error("Error al cargar proceso:", error);
-				alert("No se pudo cargar el proceso");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "No se pudo cargar el proceso",
+					type: "error"
+				});
 			}
 		};
 
@@ -42,6 +49,12 @@ export default function EditarProceso() {
 		setMaquinas(nuevas);
 	};
 
+	const eliminarVariable = (iMaquina, iVar) => {
+		const nuevas = [...maquinas];
+		nuevas[iMaquina].variables = nuevas[iMaquina].variables.filter((_, i) => i !== iVar);
+		setMaquinas(nuevas);
+	};
+
 	const agregarVariable = (iMaquina) => {
 		const nuevas = [...maquinas];
 		nuevas[iMaquina].variables.push({ nombre: "", min: 0, max: 0 });
@@ -50,27 +63,34 @@ export default function EditarProceso() {
 
 	const validarProceso = () => {
 		if (!nombreProceso.trim()) {
-			alert("⚠️ Debes ingresar un nombre para el proceso");
+			setModal({
+				isOpen: true,
+				title: "Error de validación",
+				message: "⚠️ Debes ingresar un nombre para el proceso",
+				type: "warning"
+			});
 			return false;
 		}
 
 		for (const [i, maquina] of maquinas.entries()) {
 			if (!maquina.variables || maquina.variables.length === 0) {
-				alert(
-					`⚠️ La máquina #${i + 1} (${
-						maquina.Nombre || maquina.nombre
-					}) no tiene variables`
-				);
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: `⚠️ La máquina #${i + 1} (${maquina.Nombre || maquina.nombre}) no tiene variables`,
+					type: "warning"
+				});
 				return false;
 			}
 
 			for (const [j, variable] of maquina.variables.entries()) {
 				if (!variable.nombre || variable.nombre.trim() === "") {
-					alert(
-						`⚠️ La variable #${j + 1} de la máquina ${
-							maquina.Nombre || maquina.nombre
-						} no tiene nombre`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable #${j + 1} de la máquina ${maquina.Nombre || maquina.nombre} no tiene nombre`,
+						type: "warning"
+					});
 					return false;
 				}
 
@@ -82,16 +102,22 @@ export default function EditarProceso() {
 					isNaN(variable.min) ||
 					isNaN(variable.max)
 				) {
-					alert(
-						`⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`,
+						type: "warning"
+					});
 					return false;
 				}
 
 				if (parseFloat(variable.min) > parseFloat(variable.max)) {
-					alert(
-						`⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`,
+						type: "warning"
+					});
 					return false;
 				}
 			}
@@ -118,27 +144,36 @@ export default function EditarProceso() {
 		};
 
 		try {
-			const res = await fetch(`http://localhost:3000/api/procesos/${id}`, {
-				method: "PUT",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify(payload),
+			await updateProceso(id, payload);
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Proceso actualizado",
+				type: "success"
 			});
-			const data = await res.json();
-
-			if (res.ok) {
-				alert("Proceso actualizado ✅");
-				navigate("/procesos");
-			} else {
-				alert("❌ " + data.message);
-			}
+			navigate("/procesos");
 		} catch (error) {
 			console.error("Error al actualizar:", error);
-			alert("Error al guardar los cambios");
+			const mensajeError = error.response?.data?.message || error.message || "Error al guardar los cambios";
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: mensajeError,
+				type: "error"
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white rounded shadow mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+			/>
+
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Editar proceso #{id}
 			</h2>
@@ -175,7 +210,7 @@ export default function EditarProceso() {
 						Variables estándar:
 					</h5>
 					{m.variables.map((v, j) => (
-						<div key={j} className="grid grid-cols-3 gap-2 mb-2">
+						<div key={j} className="grid grid-cols-4 gap-2 mb-2">
 							<input
 								type="text"
 								placeholder="Nombre"
@@ -203,6 +238,13 @@ export default function EditarProceso() {
 									actualizarVariable(i, j, "max", parseFloat(e.target.value))
 								}
 							/>
+							<button
+								onClick={() => eliminarVariable(i, j)}
+								className="text-red-600 hover:text-red-800 p-1 bg-gray-100 hover:bg-gray-200 rounded"
+								title="Eliminar variable"
+							>
+								🗑️
+							</button>
 						</div>
 					))}
 

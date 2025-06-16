@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSearchParams } from "react-router-dom";
+import { createProceso, getProcesoById } from "./services/proceso.service";
+import { getAllMaquinas } from "../Maquinas/services/maquinas.service";
+import Modal from "../../shared/components/Modal";
 
 export default function CrearProceso() {
 	const [searchParams] = useSearchParams();
@@ -8,14 +11,20 @@ export default function CrearProceso() {
 	const [nombreProceso, setNombreProceso] = useState("");
 	const [maquinasDisponibles, setMaquinasDisponibles] = useState([]);
 	const [maquinasSeleccionadas, setMaquinasSeleccionadas] = useState([]);
+	const [error, setError] = useState(null);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info" });
 	const navigate = useNavigate();
 
 	// ✅ Cargar máquinas disponibles
 	useEffect(() => {
 		const cargarMaquinas = async () => {
-			const res = await fetch("http://localhost:3000/api/maquinas");
-			const data = await res.json();
-			setMaquinasDisponibles(data);
+			try {
+				const data = await getAllMaquinas();
+				setMaquinasDisponibles(data);
+			} catch (error) {
+				setError("Error al cargar las máquinas");
+				console.error(error);
+			}
 		};
 		cargarMaquinas();
 	}, []);
@@ -26,9 +35,7 @@ export default function CrearProceso() {
 			if (!baseId) return;
 
 			try {
-				const res = await fetch(`http://localhost:3000/api/procesos/${baseId}`);
-				const data = await res.json();
-
+				const data = await getProcesoById(baseId);
 				setNombreProceso(data.Nombre + " (Copia)");
 
 				const maquinasProcesadas = data.Maquinas.map((m, i) => ({
@@ -37,16 +44,21 @@ export default function CrearProceso() {
 					ImagenUrl: m.Imagen,
 					numero: i + 1,
 					variables: m.variables.map((v) => ({
-						nombre: v.Nombre,
-						min: v.ValorMin,
-						max: v.ValorMax,
+						nombre: v.nombre || v.Nombre,
+						min: v.min || v.ValorMin,
+						max: v.max || v.ValorMax,
 					})),
 				}));
 
 				setMaquinasSeleccionadas(maquinasProcesadas);
 			} catch (error) {
 				console.error("Error al duplicar proceso:", error);
-				alert("No se pudo duplicar el proceso");
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "No se pudo duplicar el proceso",
+					type: "error"
+				});
 			}
 		};
 
@@ -57,7 +69,13 @@ export default function CrearProceso() {
 		if (maquinasSeleccionadas.find((x) => x.IdMaquina === m.IdMaquina)) return;
 		setMaquinasSeleccionadas([
 			...maquinasSeleccionadas,
-			{ ...m, numero: maquinasSeleccionadas.length + 1, variables: [] },
+			{ 
+				IdMaquina: m.IdMaquina,
+				Nombre: m.Nombre,
+				ImagenUrl: m.ImagenUrl,
+				numero: maquinasSeleccionadas.length + 1, 
+				variables: [] 
+			},
 		]);
 	};
 
@@ -85,27 +103,34 @@ export default function CrearProceso() {
 
 	const validarProceso = () => {
 		if (!nombreProceso.trim()) {
-			alert("⚠️ Debes ingresar un nombre para el proceso");
+			setModal({
+				isOpen: true,
+				title: "Error de validación",
+				message: "⚠️ Debes ingresar un nombre para el proceso",
+				type: "warning"
+			});
 			return false;
 		}
 
 		for (const [i, maquina] of maquinasSeleccionadas.entries()) {
 			if (!maquina.variables || maquina.variables.length === 0) {
-				alert(
-					`⚠️ La máquina #${i + 1} (${
-						maquina.Nombre || maquina.nombre
-					}) no tiene variables`
-				);
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: `⚠️ La máquina #${i + 1} (${maquina.Nombre}) no tiene variables`,
+					type: "warning"
+				});
 				return false;
 			}
 
 			for (const [j, variable] of maquina.variables.entries()) {
 				if (!variable.nombre || variable.nombre.trim() === "") {
-					alert(
-						`⚠️ La variable #${j + 1} de la máquina ${
-							maquina.Nombre || maquina.nombre
-						} no tiene nombre`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable #${j + 1} de la máquina ${maquina.Nombre} no tiene nombre`,
+						type: "warning"
+					});
 					return false;
 				}
 
@@ -117,69 +142,155 @@ export default function CrearProceso() {
 					isNaN(variable.min) ||
 					isNaN(variable.max)
 				) {
-					alert(
-						`⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La variable "${variable.nombre}" debe tener valores numéricos en ambos campos`,
+						type: "warning"
+					});
 					return false;
 				}
 
 				if (parseFloat(variable.min) > parseFloat(variable.max)) {
-					alert(
-						`⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`
-					);
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ En la variable "${variable.nombre}", el mínimo no puede ser mayor que el máximo`,
+						type: "warning"
+					});
 					return false;
 				}
 			}
 		}
 
+		setError(null);
 		return true;
 	};
 
 	const guardarProceso = async () => {
 		if (!validarProceso()) return;
-		const payload = {
-			nombre: nombreProceso,
-			maquinas: maquinasSeleccionadas.map((m, i) => ({
-				idMaquina: m.IdMaquina,
-				numero: i + 1,
-				nombre: m.Nombre,
-				imagen: m.ImagenUrl,
-				variables: m.variables,
-			})),
-		};
+		
+		try {
+			// Validar que haya al menos una máquina seleccionada
+			if (maquinasSeleccionadas.length === 0) {
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: "⚠️ Debes seleccionar al menos una máquina",
+					type: "warning"
+				});
+				return;
+			}
 
-		const res = await fetch("http://localhost:3000/api/procesos", {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify(payload),
-		});
+			// Preparar el payload en el formato exacto que espera el backend
+			const payload = {
+				nombre: nombreProceso.trim(),
+				maquinas: maquinasSeleccionadas.map((m, index) => ({
+					IdMaquina: m.IdMaquina,
+					numero: index + 1,
+					nombre: m.Nombre,
+					imagen: m.ImagenUrl,
+					variables: m.variables.map(v => ({
+						nombre: v.nombre.trim(),
+						min: parseFloat(v.min),
+						max: parseFloat(v.max)
+					}))
+				}))
+			};
 
-		const data = await res.json();
-		if (res.ok) {
-			alert("Proceso creado ✅");
+			// Validaciones adicionales según el backend
+			if (!payload.nombre || !Array.isArray(payload.maquinas)) {
+				setModal({
+					isOpen: true,
+					title: "Error de validación",
+					message: "⚠️ Datos incompletos: nombre y máquinas son requeridos",
+					type: "warning"
+				});
+				return;
+			}
+
+			// Validar cada máquina según el backend
+			for (const maquina of payload.maquinas) {
+				if (!maquina.IdMaquina || !maquina.numero || !maquina.nombre || !maquina.imagen || !Array.isArray(maquina.variables)) {
+					setModal({
+						isOpen: true,
+						title: "Error de validación",
+						message: `⚠️ La máquina ${maquina.nombre} debe tener ID, número, nombre, imagen y variables`,
+						type: "warning"
+					});
+					return;
+				}
+
+				// Validar cada variable según el backend
+				for (const variable of maquina.variables) {
+					if (!variable.nombre || variable.min === undefined || variable.max === undefined) {
+						setModal({
+							isOpen: true,
+							title: "Error de validación",
+							message: `⚠️ La variable ${variable.nombre} debe tener nombre, min y max`,
+							type: "warning"
+						});
+						return;
+					}
+				}
+			}
+
+			const response = await createProceso(payload);
+			setError(null);
 			setNombreProceso("");
 			setMaquinasSeleccionadas([]);
+			setModal({
+				isOpen: true,
+				title: "Éxito",
+				message: "Proceso creado correctamente",
+				type: "success"
+			});
 			navigate("/procesos");
-		} else {
-			alert("❌ " + data.message);
+		} catch (error) {
+			console.error("Error al guardar el proceso:", error);
+			const errorMessage = error.response?.data?.message || error.message;
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: `❌ Error al guardar el proceso: ${errorMessage}`,
+				type: "error"
+			});
 		}
 	};
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white rounded shadow mt-8">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+			/>
+
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Crear nuevo proceso
 			</h2>
 
+			{error && (
+				<div className="mb-4 p-3 bg-red-100 text-red-700 rounded">
+					{error}
+				</div>
+			)}
+
 			<div className="mb-6">
-				<label className="block text-gray-700 font-medium mb-1">
+				<label
+					htmlFor="nombreProceso"
+					className="block text-gray-700 font-medium mb-1"
+				>
 					Nombre del proceso
 				</label>
 				<input
+					id="nombreProceso"
+					className="w-full border p-2 rounded"
 					type="text"
 					value={nombreProceso}
 					onChange={(e) => setNombreProceso(e.target.value)}
-					className="w-full border p-2 rounded"
 				/>
 			</div>
 

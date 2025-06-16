@@ -2,11 +2,12 @@ import React, { useEffect, useState } from "react";
 import LoteList from "../GestionLotes/components/LoteList.jsx";
 import LoteEstadoChart from "../GestionLotes/components/LoteEstadoChart.jsx";
 import useAuth from "../Auth/hooks/useAuth.js";
+import useUser from "../Auth/hooks/useUser.js";
 import { getAllLotes } from "../GestionLotes/services/lotes.service.js";
-import { DonutChartFillableHalf } from "../../shared/components/chart.js";
 
 const DashboardPage = () => {
 	const { logout } = useAuth();
+	const { user, loading: loadingUser } = useUser();
 
 	const [lotes, setLotes] = useState([]);
 	const [loading, setLoading] = useState(true);
@@ -33,7 +34,19 @@ const DashboardPage = () => {
 	return (
 		<div className="dashboard-container">
 			<div className="header">
-				<h1 className="dashboard-title">Panel de Control</h1>
+				<div>
+					{!loadingUser && user && (
+						<div className="user-info">
+							<div className="user-avatar">
+								{user.Nombre.charAt(0).toUpperCase()}
+							</div>
+							<div className="user-details">
+								<p className="user-name">{user.Nombre}</p>
+								<p className="user-role">{user.Cargo}</p>
+							</div>
+						</div>
+					)}
+				</div>
 				<button onClick={logout} className="sign-out-button">
 					Cerrar Sesión
 				</button>

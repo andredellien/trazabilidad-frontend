@@ -2,16 +2,18 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { getProcesoById } from "./services/proceso.service";
+import Modal from "../../shared/components/Modal";
 
 export default function ProcesoPDF() {
 	const { id } = useParams();
 	const [proceso, setProceso] = useState(null);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info" });
 	const pdfRef = useRef();
 
 	useEffect(() => {
 		const cargarProceso = async () => {
-			const res = await fetch(`http://localhost:3000/api/procesos/${id}`);
-			const data = await res.json();
+			const data = await getProcesoById(id);
 			setProceso(data);
 		};
 		cargarProceso();
@@ -43,7 +45,12 @@ export default function ProcesoPDF() {
 			pdf.save(`Proceso_${id}.pdf`);
 		} catch (error) {
 			console.error("❌ Error al generar PDF:", error);
-			alert("Error al generar el certificado. Intenta nuevamente.");
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al generar el certificado. Intenta nuevamente.",
+				type: "error"
+			});
 		}
 	};
 
@@ -51,6 +58,14 @@ export default function ProcesoPDF() {
 
 	return (
 		<div style={{ maxWidth: "900px", margin: "0 auto", padding: "1rem" }}>
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+			/>
+
 			<div style={{ textAlign: "right", marginBottom: "1rem" }}>
 				<button
 					onClick={descargarPDF}
@@ -137,7 +152,7 @@ export default function ProcesoPDF() {
 							>
 								{m.variables.map((v, i) => (
 									<li key={i}>
-										{v.Nombre}: {v.ValorMin} – {v.ValorMax}
+										{v.nombre}: {v.min} – {v.max}
 									</li>
 								))}
 							</ul>

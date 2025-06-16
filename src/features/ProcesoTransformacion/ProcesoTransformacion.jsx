@@ -2,8 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MaquinaCard from "./components/MaquinaCard";
 import { obtenerEstadoFormulario } from "./services/procesoService";
+import api from "../../shared/services/api";
+import Modal from "../../shared/components/Modal";
 
-function ProcesoTransformacion() {
+export function ProcesoTransformacion() {
 	const { idLote } = useParams();
 	const navigate = useNavigate();
 
@@ -11,18 +13,28 @@ function ProcesoTransformacion() {
 	const [procesos, setProcesos] = useState([]);
 	const [maquinas, setMaquinas] = useState([]);
 	const [formularios, setFormularios] = useState({});
+	const [error, setError] = useState(null);
+	const [loading, setLoading] = useState(true);
+	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	// ✅ Cargar lote y procesos
 	useEffect(() => {
 		const cargar = async () => {
-			const loteRes = await fetch(`http://localhost:3000/api/lote/${idLote}`);
-			const loteData = await loteRes.json();
-			setLote(loteData);
+			try {
+				setLoading(true);
+				const loteRes = await api.get(`/lote/${idLote}`);
+				const loteData = loteRes.data;
+				setLote(loteData);
 
-			if (!loteData.IdProceso) {
-				const resProcesos = await fetch("http://localhost:3000/api/procesos");
-				const lista = await resProcesos.json();
-				setProcesos(lista);
+				if (!loteData.IdProceso) {
+					const resProcesos = await api.get("/procesos");
+					setProcesos(resProcesos.data || []);
+				}
+			} catch (error) {
+				console.error("Error al cargar datos:", error);
+				setError("Error al cargar los datos del lote");
+			} finally {
+				setLoading(false);
 			}
 		};
 		cargar();
@@ -32,19 +44,27 @@ function ProcesoTransformacion() {
 	useEffect(() => {
 		const cargarMaquinas = async () => {
 			if (!lote?.IdProceso) return;
-			const res = await fetch(
-				`http://localhost:3000/api/proceso-transformacion/lote/${idLote}`
-			);
-			const data = await res.json();
+			try {
+				const res = await api.get(`/proceso-transformacion/lote/${idLote}`);
+				const data = res.data;
 
-			const completados = {};
-			for (const maquina of data) {
-				const form = await obtenerEstadoFormulario(idLote, maquina.Numero);
-				completados[maquina.Numero] = !!form;
+				const completados = {};
+				for (const maquina of data) {
+					const form = await obtenerEstadoFormulario(idLote, maquina.Numero);
+					completados[maquina.Numero] = !!form;
+				}
+
+				setMaquinas(data);
+				setFormularios(completados);
+			} catch (error) {
+				console.error("Error al cargar máquinas:", error);
+				setModal({
+					isOpen: true,
+					title: "Error",
+					message: "Error al cargar las máquinas del proceso",
+					type: "error"
+				});
 			}
-
-			setMaquinas(data);
-			setFormularios(completados);
 		};
 		cargarMaquinas();
 	}, [lote, idLote]);
@@ -54,16 +74,23 @@ function ProcesoTransformacion() {
 		const idProceso = parseInt(e.target.value);
 		if (!idProceso) return;
 
-		const res = await fetch(`http://localhost:3000/api/lote/${idLote}`, {
-			method: "PUT",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({ ...lote, IdProceso: idProceso }),
-		});
+		try {
+			const res = await api.put(`/lote/${idLote}`, {
+				...lote,
+				IdProceso: idProceso,
+			});
 
-		if (res.ok) {
-			setLote({ ...lote, IdProceso: idProceso });
-		} else {
-			alert("Error al asignar proceso");
+			if (res.status === 200) {
+				setLote({ ...lote, IdProceso: idProceso });
+			}
+		} catch (error) {
+			console.error("Error al asignar proceso:", error);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al asignar proceso",
+				type: "error"
+			});
 		}
 	};
 
@@ -76,23 +103,44 @@ function ProcesoTransformacion() {
 
 	const finalizarProceso = async () => {
 		try {
-			const res = await fetch(
-				`http://localhost:3000/api/proceso-evaluacion/finalizar/${idLote}`,
-				{ method: "POST" }
-			);
-			const data = await res.json();
-			alert(`Proceso finalizado: ${data.message}\nMotivo: ${data.motivo}`);
-			navigate(`/certificado/${idLote}`);
+			const res = await api.post(`/proceso-evaluacion/finalizar/${idLote}`);
+			const data = res.data;
+			console.log(data)
+			setModal({
+				isOpen: true,
+				title: "Proceso Finalizado",
+				message: `Estado: ${data.message} <br> Motivo: ${data.motivo}`,
+				type: data.message === "Certificado" ? "success" : "warning",
+				showConfirmButton: true,
+				onConfirm: () => navigate(`/certificado/${idLote}`)
+			});
 		} catch (error) {
-			alert("Error al finalizar el proceso.");
-			console.error(error);
+			console.error("Error al finalizar proceso:", error);
+			setModal({
+				isOpen: true,
+				title: "Error",
+				message: "Error al finalizar el proceso",
+				type: "error"
+			});
 		}
 	};
 
-	if (!lote) return <p className="p-4">Cargando lote...</p>;
+	if (loading) return <p className="p-4">Cargando...</p>;
+	if (error) return <p className="p-4 text-red-600">{error}</p>;
+	if (!lote) return <p className="p-4">No se encontró el lote</p>;
 
 	return (
 		<div className="min-h-screen py-10 px-4">
+			<Modal
+				isOpen={modal.isOpen}
+				onClose={() => setModal({ isOpen: false })}
+				onConfirm={modal.onConfirm}
+				title={modal.title}
+				message={modal.message}
+				type={modal.type}
+				showConfirmButton={modal.showConfirmButton}
+			/>
+
 			<div className="max-w-6xl mx-auto">
 				<header className="text-center mb-10">
 					<h2 className="text-3xl font-extrabold text-gray-800 mb-2">
@@ -113,7 +161,7 @@ function ProcesoTransformacion() {
 								<option value="" disabled>
 									-- Escoge un proceso --
 								</option>
-								{procesos.map((p) => (
+								{Array.isArray(procesos) && procesos.map((p) => (
 									<option key={p.IdProceso} value={p.IdProceso}>
 										{p.Nombre}
 									</option>
