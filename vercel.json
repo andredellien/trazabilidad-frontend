@@ -1,0 +1,16 @@
+{
+  "rewrites": [
+    {
+      "source": "/certificado/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/proceso/:path*",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+} 
