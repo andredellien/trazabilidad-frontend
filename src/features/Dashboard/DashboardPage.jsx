@@ -4,10 +4,6 @@ import LoteEstadoChart from "../GestionLotes/components/LoteEstadoChart.jsx";
 import useAuth from "../Auth/hooks/useAuth.js";
 import useUser from "../Auth/hooks/useUser.js";
 import { getAllLotes } from "../GestionLotes/services/lotes.service.js";
-<<<<<<< HEAD
-=======
-
->>>>>>> 18dabfc (arreglos chart)
 
 const DashboardPage = () => {
 	const { logout } = useAuth();
