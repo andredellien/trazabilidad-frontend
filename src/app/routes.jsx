@@ -41,7 +41,6 @@ const AppRoutes = () => {
 
 				<Route path="/" element={<LoginForm />} />
 				<Route path="/certificado/:idLote" element={<CertificadoDetalle />} />
-			
 
 				{/* ------------- RUTAS PROTEGIDAS ------------- */}
 
@@ -139,6 +138,7 @@ const AppRoutes = () => {
 					/>
 					<Route path="/seleccionar-lote" element={<SeleccionarLote />} />
 					<Route path="/certificados" element={<Certificados />} />
+					
 					
 					<Route path="/certificado/:idLote/qr" element={<CertificadoQR />} />
 					<Route path="/procesos/crear" element={<CrearProceso />} />

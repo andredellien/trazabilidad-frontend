@@ -10,6 +10,7 @@ export default function Certificados() {
 		const cargar = async () => {
 			try {
 				const data = await getAllCertificados();
+				console.log(data)
 				setLotes(data);
 			} catch (error) {
 				console.error("Error al cargar certificados:", error);
@@ -49,7 +50,7 @@ export default function Certificados() {
 									<strong>Nombre:</strong> {lote.Nombre}
 								</p>
 								<p className="text-gray-500 text-sm">
-									<strong>Fecha de certificación:</strong>{" "}
+									<strong>Fecha de Creacion:</strong>{" "}
 									{new Date(lote.FechaCreacion).toLocaleDateString()}
 								</p>
 								<div className="mt-4 flex justify-between gap-2">
