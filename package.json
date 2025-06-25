@@ -13,6 +13,11 @@
     "test:coverage": "jest --coverage"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@mui/icons-material": "^7.1.2",
+    "@mui/lab": "^7.0.0-beta.14",
+    "@mui/material": "^7.1.2",
     "@tailwindcss/vite": "^4.1.5",
     "@types/d3": "^7.4.3",
     "axios": "^1.8.4",
@@ -29,7 +34,9 @@
     "react-dom": "^18.2.0",
     "react-icons": "^5.5.0",
     "react-qr-code": "^2.0.15",
-    "react-router-dom": "^6.22.3"
+    "react-router-dom": "^6.22.3",
+    "react-signature-canvas": "^1.1.0-alpha.2",
+    "react-toastify": "^11.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.24.0",

@@ -20,6 +20,18 @@ import Maquinas from "../features/Maquinas/maquinas";
 import EditarProceso from "../features/Proceso/EditarProceso";
 import ProcesoPDF from "../features/Proceso/ProcesoPDF";
 import UsuariosPage from "../features/Usuarios/UsuariosPage";
+import ProveedoresPage from "../features/Proveedores/pages/ProveedoresPage";
+import PedidosPage from "../features/Pedidos/PedidosPage";
+import GestionPedidosPage from "../features/GestionPedidos/GestionPedidosPage";
+import MateriaPrimaBasePage  from '../features/MateriaPrima/MateriaPrimaBasePage';
+import SolicitarMateriaPrimaPage from '../features/MateriaPrima/SolicitarMateriaPrimaPage';
+import RecepcionMateriaPrimaPage from '../features/MateriaPrima/RecepcionMateriaPrimaPage';
+import AlmacenajeSection from '../features/GestionLotes/components/AlmacenajeSection';
+import LotesAlmacenadosSection from '../features/GestionLotes/components/LotesAlmacenadosSection';
+import { VariablesEstandarPage } from '../features/VariablesEstandar';
+import { DashboardClientePage } from '../features/Dashboard/components/DashboardClientePage';
+// ...
+
 
 const AppRoutes = () => {
 	return (
@@ -28,7 +40,7 @@ const AppRoutes = () => {
 				{/* ------------- RUTAS PÚBLICAS ------------- */}
 
 				<Route path="/" element={<LoginForm />} />
-				<Route path="/register" element={<RegisterForm />} />
+			
 
 				{/* ------------- RUTAS PROTEGIDAS ------------- */}
 
@@ -49,10 +61,18 @@ const AppRoutes = () => {
 						}
 					/>
 					<Route
-						path="/materia-prima"
+						path="/dashboard-cliente"
 						element={
 							<RequireAuth>
-								<MateriaPrimaPage />
+								<DashboardClientePage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/register"
+						element={
+							<RequireAuth>
+								<RegisterForm />
 							</RequireAuth>
 						}
 					/>
@@ -61,6 +81,14 @@ const AppRoutes = () => {
 						element={
 							<RequireAuth>
 								<LotePage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/gestion-pedidos"
+						element={
+							<RequireAuth>
+								<GestionPedidosPage />
 							</RequireAuth>
 						}
 					/>
@@ -89,6 +117,22 @@ const AppRoutes = () => {
 						}
 					/>
 					<Route
+						path="/proveedores"
+						element={
+							<RequireAuth>
+								<ProveedoresPage />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/pedidos"
+						element={
+							<RequireAuth>
+								<PedidosPage />
+							</RequireAuth>
+						}
+					/>
+					<Route
 						path="/proceso/:idLote/maquina/:numeroMaquina"
 						element={<FormularioMaquina />}
 					/>
@@ -101,6 +145,26 @@ const AppRoutes = () => {
 					<Route path="/maquinas" element={<Maquinas />} />
 					<Route path="/procesos/:id/editar" element={<EditarProceso />} />
 					<Route path="/procesos/:id/pdf" element={<ProcesoPDF />} />
+					<Route path="/materia-prima-base" element={<MateriaPrimaBasePage />} />
+					<Route path="/solicitar-materia-prima" element={<SolicitarMateriaPrimaPage />} />
+					<Route path="/recepcion-materia-prima" element={<RecepcionMateriaPrimaPage />} />
+					<Route
+						path="/almacenaje"
+						element={
+							<RequireAuth>
+								<AlmacenajeSection />
+							</RequireAuth>
+						}
+					/>
+					<Route
+						path="/lotes-almacenados"
+						element={
+							<RequireAuth>
+								<LotesAlmacenadosSection />
+							</RequireAuth>
+						}
+					/>
+					<Route path="/variables-estandar" element={<VariablesEstandarPage />} />
 				</Route>
 			</Routes>
 		</BrowserRouter>
