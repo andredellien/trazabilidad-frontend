@@ -9,6 +9,7 @@ const ESTADOS = [
   { key: "pendiente", label: "Pendiente", color: "warning" },
   { key: "materia prima solicitada", label: "Materia Prima Solicitada", color: "info" },
   { key: "en_proceso", label: "En Proceso", color: "primary" },
+  { key: "En Proceso", label: "En Proceso", color: "primary" },
   { key: "Produccion Finalizada", label: "Producción Finalizada", color: "success" },
   { key: "Almacenado", label: "Almacenado", color: "secondary" },
   { key: "cancelado", label: "Cancelado", color: "error" },
