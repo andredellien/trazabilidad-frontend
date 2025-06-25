@@ -5,6 +5,7 @@ import {
 	register as registerService,
 } from "../../../shared/services/auth.service";
 import api from "../../../shared/services/api";
+import { getMe } from "../../../shared/services/auth.service";
 
 /**
  * Hook central de autenticación
@@ -28,7 +29,17 @@ export default function useAuth() {
 			const { data } = await loginService(usuario, password); // { token }
 			localStorage.setItem("token", data.token);
 			api.defaults.headers.Authorization = `Bearer ${data.token}`;
-			navigate(redirect, { replace: true });
+
+			// Obtener el usuario y redirigir según el cargo
+			const me = await getMe();
+			const cargo = me.data?.Cargo?.toLowerCase();
+			if (cargo === "admin") {
+				navigate("/dashboard", { replace: true });
+			} else if (cargo === "cliente") {
+				navigate("/dashboard-cliente", { replace: true });
+			} else {
+				navigate("/dashboard", { replace: true });
+			}
 		} catch (err) {
 			setError(err.response?.data?.message || "Error al iniciar sesión");
 		} finally {

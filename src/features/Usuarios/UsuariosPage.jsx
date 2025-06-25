@@ -14,7 +14,7 @@ export default function UsuariosPage() {
 		const formData = new FormData(e.target);
 		const data = {
 			Nombre: formData.get("nombre"),
-			Cargo: "operador",
+			Cargo: formData.get("cargo"),
 			Usuario: formData.get("usuario"),
 			Password: formData.get("password"),
 		};
@@ -36,7 +36,7 @@ export default function UsuariosPage() {
 			setModal({
 				isOpen: true,
 				title: "Éxito",
-				message: "Operador creado correctamente",
+				message: "Usuario creado correctamente",
 				type: "success"
 			});
 		} catch (error) {
@@ -44,7 +44,7 @@ export default function UsuariosPage() {
 			setModal({
 				isOpen: true,
 				title: "Error",
-				message: "Error al crear el operador",
+				message: "Error al crear el usuario",
 				type: "error"
 			});
 		}
@@ -56,7 +56,7 @@ export default function UsuariosPage() {
 				{/* Formulario de creación */}
 				<div className="mp-form-wrapper">
 					<div className="mp-form-card">
-						<h2 className="mp-heading">Crear Nuevo Operador</h2>
+						<h2 className="mp-heading">Crear Nuevo Usuario</h2>
 						<form onSubmit={handleSubmit} className="mp-form">
 							<div className="mp-field">
 								<label htmlFor="nombre" className="mp-label">
@@ -69,6 +69,23 @@ export default function UsuariosPage() {
 									required
 									className="mp-input"
 								/>
+							</div>
+
+							<div className="mp-field">
+								<label htmlFor="cargo" className="mp-label">
+									Cargo
+								</label>
+								<select
+									name="cargo"
+									id="cargo"
+									required
+									className="mp-input"
+								>
+									<option value="">Seleccione un cargo</option>
+									<option value="admin">Administrador</option>
+									<option value="operador">Operador</option>
+									<option value="cliente">Cliente</option>
+								</select>
 							</div>
 
 							<div className="mp-field">
@@ -117,7 +134,7 @@ export default function UsuariosPage() {
 								disabled={loading}
 								className="mp-button"
 							>
-								{loading ? "Creando..." : "Crear Operador"}
+								{loading ? "Creando..." : "Crear Usuario"}
 							</button>
 						</form>
 					</div>

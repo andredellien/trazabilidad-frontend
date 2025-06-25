@@ -1,5 +1,6 @@
 import { useState } from "react";
 import useCreateMateriaPrima from "../hooks/useCreateMateriaPrima";
+import usePedidosPendientes from "../hooks/usePedidosPendientes";
 
 /**
  * Formulario de registro de Materia Prima (sin Tailwind)
@@ -11,9 +12,11 @@ export default function MateriaPrimaForm({ onCreated }) {
 		FechaRecepcion: "",
 		Proveedor: "",
 		Cantidad: "",
+		IdPedido: "",
 	});
 
 	const { handleCreate, loading, error, success } = useCreateMateriaPrima();
+	const { pedidos, loading: loadingPedidos, error: errorPedidos } = usePedidosPendientes();
 
 	const handleChange = (e) =>
 		setForm({ ...form, [e.target.name]: e.target.value });
@@ -22,7 +25,7 @@ export default function MateriaPrimaForm({ onCreated }) {
 		e.preventDefault();
 		await handleCreate({ ...form, Cantidad: parseFloat(form.Cantidad) });
 		if (!error) {
-			setForm({ Nombre: "", FechaRecepcion: "", Proveedor: "", Cantidad: "" });
+			setForm({ Nombre: "", FechaRecepcion: "", Proveedor: "", Cantidad: "", IdPedido:"" });
 			if (typeof onCreated === "function") onCreated(); // recarga la lista
 		}
 	};
@@ -95,6 +98,30 @@ export default function MateriaPrimaForm({ onCreated }) {
 							onChange={handleChange}
 							className="mp-input"
 						/>
+					</div>
+
+					<div className="mp-field">
+						<label htmlFor="IdPedido" className="mp-label">
+							Pedido *
+						</label>
+						<select
+							id="IdPedido"
+							name="IdPedido"
+							value={form.IdPedido}
+							onChange={handleChange}
+							required
+							className="mp-input"
+							disabled={loadingPedidos}
+						>
+							<option value="">Seleccionar pedido disponible</option>
+							{pedidos.map((pedido) => (
+								<option key={pedido.IdPedido} value={pedido.IdPedido}>
+									Pedido #{pedido.IdPedido} - {pedido.Descripcion || "Sin descripción"} ({pedido.Estado})
+								</option>
+							))}
+						</select>
+						{loadingPedidos && <small className="mp-help">Cargando pedidos...</small>}
+						{errorPedidos && <small className="mp-error">{errorPedidos}</small>}
 					</div>
 
 					{error && <p className="mp-error">{error}</p>}

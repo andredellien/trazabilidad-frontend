@@ -4,6 +4,8 @@ import { useSearchParams } from "react-router-dom";
 import { createProceso, getProcesoById } from "./services/proceso.service";
 import { getAllMaquinas } from "../Maquinas/services/maquinas.service";
 import Modal from "../../shared/components/Modal";
+import useVariablesEstandar from "../VariablesEstandar/hooks/useVariablesEstandar";
+import { Select, MenuItem, InputLabel, FormControl, Box, TextField } from '@mui/material';
 
 export default function CrearProceso() {
 	const [searchParams] = useSearchParams();
@@ -14,6 +16,12 @@ export default function CrearProceso() {
 	const [error, setError] = useState(null);
 	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info" });
 	const navigate = useNavigate();
+
+	const { variables: variablesEstandar, fetchVariables } = useVariablesEstandar();
+
+	useEffect(() => {
+		fetchVariables();
+	}, [fetchVariables]);
 
 	// ✅ Cargar máquinas disponibles
 	useEffect(() => {
@@ -91,13 +99,20 @@ export default function CrearProceso() {
 
 	const actualizarVariable = (iMaquina, iVar, campo, valor) => {
 		const nuevas = [...maquinasSeleccionadas];
+		if (campo === 'nombre') {
+			const variableSeleccionada = variablesEstandar.find(v => v.IdVariableEstandar === valor);
+			nuevas[iMaquina].variables[iVar].IdVariableEstandar = variableSeleccionada ? variableSeleccionada.IdVariableEstandar : undefined;
+			nuevas[iMaquina].variables[iVar].nombre = variableSeleccionada ? variableSeleccionada.Nombre : '';
+			nuevas[iMaquina].variables[iVar].unidad = variableSeleccionada ? variableSeleccionada.Unidad : '';
+		} else {
 		nuevas[iMaquina].variables[iVar][campo] = valor;
+		}
 		setMaquinasSeleccionadas(nuevas);
 	};
 
 	const agregarVariable = (iMaquina) => {
 		const nuevas = [...maquinasSeleccionadas];
-		nuevas[iMaquina].variables.push({ nombre: "", min: 0, max: 0 });
+		nuevas[iMaquina].variables.push({ nombre: "", unidad: "", min: 0, max: 0 });
 		setMaquinasSeleccionadas(nuevas);
 	};
 
@@ -191,7 +206,9 @@ export default function CrearProceso() {
 					nombre: m.Nombre,
 					imagen: m.ImagenUrl,
 					variables: m.variables.map(v => ({
+						IdVariableEstandar: v.IdVariableEstandar,
 						nombre: v.nombre.trim(),
+						unidad: v.unidad,
 						min: parseFloat(v.min),
 						max: parseFloat(v.max)
 					}))
@@ -345,15 +362,33 @@ export default function CrearProceso() {
 						Variables estándar:
 					</h5>
 					{m.variables.map((v, j) => (
-						<div key={j} className="grid grid-cols-3 gap-2 mb-2">
-							<input
-								type="text"
-								placeholder="Nombre"
-								className="border p-1 rounded"
-								value={v.nombre}
-								onChange={(e) =>
-									actualizarVariable(i, j, "nombre", e.target.value)
-								}
+						<Box key={j} sx={{ display: 'flex', gap: 2, alignItems: 'center', mb: 1 }}>
+							<FormControl variant="outlined" size="small" sx={{ minWidth: 180 }}>
+								<InputLabel id={`var-label-${i}-${j}`}>Variable</InputLabel>
+								<Select
+									labelId={`var-label-${i}-${j}`}
+									value={v.IdVariableEstandar || ''}
+									label="Variable"
+									onChange={e => actualizarVariable(i, j, 'nombre', Number(e.target.value))}
+									required
+								>
+									<MenuItem value="">
+										<em>Seleccionar variable…</em>
+									</MenuItem>
+									{variablesEstandar.map(v => (
+										<MenuItem key={v.IdVariableEstandar} value={v.IdVariableEstandar}>
+											{v.Nombre}
+										</MenuItem>
+									))}
+								</Select>
+							</FormControl>
+							<TextField
+								label="Unidad"
+								value={v.unidad || ''}
+								InputProps={{ readOnly: true }}
+								variant="outlined"
+								size="small"
+								sx={{ minWidth: 100, background: '#f5f5f5' }}
 							/>
 							<input
 								type="number"
@@ -373,7 +408,7 @@ export default function CrearProceso() {
 									actualizarVariable(i, j, "max", parseFloat(e.target.value))
 								}
 							/>
-						</div>
+						</Box>
 					))}
 
 					<button
