@@ -40,7 +40,6 @@ const AppRoutes = () => {
 				{/* ------------- RUTAS PÚBLICAS ------------- */}
 
 				<Route path="/" element={<LoginForm />} />
-			
 
 				{/* ------------- RUTAS PROTEGIDAS ------------- */}
 
@@ -138,7 +137,7 @@ const AppRoutes = () => {
 					/>
 					<Route path="/seleccionar-lote" element={<SeleccionarLote />} />
 					<Route path="/certificados" element={<Certificados />} />
-					<Route path="/certificado/:idLote" element={<CertificadoDetalle />} />
+					
 					<Route path="/certificado/:idLote/qr" element={<CertificadoQR />} />
 					<Route path="/procesos/crear" element={<CrearProceso />} />
 					<Route path="/procesos" element={<ListaProcesos />} />
