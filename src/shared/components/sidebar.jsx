@@ -15,11 +15,13 @@ import {
 	FiChevronRight,
 } from "react-icons/fi";
 import useUser from "../../features/Auth/hooks/useUser";
+import useAuth from "../../features/Auth/hooks/useAuth";
 
 export default function Sidebar({ onCollapse }) {
 	const { pathname } = useLocation();
 	const [collapsed, setCollapsed] = useState(false);
 	const { user } = useUser();
+	const { logout } = useAuth();
 	const [openSections, setOpenSections] = useState({});
 
 	const groupedLinks = [
@@ -112,86 +114,109 @@ export default function Sidebar({ onCollapse }) {
 				overflowY: "auto",
 				transition: "width 0.2s",
 				zIndex: 1000,
+				display: "flex",
+				flexDirection: "column",
+				justifyContent: "space-between"
 			}}
 		>
-			<button
-				onClick={toggleSidebar}
-				style={{
-					background: "transparent",
-					border: "none",
-					color: "white",
-					cursor: "pointer",
-					fontSize: "1.5rem",
-					marginLeft: collapsed ? "0.2rem" : "0.5rem",
-				}}
-			>
-				<FiMenu />
-			</button>
+			<div>
+				<button
+					onClick={toggleSidebar}
+					style={{
+						background: "transparent",
+						border: "none",
+						color: "white",
+						cursor: "pointer",
+						fontSize: "1.5rem",
+						marginLeft: collapsed ? "0.2rem" : "0.5rem",
+					}}
+				>
+					<FiMenu />
+				</button>
 
-			<nav style={{ marginTop: "2rem" }}>
-				
-
-				{groupedLinks.map((section) => {
-					const visibleLinks = getVisibleLinks(section.links);
-					if (visibleLinks.length === 0) return null;
-					const isOpen = openSections[section.title] || false;
-					return (
-						<div key={section.title} style={{ marginBottom: "1.5rem" }}>
-							<button
-								onClick={() => handleSectionClick(section.title)}
-								style={{
-									display: "flex",
-									alignItems: "center",
-									width: "100%",
-									background: "none",
-									border: "none",
-									color: "white",
-									fontWeight: 700,
-									fontSize: "0.95rem",
-									letterSpacing: "0.04em",
-									margin: "0.5rem 0 0.2rem 0.5rem",
-									padding: 0,
-									cursor: "pointer",
-									opacity: 0.7,
-								}}
-							>
-								{isOpen ? <FiChevronDown /> : <FiChevronRight />}
-								{!collapsed && <span style={{ marginLeft: 8 }}>{section.title}</span>}
-							</button>
-							{isOpen && (
-								<div>
-									{visibleLinks.map((link) => (
-										<Link
-											key={link.to}
-											to={link.to}
-											style={{
-												display: "flex",
-												alignItems: "center",
-												color: "white",
-												padding: "0.5rem 0.5rem 0.5rem 1.5rem",
-												textDecoration: "none",
-												background: pathname === link.to ? "#005f4f" : "transparent",
-												borderRadius: "6px",
-												margin: "0.3rem 0",
-											}}
-										>
-											<span
+				<nav style={{ marginTop: "2rem" }}>
+					{groupedLinks.map((section) => {
+						const visibleLinks = getVisibleLinks(section.links);
+						if (visibleLinks.length === 0) return null;
+						const isOpen = openSections[section.title] || false;
+						return (
+							<div key={section.title} style={{ marginBottom: "1.5rem" }}>
+								<button
+									onClick={() => handleSectionClick(section.title)}
+									style={{
+										display: "flex",
+										alignItems: "center",
+										width: "100%",
+										background: "none",
+										border: "none",
+										color: "white",
+										fontWeight: 700,
+										fontSize: "0.95rem",
+										letterSpacing: "0.04em",
+										margin: "0.5rem 0 0.2rem 0.5rem",
+										padding: 0,
+										cursor: "pointer",
+										opacity: 0.7,
+									}}
+								>
+									{isOpen ? <FiChevronDown /> : <FiChevronRight />}
+									{!collapsed && <span style={{ marginLeft: 8 }}>{section.title}</span>}
+								</button>
+								{isOpen && (
+									<div>
+										{visibleLinks.map((link) => (
+											<Link
+												key={link.to}
+												to={link.to}
 												style={{
-													fontSize: "1.25rem",
-													marginRight: collapsed ? "0" : "0.75rem",
+													display: "flex",
+													alignItems: "center",
+													color: "white",
+													padding: "0.5rem 0.5rem 0.5rem 1.5rem",
+													textDecoration: "none",
+													background: pathname === link.to ? "#005f4f" : "transparent",
+													borderRadius: "6px",
+													margin: "0.3rem 0",
 												}}
 											>
-												{link.icon}
-											</span>
-											{!collapsed && <span>{link.label}</span>}
-										</Link>
-									))}
-								</div>
-							)}
-						</div>
-					);
-				})}
-			</nav>
+												<span
+													style={{
+														fontSize: "1.25rem",
+														marginRight: collapsed ? "0" : "0.75rem",
+													}}
+												>
+													{link.icon}
+												</span>
+												{!collapsed && <span>{link.label}</span>}
+											</Link>
+										))}
+									</div>
+								)}
+							</div>
+						);
+					})}
+				</nav>
+			</div>
+
+			<div style={{ marginTop: "auto", padding: collapsed ? "0.5rem" : "1rem" }}>
+				<button
+					onClick={logout}
+					style={{
+						width: "100%",
+						background: "#005f4f",
+						color: "white",
+						border: "none",
+						borderRadius: "6px",
+						padding: collapsed ? "0.5rem" : "0.75rem 1rem",
+						fontSize: "1rem",
+						fontWeight: 600,
+						cursor: "pointer",
+						marginTop: "1rem"
+					}}
+				>
+					{!collapsed ? "Cerrar sesión" : <FiUsers />}
+				</button>
+			</div>
 		</aside>
 	);
 }
