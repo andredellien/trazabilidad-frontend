@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Box, Container, Tabs, Tab, Typography, Paper } from '@mui/material';
-import { Add as AddIcon, List as ListIcon } from '@mui/icons-material';
 import LoteForm from './components/LoteForm';
 import LoteList from './components/LoteList';
 import LoteStats from './components/LoteStats';
 import useLotes from './hooks/useLotes';
+import Card from '../../shared/components/Card';
+import Button from '../../shared/components/Button';
 import './styles/Lotes.css';
 
 function TabPanel({ children, value, index, ...other }) {
@@ -16,7 +16,7 @@ function TabPanel({ children, value, index, ...other }) {
 			aria-labelledby={`lote-tab-${index}`}
 			{...other}
 		>
-			{value === index && <Box sx={{ py: 3 }}>{children}</Box>}
+			{value === index && <div className="py-6">{children}</div>}
 		</div>
 	);
 }
@@ -36,43 +36,40 @@ export default function GestionLotesPage() {
 	};
 
 	return (
-		<Container maxWidth="xl" sx={{ py: 4 }}>
-			<Typography variant="h3" component="h1" gutterBottom align="center" color="primary" fontWeight="bold">
-				🏭 Gestión de Lotes
-			</Typography>
-			
-			<Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 4 }}>
-				Administre la creación y seguimiento de lotes de producción
-			</Typography>
+		<div className="p-6 max-w-7xl mx-auto">
+			<div className="text-center mb-8">
+				<h1 className="text-4xl font-bold text-primary mb-4">
+					🏭 Gestión de Lotes
+				</h1>
+				<p className="text-lg text-secondary">
+					Administre la creación y seguimiento de lotes de producción
+				</p>
+			</div>
 
-			<Paper elevation={2} sx={{ mb: 3 }}>
-				<Tabs
-					value={tabValue}
-					onChange={handleTabChange}
-					aria-label="gestión de lotes tabs"
-					variant="fullWidth"
-					sx={{
-						'& .MuiTab-root': {
-							minHeight: 64,
-							fontSize: '1rem',
-							fontWeight: 600
-						}
-					}}
-				>
-					<Tab
-						icon={<AddIcon />}
-						label="Crear Lote"
-						iconPosition="start"
-						sx={{ py: 2 }}
-					/>
-					<Tab
-						icon={<ListIcon />}
-						label="Ver Lotes"
-						iconPosition="start"
-						sx={{ py: 2 }}
-					/>
-				</Tabs>
-			</Paper>
+			<Card className="mb-6">
+				<div className="flex border-b border-light">
+					<button
+						className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${
+							tabValue === 0 
+								? 'text-primary border-b-2 border-primary bg-primary-light' 
+								: 'text-secondary hover:text-primary'
+						}`}
+						onClick={() => setTabValue(0)}
+					>
+						➕ Crear Lote
+					</button>
+					<button
+						className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${
+							tabValue === 1 
+								? 'text-primary border-b-2 border-primary bg-primary-light' 
+								: 'text-secondary hover:text-primary'
+						}`}
+						onClick={() => setTabValue(1)}
+					>
+						📋 Ver Lotes
+					</button>
+				</div>
+			</Card>
 
 			<TabPanel value={tabValue} index={0}>
 				<LoteForm onCreated={handleLoteCreated} />
@@ -82,6 +79,6 @@ export default function GestionLotesPage() {
 				<LoteStats lotes={lotes} />
 				<LoteList key={refreshList} />
 			</TabPanel>
-		</Container>
+		</div>
 	);
 }

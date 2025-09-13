@@ -31,10 +31,10 @@ export default function Maquinas() {
 		}
 	};
 
-	const subirImagen = async () => {
-		if (!imagen) return;
+	const subirImagen = async (archivo) => {
+		if (!archivo) return;
 		const formData = new FormData();
-		formData.append("imagen", imagen);
+		formData.append("imagen", archivo);
 		setCargando(true);
 
 		try {
@@ -44,6 +44,7 @@ export default function Maquinas() {
 				}
 			});
 			setImagenUrl(response.data.imageUrl);
+			setImagen(archivo);
 		} catch (error) {
 			console.error("Error al subir imagen:", error);
 			setModal({
@@ -55,6 +56,28 @@ export default function Maquinas() {
 		} finally {
 			setCargando(false);
 		}
+	};
+
+	// Maneja la selección de archivo desde el input oculto
+	const manejarSeleccionArchivo = (e) => {
+		const archivo = e.target.files[0];
+		if (archivo) {
+			subirImagen(archivo);
+		}
+	};
+
+	// Maneja la selección de archivo desde el botón
+	const manejarClickBotonSubir = () => {
+		const input = document.createElement('input');
+		input.type = 'file';
+		input.accept = 'image/*';
+		input.onchange = (e) => {
+			const archivo = e.target.files[0];
+			if (archivo) {
+				subirImagen(archivo);
+			}
+		};
+		input.click();
 	};
 
 	const guardarMaquina = async () => {
@@ -92,7 +115,7 @@ export default function Maquinas() {
 	};
 
 	return (
-		<div className="max-w-5xl mx-auto p-6 bg-white shadow rounded mt-8">
+		<div className="p-4 min-h-screen bg-secondary">
 			<Modal
 				isOpen={modal.isOpen}
 				onClose={() => setModal({ isOpen: false })}
@@ -102,95 +125,139 @@ export default function Maquinas() {
 				showConfirmButton={modal.showConfirmButton}
 			/>
 
-			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
-				Gestión de Máquinas
-			</h2>
+			{/* Header */}
+			<div className="mb-6">
+				<h2 className="text-3xl font-bold text-[#007c64]">
+					Gestión de Máquinas
+				</h2>
+				<p className="text-secondary mt-2">
+					Administra y registra las máquinas del sistema
+				</p>
+			</div>
 
-			{/* Formulario de creación */}
-			<div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10 bg-gray-50 p-6 rounded border">
-				<div>
-					<label className="block font-medium text-gray-700 mb-1">
-						Nombre de la máquina
-					</label>
-					<input
-						type="text"
-						placeholder="Ej: Balanza automática"
-						value={nombre}
-						onChange={(e) => setNombre(e.target.value)}
-						className="w-full border p-2 rounded"
-					/>
+			{/* Fila 1: Formulario de creación - 2 columnas */}
+			<div className="grid grid-cols-2 gap-6 mb-8">
+				{/* Columna 1: Datos de la máquina */}
+				<div className="bg-white shadow rounded p-6">
+					<h3 className="text-lg font-semibold text-gray-800 mb-4">
+						Información de la Máquina
+					</h3>
+					
+					<div className="mb-4">
+						<label className="block font-medium text-gray-700 mb-2">
+							Nombre de la máquina
+						</label>
+						<input
+							type="text"
+							placeholder="Ej: Balanza automática"
+							value={nombre}
+							onChange={(e) => setNombre(e.target.value)}
+							className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#007c64]"
+						/>
+					</div>
 
 					{imagenUrl && (
-						<div className="mt-4">
-							<label className="block font-medium text-gray-700 mb-1">
+						<div>
+							<label className="block font-medium text-gray-700 mb-2">
 								Previsualización
 							</label>
-							<img
-								src={imagenUrl}
-								alt="Preview"
-								className="w-40 h-40 object-cover rounded border shadow"
-							/>
+							<div className="flex justify-center">
+								<img
+									src={imagenUrl}
+									alt="Preview"
+									className="w-48 h-48 object-contain rounded border shadow bg-white"
+								/>
+							</div>
 						</div>
 					)}
 				</div>
 
-				<div className="flex flex-col justify-between">
-					<label className="block font-medium text-gray-700 mb-2">
-						Imagen de la máquina
-					</label>
+				{/* Columna 2: Carga de imagen */}
+				<div className="bg-white shadow rounded p-6">
+					<h3 className="text-lg font-semibold text-gray-800 mb-4">
+						Imagen de la Máquina
+					</h3>
 
-					<label className="flex flex-col items-center justify-center p-4 border-2 border-dashed border-gray-400 rounded cursor-pointer hover:bg-gray-100">
-						<FiUploadCloud className="text-4xl text-gray-500 mb-2" />
-						<p className="text-gray-600 text-sm text-center">
-							{imagen ? imagen.name : "Haz clic para seleccionar una imagen"}
+					<label className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-400 rounded cursor-pointer hover:bg-gray-100 mb-4">
+						<FiUploadCloud className="text-5xl text-gray-500 mb-3" />
+						<p className="text-gray-600 text-center">
+							{cargando ? "Subiendo imagen..." : 
+							 imagen ? `Imagen cargada: ${imagen.name}` : 
+							 "Haz clic para seleccionar y subir una imagen"}
 						</p>
 						<input
 							type="file"
+							accept="image/*"
 							className="hidden"
-							onChange={(e) => setImagen(e.target.files[0])}
+							onChange={manejarSeleccionArchivo}
+							disabled={cargando}
 						/>
 					</label>
 
-					<button
-						onClick={subirImagen}
-						disabled={!imagen || cargando}
-						className="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition"
-					>
-						{cargando ? "Subiendo..." : "📤 Subir imagen"}
-					</button>
+					<div className="space-y-3">
+						<button
+							onClick={manejarClickBotonSubir}
+							disabled={cargando}
+							className="w-full bg-blue-600 text-white px-4 py-3 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							{cargando ? "Subiendo..." : "📤 Subir imagen"}
+						</button>
 
-					<button
-						onClick={guardarMaquina}
-						disabled={!nombre || !imagenUrl}
-						className="mt-4 bg-[#007c64] text-white px-4 py-2 rounded hover:bg-[#006554] transition"
-					>
-						💾 Guardar máquina
-					</button>
+						<button
+							onClick={guardarMaquina}
+							disabled={!nombre || !imagenUrl}
+							className="w-full bg-[#007c64] text-white px-4 py-3 rounded hover:bg-[#006554] transition disabled:opacity-50 disabled:cursor-not-allowed"
+						>
+							💾 Guardar máquina
+						</button>
+					</div>
 				</div>
 			</div>
 
-			{/* Lista de máquinas */}
-			<div>
-				<h3 className="text-lg font-semibold text-gray-800 mb-3">
-					Máquinas registradas
+			{/* Fila 2: Máquinas registradas - 3 columnas iguales */}
+			<div className="bg-white shadow rounded p-6">
+				<h3 className="text-xl font-semibold text-gray-800 mb-6">
+					Máquinas registradas ({maquinas.length})
 				</h3>
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-					{maquinas.map((m) => (
-						<div
-							key={m.IdMaquina}
-							className="border rounded p-3 shadow-sm bg-white"
-						>
-							<img
-								src={m.ImagenUrl}
-								alt={m.Nombre}
-								className="w-full h-40 object-contain mb-2 rounded "
-							/>
-							<p className="text-center font-medium text-gray-700">
-								{m.Nombre}
-							</p>
+				
+				{maquinas.length === 0 ? (
+					<div className="text-center py-12">
+						<div className="text-gray-400 mb-4">
+							<FiUploadCloud className="text-6xl mx-auto mb-3" />
 						</div>
-					))}
-				</div>
+						<p className="text-gray-500 text-lg">
+							No hay máquinas registradas
+						</p>
+						<p className="text-gray-400">
+							Agrega tu primera máquina usando el formulario de arriba
+						</p>
+					</div>
+				) : (
+					<div className="grid grid-cols-3 gap-6">
+						{maquinas.map((m) => (
+							<div
+								key={m.IdMaquina}
+								className="border rounded-lg p-4 shadow-sm bg-gray-50 hover:shadow-md transition-shadow"
+							>
+								<div className="mb-4">
+									<img
+										src={m.ImagenUrl}
+										alt={m.Nombre}
+										className="w-full h-48 object-contain rounded border bg-white"
+									/>
+								</div>
+								<div className="text-center">
+									<p className="font-semibold text-gray-800 text-lg">
+										{m.Nombre}
+									</p>
+									<p className="text-sm text-gray-500 mt-1">
+										ID: #{m.IdMaquina}
+									</p>
+								</div>
+							</div>
+						))}
+					</div>
+				)}
 			</div>
 		</div>
 	);

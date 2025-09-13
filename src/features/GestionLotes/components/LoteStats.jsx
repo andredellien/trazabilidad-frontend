@@ -83,7 +83,14 @@ export default function LoteStats({ lotes }) {
               <Typography variant="body2" color="text.secondary">
                 Total de Lotes
               </Typography>
+              <LinearProgress 
+                variant="determinate" 
+                value={getPercentage(stats.total)} 
+                color="primary"
+                sx={{ mt: 1 }}
+              />
             </CardContent>
+            
           </Card>
         </Grid>
 

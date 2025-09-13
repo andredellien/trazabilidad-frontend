@@ -4,6 +4,7 @@ import usePedidos from './hooks/usePedidos';
 import PedidoForm from './components/PedidoForm';
 import PedidoList from './components/PedidoList';
 import Modal from '../../shared/components/Modal';
+import Card from '../../shared/components/Card';
 
 export default function PedidosPage() {
     const { user } = useUser();
@@ -48,15 +49,21 @@ export default function PedidosPage() {
     );
 
     return (
-        <div className="container mx-auto px-4">
+        <div className="p-6 max-w-7xl mx-auto">
+            <div className="text-center mb-8">
+                <h1 className="text-4xl font-bold text-primary mb-4">
+                    🛒 Mis Pedidos
+                </h1>
+                <p className="text-lg text-secondary">
+                    Gestiona tus pedidos y solicitudes
+                </p>
+            </div>
+
             <div className="space-y-8">
                 {/* Formulario de creación */}
-                <div className="mp-form-wrapper">
-                    <div className="mp-form-card">
-                        <h2 className="mp-heading">Crear Nuevo Pedido</h2>
-                        <PedidoForm onSubmit={handleSubmit} loading={loading} />
-                    </div>
-                </div>
+                <Card title="Crear Nuevo Pedido">
+                    <PedidoForm onSubmit={handleSubmit} loading={loading} />
+                </Card>
 
                 {/* Lista de pedidos */}
                 <PedidoList 

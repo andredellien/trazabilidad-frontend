@@ -37,7 +37,7 @@ export default function Certificados() {
 						No hay lotes certificados.
 					</p>
 				) : (
-					<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+					<div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 						{lotes.map((lote) => (
 							<div
 								key={lote.IdLote}

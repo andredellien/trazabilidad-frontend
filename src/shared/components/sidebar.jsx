@@ -201,16 +201,11 @@ export default function Sidebar({ onCollapse }) {
 			<div style={{ marginTop: "auto", padding: collapsed ? "0.5rem" : "1rem" }}>
 				<button
 					onClick={logout}
+					className="btn btn-primary w-full"
 					style={{
-						width: "100%",
-						background: "#005f4f",
-						color: "white",
-						border: "none",
-						borderRadius: "6px",
 						padding: collapsed ? "0.5rem" : "0.75rem 1rem",
 						fontSize: "1rem",
 						fontWeight: 600,
-						cursor: "pointer",
 						marginTop: "1rem"
 					}}
 				>

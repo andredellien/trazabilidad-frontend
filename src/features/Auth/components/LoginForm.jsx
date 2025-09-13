@@ -1,5 +1,9 @@
 import { useState } from "react";
 import useAuth from "../hooks/useAuth";
+import Button from "../../../shared/components/Button";
+import Alert from "../../../shared/components/Alert";
+import Input from "../../../shared/components/Input";
+import Card from "../../../shared/components/Card";
 
 /**
  * Formulario de inicio de sesión (CSS vanilla + tema #007c64)
@@ -15,54 +19,46 @@ export default function LoginForm() {
 	};
 
 	return (
-		<div className="mp-form-wrapper" style={{ maxWidth: 400 }}>
-			<div className="mp-form-card">
-				<h2 className="mp-heading">Iniciar sesión</h2>
+		<div className="flex items-center justify-center min-h-screen bg-secondary p-4">
+			<Card className="w-full max-w-md">
+				<div className="text-center mb-6">
+					<h2 className="text-3xl font-bold text-primary mb-2">Iniciar sesión</h2>
+					<p className="text-secondary">Ingresa tus credenciales para acceder</p>
+				</div>
 
-				{error && <p className="mp-error">{error}</p>}
+				{error && <Alert type="error" className="mb-4">{error}</Alert>}
 
-				<form onSubmit={onSubmit} className="mp-form">
-					<div className="mp-field">
-						<label htmlFor="usuario" className="mp-label">
-							Usuario
-						</label>
-						<input
-							id="usuario"
-							placeholder="Usuario"
-							value={user}
-							onChange={(e) => setUser(e.target.value)}
-							required
-							className="mp-input"
-						/>
-					</div>
+				<form onSubmit={onSubmit} className="space-y-4">
+					<Input
+						id="usuario"
+						label="Usuario"
+						placeholder="Usuario"
+						value={user}
+						onChange={(e) => setUser(e.target.value)}
+						required
+					/>
 
-					<div className="mp-field">
-						<label htmlFor="password" className="mp-label">
-							Contraseña
-						</label>
-						<input
-							id="password"
-							type="password"
-							placeholder="Contraseña"
-							value={pass}
-							onChange={(e) => setPass(e.target.value)}
-							required
-							className="mp-input"
-						/>
-					</div>
+					<Input
+						id="password"
+						label="Contraseña"
+						type="password"
+						placeholder="Contraseña"
+						value={pass}
+						onChange={(e) => setPass(e.target.value)}
+						required
+					/>
 
-					<button type="submit" disabled={loading} className="mp-button">
+					<Button 
+						type="submit" 
+						disabled={loading} 
+						loading={loading}
+						fullWidth
+						size="lg"
+					>
 						{loading ? "Entrando…" : "Entrar"}
-					</button>
-
-					<p className="mp-small">
-						¿No tienes cuenta?{" "}
-						<a href="/register" className="mp-link">
-							Regístrate
-						</a>
-					</p>
+					</Button>
 				</form>
-			</div>
+			</Card>
 		</div>
 	);
 }

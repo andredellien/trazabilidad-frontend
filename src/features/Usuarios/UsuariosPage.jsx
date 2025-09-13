@@ -3,6 +3,11 @@ import useOperadores from "./hooks/useOperadores";
 import useAuth from "../Auth/hooks/useAuth";
 import OperadoresList from "./components/OperadoresList";
 import Modal from "../../shared/components/Modal";
+import Button from "../../shared/components/Button";
+import Alert from "../../shared/components/Alert";
+import Input from "../../shared/components/Input";
+import Select from "../../shared/components/Select";
+import Card from "../../shared/components/Card";
 
 export default function UsuariosPage() {
 	const { user } = useAuth();
@@ -51,94 +56,82 @@ export default function UsuariosPage() {
 	};
 
 	return (
-		<div className="container mx-auto px-4 ">
+		<div className="p-6 max-w-7xl mx-auto">
+			<div className="text-center mb-8">
+				<h1 className="text-4xl font-bold text-primary mb-4">
+					👥 Gestión de Usuarios
+				</h1>
+				<p className="text-lg text-secondary">
+					Administre usuarios y operadores del sistema
+				</p>
+			</div>
+
 			<div className="space-y-8">
 				{/* Formulario de creación */}
-				<div className="mp-form-wrapper">
-					<div className="mp-form-card">
-						<h2 className="mp-heading">Crear Nuevo Usuario</h2>
-						<form onSubmit={handleSubmit} className="mp-form">
-							<div className="mp-field">
-								<label htmlFor="nombre" className="mp-label">
-									Nombre
-								</label>
-								<input
-									type="text"
-									name="nombre"
-									id="nombre"
-									required
-									className="mp-input"
-								/>
-							</div>
+				<Card title="Crear Nuevo Usuario">
+					<form onSubmit={handleSubmit} className="space-y-4">
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<Input
+								id="nombre"
+								name="nombre"
+								label="Nombre completo"
+								type="text"
+								required
+							/>
 
-							<div className="mp-field">
-								<label htmlFor="cargo" className="mp-label">
-									Cargo
-								</label>
-								<select
-									name="cargo"
-									id="cargo"
-									required
-									className="mp-input"
-								>
-									<option value="">Seleccione un cargo</option>
-									<option value="admin">Administrador</option>
-									<option value="operador">Operador</option>
-									<option value="cliente">Cliente</option>
-								</select>
-							</div>
+							<Select
+								id="cargo"
+								name="cargo"
+								label="Cargo"
+								required
+								placeholder="Seleccione un cargo"
+								options={[
+									{ value: "admin", label: "Administrador" },
+									{ value: "operador", label: "Operador" },
+									{ value: "cliente", label: "Cliente" }
+								]}
+							/>
+						</div>
 
-							<div className="mp-field">
-								<label htmlFor="usuario" className="mp-label">
-									Usuario
-								</label>
-								<input
-									type="text"
-									name="usuario"
-									id="usuario"
-									required
-									className="mp-input"
-								/>
-							</div>
+						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+							<Input
+								id="usuario"
+								name="usuario"
+								label="Usuario"
+								type="text"
+								required
+							/>
 
-							<div className="mp-field">
-								<label htmlFor="password" className="mp-label">
-									Contraseña
-								</label>
-								<input
-									type="password"
-									name="password"
-									id="password"
-									required
-									className="mp-input"
-								/>
-							</div>
+							<Input
+								id="password"
+								name="password"
+								label="Contraseña"
+								type="password"
+								required
+							/>
+						</div>
 
-							<div className="mp-field">
-								<label htmlFor="confirmPassword" className="mp-label">
-									Confirmar Contraseña
-								</label>
-								<input
-									type="password"
-									name="confirmPassword"
-									id="confirmPassword"
-									required
-									className="mp-input"
-								/>
-							</div>
+						<Input
+							id="confirmPassword"
+							name="confirmPassword"
+							label="Confirmar Contraseña"
+							type="password"
+							required
+						/>
 
-							{error && <p className="mp-error">{error}</p>}
+						{error && <Alert type="error">{error}</Alert>}
 
-							<button
-								type="submit"
-								disabled={loading}
-								className="mp-button"
-							>
-								{loading ? "Creando..." : "Crear Usuario"}
-							</button>
-						</form>
-					</div>
-				</div>
+						<Button
+							type="submit"
+							disabled={loading}
+							loading={loading}
+							fullWidth
+							size="lg"
+						>
+							{loading ? "Creando..." : "Crear Usuario"}
+						</Button>
+					</form>
+				</Card>
 
 				{/* Lista de operadores */}
 				<OperadoresList 
