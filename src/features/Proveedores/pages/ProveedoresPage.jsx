@@ -1,9 +1,12 @@
+import React, { useState } from "react";
 import useProveedores from "../hooks/useProveedores";
 import ProveedorList from "../components/ProveedorList";
 import { toast } from "react-toastify";
 import { FiTruck } from "react-icons/fi";
 import Alert from "../../../shared/components/Alert";
 import Card from "../../../shared/components/Card";
+import DeleteConfirmDialog from "../../../shared/components/DeleteConfirmDialog";
+import BackButton from "../../../shared/components/BackButton";
 import "../styles/Proveedores.css";
 
 export default function ProveedoresPage() {
@@ -15,6 +18,9 @@ export default function ProveedoresPage() {
         handleUpdate,
         handleDelete
     } = useProveedores();
+
+    const [deleteId, setDeleteId] = useState(null);
+    const [deleting, setDeleting] = useState(false);
 
     if (loading) {
         return (
@@ -53,18 +59,26 @@ export default function ProveedoresPage() {
     };
 
     const handleDeleteProveedor = async (id) => {
-        if (window.confirm("¿Está seguro de eliminar este proveedor?")) {
-            try {
-                await handleDelete(id);
-                toast.success("Proveedor eliminado exitosamente");
-            } catch (error) {
-                toast.error("Error al eliminar el proveedor");
-            }
+        setDeleteId(id);
+    };
+
+    const confirmDelete = async () => {
+        if (!deleteId) return;
+        setDeleting(true);
+        try {
+            await handleDelete(deleteId);
+            toast.success("Proveedor eliminado exitosamente");
+            setDeleteId(null);
+        } catch (error) {
+            toast.error("Error al eliminar el proveedor");
+        } finally {
+            setDeleting(false);
         }
     };
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
+            <BackButton />
             <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
                     <FiTruck className="text-4xl" />
@@ -83,6 +97,15 @@ export default function ProveedoresPage() {
                     onCreate={handleCreateProveedor}
                 />
             </Card>
+            <DeleteConfirmDialog
+                open={!!deleteId}
+                onClose={() => setDeleteId(null)}
+                onConfirm={confirmDelete}
+                loading={deleting}
+                title="¿Eliminar proveedor?"
+                message="Esta acción eliminará el proveedor de forma permanente."
+                confirmLabel="Eliminar"
+            />
         </div>
     );
 } 

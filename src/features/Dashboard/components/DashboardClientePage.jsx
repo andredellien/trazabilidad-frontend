@@ -48,9 +48,6 @@ export default function DashboardClientePage() {
         <Typography variant="h4" fontWeight="bold" color="primary.main">
           Panel de Seguimiento de Pedidos
         </Typography>
-        <Button onClick={logout} color="primary" variant="outlined" size="medium">
-          Cerrar sesión
-        </Button>
       </Box>
       {loadingUser || loadingPedidos ? (
         <Box display="flex" justifyContent="center" my={4}><CircularProgress /></Box>

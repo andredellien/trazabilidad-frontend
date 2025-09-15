@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, MenuItem, Alert, CircularProgress } from '@mui/material';
+import NumberStepper from '../../../shared/components/NumberStepper';
 import { createMateriaPrimaBase } from '../services/materiaPrima.service';
 
 const unidades = [
@@ -54,7 +55,7 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: 3, boxShadow: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: 1, boxShadow: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
       <Typography variant="h5" mb={2} fontWeight={600} align="center">
         Crear Materia Prima Base
       </Typography>
@@ -82,14 +83,12 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
           <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
         ))}
       </TextField>
-      <TextField
+      <NumberStepper
         label="Cantidad inicial"
-        type="number"
         value={cantidad}
-        onChange={e => setCantidad(Number(e.target.value))}
-        fullWidth
-        margin="normal"
-        inputProps={{ min: 0, step: 0.01 }}
+        onChange={(v) => setCantidad(v)}
+        min={0}
+        step={0.01}
       />
       <Box mt={2} display="flex" justifyContent="center">
         <Button type="submit" variant="contained" color="primary" disabled={loading} size="large" sx={{ minWidth: 120 }}>

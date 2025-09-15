@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import DeleteConfirmDialog from "../../shared/components/DeleteConfirmDialog";
+import BackButton from "../../shared/components/BackButton";
 import { getAllProcesos, getProcesoById, deleteProceso } from "./services/proceso.service";
 import Modal from "../../shared/components/Modal";
 
@@ -50,52 +52,38 @@ export default function ListaProcesos() {
 		}
 	};
 
-	const eliminarProceso = async (id) => {
-		setModal({
-			isOpen: true,
-			title: "Confirmar eliminación",
-			message: "¿Estás seguro que deseas eliminar este proceso?",
-			type: "warning",
-			showConfirmButton: true,
-			id
-		});
+	const [deleteId, setDeleteId] = useState(null);
+	const [deleting, setDeleting] = useState(false);
+
+	const eliminarProceso = (id) => {
+		setDeleteId(id);
 	};
 
 	const handleEliminar = async (id) => {
 		try {
 			await deleteProceso(id);
-			setModal({
-				isOpen: true,
-				title: "Éxito",
-				message: "Proceso eliminado",
-				type: "success",
-				showConfirmButton: false,
-				id: null
-			});
 			setProcesos((prev) => prev.filter((p) => p.IdProceso !== id));
 		} catch (err) {
 			console.error("Error al eliminar:", err);
-			setModal({
-				isOpen: true,
-				title: "Error",
-				message: "Error al eliminar el proceso",
-				type: "error",
-				showConfirmButton: false,
-				id: null
-			});
 		}
 	};
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white shadow rounded mt-8">
-			<Modal
-				isOpen={modal.isOpen}
-				onClose={() => setModal({ isOpen: false, id: null })}
-				onConfirm={() => handleEliminar(modal.id)}
-				title={modal.title}
-				message={modal.message}
-				type={modal.type}
-				showConfirmButton={modal.showConfirmButton}
+			<BackButton />
+			<DeleteConfirmDialog
+				open={!!deleteId}
+				onClose={() => setDeleteId(null)}
+				onConfirm={async () => {
+					if (!deleteId) return;
+					setDeleting(true);
+					await handleEliminar(deleteId);
+					setDeleting(false);
+					setDeleteId(null);
+				}}
+				loading={deleting}
+				title="¿Eliminar proceso?"
+				message="Esta acción eliminará el proceso de forma permanente."
 			/>
 
 			<div className="flex justify-between items-center mb-8">

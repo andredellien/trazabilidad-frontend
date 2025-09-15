@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import NumberStepper from '../../../shared/components/NumberStepper';
 
 export default function PedidoForm({ onSubmit, loading }) {
     const [formData, setFormData] = useState({
@@ -59,24 +60,24 @@ export default function PedidoForm({ onSubmit, loading }) {
                 />
             </div>
 
-            <div className="mp-row">
-                <div className="mp-field">
+            <div className="mp-row" style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+                <div className="mp-field" style={{ flex: 1, marginTop: 8 }}>
                     <label htmlFor="Cantidad" className="mp-label">
                         Cantidad
                     </label>
-                    <input
-                        type="number"
-                        name="Cantidad"
-                        id="Cantidad"
-                        required
-                        min="1"
-                        className="mp-input"
-                        value={formData.Cantidad}
-                        onChange={handleChange}
+                    <NumberStepper
+                        label={null}
+                        value={Number(formData.Cantidad) || 0}
+                        onChange={(v) => setFormData(prev => ({ ...prev, Cantidad: v }))}
+                        min={1}
+                        step={1}
+                        unit={formData.Unidad}
+                        size="small"
+                        margin="none"
                     />
                 </div>
 
-                <div className="mp-field">
+                <div className="mp-field" style={{ flex: 1 }}>
                     <label htmlFor="Unidad" className="mp-label">
                         Unidad
                     </label>

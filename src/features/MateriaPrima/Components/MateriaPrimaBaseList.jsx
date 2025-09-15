@@ -45,7 +45,7 @@ export default function MateriaPrimaBaseList({ refresh, onShowLog }) {
                 <TableCell>Nombre</TableCell>
                 <TableCell>Unidad</TableCell>
                 <TableCell align="right">Cantidad</TableCell>
-                <TableCell align="center">Log</TableCell>
+                <TableCell align="center">Registros</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -60,7 +60,7 @@ export default function MateriaPrimaBaseList({ refresh, onShowLog }) {
                   <TableCell align="right">{row.Cantidad}</TableCell>
                   <TableCell align="center">
                     <Button variant="outlined" size="small" onClick={() => onShowLog && onShowLog(row)}>
-                      Ver log
+                      Ver Registros
                     </Button>
                   </TableCell>
                 </TableRow>

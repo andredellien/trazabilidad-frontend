@@ -3,6 +3,7 @@ import { getLotesCertificados } from "../services/lotes.service";
 import { getAlmacenajesByLote, createAlmacenaje } from "../services/almacenaje.service";
 import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Tooltip, Button, Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, TextField, CircularProgress } from "@mui/material";
 import { Warehouse as WarehouseIcon } from "@mui/icons-material";
+import { formatDate } from '../../../shared/utils/formatDate';
 
 const AlmacenajeSection = () => {
   const [lotes, setLotes] = useState([]);
@@ -89,7 +90,7 @@ const AlmacenajeSection = () => {
               <TableRow key={lote.IdLote} hover>
                 <TableCell>{lote.IdLote}</TableCell>
                 <TableCell>{lote.Nombre}</TableCell>
-                <TableCell>{lote.FechaCreacion}</TableCell>
+                <TableCell>{formatDate(lote.FechaCreacion)}</TableCell>
                 <TableCell>{lote.NombreCliente}</TableCell>
                 <TableCell align="center">
                   <Tooltip title="Almacenar">
@@ -138,7 +139,7 @@ const AlmacenajeSection = () => {
               {almacenajes.length === 0 && <Typography component="li">No hay registros previos.</Typography>}
               {almacenajes.map((a) => (
                 <li key={a.IdAlmacenaje}>
-                  <b>{a.FechaAlmacenaje?.slice(0, 10)}</b> - {a.Ubicacion} ({a.Condicion})
+                  <b>{formatDate(a.FechaAlmacenaje)}</b> - {a.Ubicacion} ({a.Condicion})
                 </li>
               ))}
             </Box>

@@ -21,6 +21,7 @@ import {
 	Paper
 } from '@mui/material';
 import { Add as AddIcon, Delete as DeleteIcon, Info as InfoIcon } from '@mui/icons-material';
+import NumberStepper from '../../../shared/components/NumberStepper';
 import { createLote } from '../services/lotes.service';
 import { getAllMateriaPrimaBase } from '../../MateriaPrima/services/materiaPrima.service';
 import { getAllProcesos } from '../../Proceso/services/proceso.service';
@@ -200,11 +201,11 @@ export default function LoteForm({ onCreated }) {
 										variant="outlined"
 										size="medium"
 										sx={{
-											'& .MuiInputLabel-root': {
-												fontSize: '1rem',
-												fontWeight: 500
-											}
-										}}
+										'& .MuiInputLabel-root': {
+											fontSize: '1rem',
+											fontWeight: 500
+										}
+									}}
 								/>
 							</Grid>
 
@@ -213,26 +214,26 @@ export default function LoteForm({ onCreated }) {
 										<InputLabel sx={{ fontSize: '1rem', fontWeight: 500,}}>
 											Pedido Asociado 
 										</InputLabel>
-									<Select
-										value={formData.IdPedido}
-											label="Pedido Asociado"
-										onChange={(e) => handleInputChange('IdPedido', e.target.value)}
-											sx={{
+										<Select
+											value={formData.IdPedido}
+												label="Pedido Asociado"
+											onChange={(e) => handleInputChange('IdPedido', e.target.value)}
+												sx={{
 												'& .MuiSelect-select': {
 													fontSize: '1rem'
 												},
 												minWidth: 200
 											}}
-									>
+										>
 											<MenuItem value="">Sin pedido asociado</MenuItem>
 											{pedidosFiltrados.map(pedido => (
-											<MenuItem key={pedido.IdPedido} value={pedido.IdPedido}>
-												Pedido #{pedido.IdPedido} - {pedido.Descripcion || "Sin descripción"}
-											</MenuItem>
-										))}
-									</Select>
-								</FormControl>
-							</Grid>
+												<MenuItem key={pedido.IdPedido} value={pedido.IdPedido}>
+													Pedido #{pedido.IdPedido} - {pedido.Descripcion || "Sin descripción"}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
+								</Grid>
 							</Grid>
 						</Paper>
 
@@ -242,7 +243,7 @@ export default function LoteForm({ onCreated }) {
 								<Typography variant="h5" color="primary" fontWeight="600">
 										📦 Materias Primas Base
 									</Typography>
-									<Button
+								<Button
 									variant="contained"
 										startIcon={<AddIcon />}
 										onClick={handleAddMateriaPrima}
@@ -253,16 +254,16 @@ export default function LoteForm({ onCreated }) {
 										borderRadius: 2,
 										fontWeight: 600
 									}}
-									>
+								>
 									Agregar Materia Prima
-									</Button>
-								</Box>
+								</Button>
+							</Box>
 							<Divider sx={{ mb: 3 }} />
 
 							{formData.MateriasPrimas.length === 0 && (
 								<Alert severity="info" icon={<InfoIcon />} sx={{ mb: 3 }}>
 									No hay materias primas base agregadas. Haga clic en "Agregar Materia Prima" para comenzar.
-									</Alert>
+								</Alert>
 							)}
 
 							{formData.MateriasPrimas.map((materia, index) => {
@@ -278,62 +279,44 @@ export default function LoteForm({ onCreated }) {
 													<InputLabel sx={{ fontSize: '1rem', fontWeight: 500 }}>
 														Materia Prima Base
 													</InputLabel>
-														<Select
-															value={materia.IdMateriaPrimaBase}
-															label="Materia Prima Base"
-															onChange={(e) => handleMateriaPrimaChange(index, 'IdMateriaPrimaBase', e.target.value)}
-															required
-														sx={{
-															'& .MuiSelect-select': {
-																fontSize: '1rem'
-															},
-															minWidth: 200
-														}}
-														>
-															{materiasPrimasBase.map(mp => (
-																<MenuItem key={mp.IdMateriaPrimaBase} value={mp.IdMateriaPrimaBase}>
-																	{mp.Nombre} ({mp.Unidad})
-																</MenuItem>
-															))}
-														</Select>
-													</FormControl>
-												</Grid>
-
-												<Grid item xs={12} md={3}>
-													<TextField
-														fullWidth
-													label="Cantidad Requerida"
-														type="number"
-														value={materia.Cantidad}
-														onChange={(e) => handleMateriaPrimaChange(index, 'Cantidad', e.target.value)}
+													<Select
+														value={materia.IdMateriaPrimaBase}
+														label="Materia Prima Base"
+														onChange={(e) => handleMateriaPrimaChange(index, 'IdMateriaPrimaBase', e.target.value)}
 														required
-													variant="outlined"
-													size="medium"
-														inputProps={{ min: 0, step: 0.01 }}
-														InputProps={{
-														endAdornment: materiaBase?.Unidad && (
-															<InputAdornment position="end">
-																<Typography variant="body2" color="text.secondary" sx={{ fontWeight: 500 }}>
-																	{materiaBase.Unidad}
-																</Typography>
-															</InputAdornment>
-														)
-														}}
-														error={excede}
-														helperText={excede ? `Excede disponible (${disponible} ${materiaBase?.Unidad})` : ''}
-													sx={{
-														'& .MuiInputLabel-root': {
-															fontSize: '1rem',
-															fontWeight: 500
-														}
+														sx={{
+														'& .MuiSelect-select': {
+															fontSize: '1rem'
+														},
+														minWidth: 200
 													}}
-													/>
-												</Grid>
+													>
+														{materiasPrimasBase.map(mp => (
+															<MenuItem key={mp.IdMateriaPrimaBase} value={mp.IdMateriaPrimaBase}>
+																{mp.Nombre} ({mp.Unidad})
+															</MenuItem>
+														))}
+													</Select>
+												</FormControl>
+											</Grid>
 
-												<Grid item xs={12} md={3}>
-													<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-														<Chip 
-															label={`Disponible: ${disponible} ${materiaBase?.Unidad || ''}`}
+											<Grid item xs={12} md={3}>
+												<NumberStepper
+													label="Cantidad Requerida"
+													value={Number(materia.Cantidad) || 0}
+													onChange={(v) => handleMateriaPrimaChange(index, 'Cantidad', v)}
+													min={0}
+													step={0.01}
+													unit={materiaBase?.Unidad}
+													error={excede}
+													helperText={excede ? `Excede disponible (${disponible} ${materiaBase?.Unidad})` : ''}
+												/>
+											</Grid>
+
+											<Grid item xs={12} md={3}>
+												<Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+													<Chip 
+														label={`Disponible: ${disponible} ${materiaBase?.Unidad || ''}`}
 														color={excede ? 'error' : 'primary'}
 														variant={excede ? 'filled' : 'outlined'}
 														size="medium"
@@ -341,41 +324,41 @@ export default function LoteForm({ onCreated }) {
 															fontWeight: 600,
 															fontSize: '0.875rem'
 														}}
-														/>
-													</Box>
-												</Grid>
-
-											<Grid item xs={12} md={1}>
-												<Tooltip title="Eliminar materia prima" placement="top">
-														<IconButton
-															color="error"
-															onClick={() => handleRemoveMateriaPrima(index)}
-															disabled={loading}
-														sx={{ 
-															bgcolor: 'error.light',
-															color: 'white',
-															'&:hover': {
-																bgcolor: 'error.main'
-															}
-														}}
-														>
-															<DeleteIcon />
-														</IconButton>
-													</Tooltip>
-												</Grid>
+													/>
+												</Box>
 											</Grid>
-										</Card>
+
+										<Grid item xs={12} md={1}>
+											<Tooltip title="Eliminar materia prima" placement="top">
+												<IconButton
+													color="error"
+													onClick={() => handleRemoveMateriaPrima(index)}
+													disabled={loading}
+													sx={{ 
+														bgcolor: 'error.light',
+														color: 'white',
+														'&:hover': {
+															bgcolor: 'error.main'
+														}
+													}}
+												>
+													<DeleteIcon />
+												</IconButton>
+											</Tooltip>
+										</Grid>
+									</Grid>
+								</Card>
 								);
 							})}
 						</Paper>
 
 							{/* Botón de envío */}
 						<Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-									<Button
-										type="submit"
-										variant="contained"
-										size="large"
-										disabled={loading || formData.MateriasPrimas.length === 0}
+								<Button
+									type="submit"
+									variant="contained"
+									size="large"
+									disabled={loading || formData.MateriasPrimas.length === 0}
 								sx={{ 
 									minWidth: 250, 
 									py: 2,
@@ -385,17 +368,17 @@ export default function LoteForm({ onCreated }) {
 									fontWeight: 600,
 									textTransform: 'none'
 								}}
-									>
-										{loading ? (
-											<>
-										<CircularProgress size={24} sx={{ mr: 2 }} />
+								>
+									{loading ? (
+										<>
+											<CircularProgress size={24} sx={{ mr: 2 }} />
 												Creando Lote...
-											</>
-										) : (
-											'🏭 Crear Lote'
-										)}
-									</Button>
-								</Box>
+										</>
+									) : (
+										'🏭 Crear Lote'
+									)}
+								</Button>
+						</Box>
 					</Box>
 				</CardContent>
 			</Card>

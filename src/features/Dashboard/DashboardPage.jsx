@@ -219,7 +219,7 @@ const DashboardPage = () => {
 						<div className="space-y-3">
 							{ultimosLotes.map((lote) => (
 								<div key={lote.IdLote} className="flex items-center gap-3 p-3 bg-secondary rounded-lg">
-									<div className="w-10 h-10 bg-success rounded-full flex items-center justify-center text-white font-bold">
+									<div className="w-10 h-10 bg-primary rounded-full  flex items-center justify-center text-white font-bold">
 										{lote.NombreCliente ? lote.NombreCliente.charAt(0).toUpperCase() : "C"}
 									</div>
 									<div className="flex-1">

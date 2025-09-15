@@ -23,7 +23,7 @@ export default function MateriaPrimaBaseLogModal({ open, onClose, materiaPrimaBa
 
   return (
     <Dialog open={open} onClose={onClose} maxWidth="md" fullWidth>
-      <DialogTitle>Log de movimientos - {materiaPrimaBase?.Nombre}</DialogTitle>
+      <DialogTitle>Registro de movimientos - {materiaPrimaBase?.Nombre}</DialogTitle>
       <DialogContent>
         {loading ? (
           <CircularProgress />
