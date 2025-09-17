@@ -109,11 +109,12 @@ export function ProcesoTransformacion() {
 			setModal({
 				isOpen: true,
 				title: "Proceso Finalizado",
-				message: `Estado: ${data.message} <br> Motivo: ${data.motivo}`,
+				message: `Estado: ${data.message} Motivo: ${data.motivo}`,
 				type: data.message === "Certificado" ? "success" : "warning",
 				showConfirmButton: true,
 				onConfirm: () => navigate(`/certificado/${idLote}`)
-			});
+			  });	
+			  
 		} catch (error) {
 			console.error("Error al finalizar proceso:", error);
 			setModal({

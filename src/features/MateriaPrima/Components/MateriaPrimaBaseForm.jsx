@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, MenuItem, Alert, CircularProgress } from '@mui/material';
 import NumberStepper from '../../../shared/components/NumberStepper';
-import { createMateriaPrimaBase } from '../services/materiaPrima.service';
+import { createMateriaPrimaBase, getAllMateriaPrimaBase, updateMateriaPrimaBase } from '../services/materiaPrima.service';
 
 const unidades = [
   { value: 'kg', label: 'Kilogramos (kg)' },
@@ -37,18 +37,37 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
     }
     setLoading(true);
     try {
-      await createMateriaPrimaBase({
-        Nombre: nombre,
-        Unidad: unidad,
-        Cantidad: cantidad
-      });
-      setSuccess('Materia prima base creada exitosamente');
+      // Verificar si ya existe una materia prima base con el mismo nombre
+      const materiasPrimasBaseExistentes = await getAllMateriaPrimaBase();
+      const materiaPrimaBaseExistente = materiasPrimasBaseExistentes.find(mp => 
+        mp.Nombre.toLowerCase() === nombre.toLowerCase().trim()
+      );
+
+      if (materiaPrimaBaseExistente) {
+        // Si existe, actualizar la cantidad
+        const nuevaCantidad = materiaPrimaBaseExistente.Cantidad + cantidad;
+        await updateMateriaPrimaBase(materiaPrimaBaseExistente.IdMateriaPrimaBase, {
+          Nombre: materiaPrimaBaseExistente.Nombre,
+          Unidad: materiaPrimaBaseExistente.Unidad,
+          Cantidad: nuevaCantidad
+        });
+        setSuccess(`Cantidad actualizada exitosamente. Total: ${nuevaCantidad} ${unidad}`);
+      } else {
+        // Si no existe, crear nueva materia prima base
+        await createMateriaPrimaBase({
+          Nombre: nombre.trim(),
+          Unidad: unidad,
+          Cantidad: cantidad
+        });
+        setSuccess('Materia prima base creada exitosamente');
+      }
+      
       setNombre('');
       setUnidad('kg');
       setCantidad(0);
       if (onCreated) onCreated();
     } catch (err) {
-      setError(err.response?.data?.message || 'Error al crear materia prima base');
+      setError(err.response?.data?.message || 'Error al procesar materia prima base');
     } finally {
       setLoading(false);
     }

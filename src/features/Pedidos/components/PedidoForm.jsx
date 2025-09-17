@@ -57,6 +57,7 @@ export default function PedidoForm({ onSubmit, loading }) {
                     className="mp-input"
                     value={formData.FechaEntrega}
                     onChange={handleChange}
+                    min={new Date().toISOString().split('T')[0]}
                 />
             </div>
 
@@ -71,7 +72,7 @@ export default function PedidoForm({ onSubmit, loading }) {
                         onChange={(v) => setFormData(prev => ({ ...prev, Cantidad: v }))}
                         min={1}
                         step={1}
-                        unit={formData.Unidad}
+                        unit={formData.Unidad} 
                         size="small"
                         margin="none"
                     />

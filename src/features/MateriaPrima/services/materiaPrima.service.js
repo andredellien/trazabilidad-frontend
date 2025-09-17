@@ -41,6 +41,11 @@ export async function createMateriaPrimaBase(data) {
 	return api.post("/materia-prima-base", data).then(response => response.data);
 }
 
+// NUEVO: Actualizar materia prima base
+export async function updateMateriaPrimaBase(id, data) {
+	return api.put(`/materia-prima-base/${id}`, data).then(response => response.data);
+}
+
 // NUEVO: Obtener el log de movimientos de una materia prima base
 export async function getLogMateriaPrimaBase(idMateriaPrimaBase) {
 	return api.get(`/log-materia-prima/base/${idMateriaPrimaBase}`).then(response => response.data);

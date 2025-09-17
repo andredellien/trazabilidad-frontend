@@ -3,13 +3,14 @@ import { Box, TextField, Button, MenuItem, Typography, Alert, CircularProgress }
 import { getAllMateriaPrimaBase, createMateriaPrima } from '../services/materiaPrima.service';
 import { getAllProveedores } from '../../Proveedores/services/proveedor.service';
 import usePedidosPendientes from '../hooks/usePedidosPendientes';
+import NumberStepper from '../../../shared/components/NumberStepper';
 
 export default function SolicitarMateriaPrimaForm({ onCreated }) {
   const [bases, setBases] = useState([]);
   const [proveedores, setProveedores] = useState([]);
   const [baseId, setBaseId] = useState('');
   const [unidad, setUnidad] = useState('');
-  const [cantidad, setCantidad] = useState('');
+  const [cantidad, setCantidad] = useState(0);
   const [proveedorId, setProveedorId] = useState('');
   const [pedidoId, setPedidoId] = useState('');
   const [error, setError] = useState('');
@@ -46,7 +47,7 @@ export default function SolicitarMateriaPrimaForm({ onCreated }) {
 
   const validate = () => {
     if (!baseId) return 'Debes seleccionar una materia prima base';
-    if (!cantidad || isNaN(Number(cantidad)) || Number(cantidad) <= 0) return 'La cantidad debe ser mayor a 0';
+    if (!cantidad || cantidad <= 0) return 'La cantidad debe ser mayor a 0';
     if (!proveedorId) return 'Debes seleccionar un proveedor';
     if (!pedidoId) return 'Debes seleccionar un pedido';
     return '';
@@ -66,7 +67,7 @@ export default function SolicitarMateriaPrimaForm({ onCreated }) {
       const proveedorObj = proveedores.find(p => p.IdProveedor === Number(proveedorId));
       await createMateriaPrima({
         Nombre: bases.find(b => b.IdMateriaPrimaBase === Number(baseId))?.Nombre || '',
-        Cantidad: Number(cantidad),
+        Cantidad: cantidad,
         Unidad: unidad,
         Estado: 'solicitado',
         IdMateriaPrimaBase: Number(baseId),
@@ -77,7 +78,7 @@ export default function SolicitarMateriaPrimaForm({ onCreated }) {
       setSuccess('Solicitud creada exitosamente');
       setBaseId('');
       setUnidad('');
-      setCantidad('');
+      setCantidad(0);
       setProveedorId('');
       setPedidoId('');
       if (onCreated) onCreated();
@@ -121,15 +122,14 @@ export default function SolicitarMateriaPrimaForm({ onCreated }) {
         margin="normal"
         InputProps={{ readOnly: true }}
       />
-      <TextField
+      <NumberStepper
         label="Cantidad"
-        type="number"
         value={cantidad}
-        onChange={e => setCantidad(e.target.value)}
-        fullWidth
-        required
+        onChange={setCantidad}
+        min={0}
+        step={0.01}
+        unit={unidad}
         margin="normal"
-        inputProps={{ min: 0, step: 0.01 }}
       />
       <TextField
         select
