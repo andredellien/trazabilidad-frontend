@@ -17,7 +17,7 @@ const baseURL = import.meta.env.VITE_API_URL;
 // La API back‑end expone todos los endpoints bajo /api
 // Ej.: traz-back.local/api/lote
 const api = axios.create({
-	baseURL: `${baseURL}/api`,
+	baseURL: `traz-back.local/api`,
 	timeout: 15000, // 15 segundos
 	headers: { "Content-Type": "application/json" },
 });
