@@ -14,7 +14,7 @@ export function DonutChartFillableHalf() {
 
 useEffect(() => {
     const cargar = async () => {
-        const res = await fetch("http://localhost:3000/api/lote");
+        const res = await fetch("traz-back.local/api/lote");
         const lotes = await res.json();
 
         const total = lotes.length || 1;

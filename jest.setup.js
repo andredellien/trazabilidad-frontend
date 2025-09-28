@@ -1,11 +1,11 @@
 // Mock de las variables de entorno
-process.env.VITE_API_URL = 'http://localhost:3000/api';
+process.env.VITE_API_URL = 'traz-back.local/api';
 
 // Mock de import.meta
 global.import = {
   meta: {
     env: {
-      VITE_API_URL: 'http://localhost:3000/api'
+      VITE_API_URL: 'traz-back.local/api'
     }
   }
 };
