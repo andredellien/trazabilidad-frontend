@@ -6,7 +6,8 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
 	server:{
 		allowedHosts: [
-			'traz-front.local'
+			'traz-front.local',
+			'traz-back.local'
 		]
 	},
 	plugins: [react(), tailwindcss()],
