@@ -21,6 +21,6 @@ export async function descargarCertificadoA4(id) {
 		pdf.addImage(imgData, "JPEG", 0, 0, width, height);
 		pdf.save("certificado.pdf");
 	} catch (error) {
-		console.error("❌ Error al generar PDF:", error);
+		console.error("Error al generar PDF:", error);
 	}
 }

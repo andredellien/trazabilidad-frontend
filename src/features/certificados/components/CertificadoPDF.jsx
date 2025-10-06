@@ -45,7 +45,7 @@ export default function CertificadoPDF({ lote, log }) {
 						<strong>
 							{m.NumeroMaquina}. {m.NombreMaquina}
 						</strong>{" "}
-						{m.CumpleEstandar ? "✅" : "❌"}
+						{m.CumpleEstandar ? "Exito" : "Error"}
 						<ul>
 							{Object.entries(m.VariablesIngresadas).map(([k, v]) => (
 								<li key={k}>
@@ -60,7 +60,7 @@ export default function CertificadoPDF({ lote, log }) {
 			<section style={estilos.resultado}>
 				<h2 style={estilos.h2}>Resultado Final</h2>
 				<p style={estado === "Certificado" ? estilos.ok : estilos.fail}>
-					{estado === "Certificado" ? "✅" : "❌"} {estado}
+					{estado === "Certificado" ? "Exito" : "Error"} {estado}
 				</p>
 				<p style={estilos.motivo}>{motivo}</p>
 			</section>

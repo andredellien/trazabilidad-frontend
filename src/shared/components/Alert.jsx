@@ -14,13 +14,13 @@ const Alert = ({
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return '✅';
+        return 'Exito';
       case 'error':
-        return '❌';
+        return 'Error';
       case 'warning':
-        return '⚠️';
+        return 'Advertencia';
       default:
-        return 'ℹ️';
+        return 'Error';
     }
   };
   

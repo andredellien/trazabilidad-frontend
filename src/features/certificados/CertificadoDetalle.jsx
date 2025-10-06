@@ -73,7 +73,7 @@ export default function CertificadoDetalle() {
 
 			pdf.save(`certificado-lote-${idLote}.pdf`);
 		} catch (err) {
-			console.error("❌ Error al generar PDF:", err);
+			console.error("Error al generar PDF:", err);
 			alert("Error al generar el certificado. Intenta nuevamente.");
 		}
 	};
@@ -152,7 +152,7 @@ export default function CertificadoDetalle() {
 							>
 								<h3 className="font-semibold text-gray-800 mb-1">
 									{maq.NumeroMaquina}. {maq.NombreMaquina}{" "}
-									{maq.CumpleEstandar ? "✅" : "❌"}
+									{maq.CumpleEstandar ? "Exito" : "Error"}
 								</h3>
 								<ul className="text-sm text-gray-600 space-y-1">
 									{Object.entries(maq.VariablesIngresadas).map(([k, v]) => (

@@ -25,7 +25,7 @@ export default function Certificados() {
 			<div className="max-w-6xl mx-auto">
 				<header className="mb-8 text-center">
 					<h1 className="text-3xl font-extrabold text-gray-800">
-						📄 Certificados de Calidad
+						Certificados de Calidad
 					</h1>
 					<p className="text-gray-500 mt-2">
 						Selecciona un lote certificado para ver su trazabilidad completa.

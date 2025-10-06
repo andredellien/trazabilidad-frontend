@@ -270,7 +270,7 @@ export default function CrearProceso() {
 			setModal({
 				isOpen: true,
 				title: "Error",
-				message: `❌ Error al guardar el proceso: ${errorMessage}`,
+				message: `Error al guardar el proceso: ${errorMessage}`,
 				type: "error"
 			});
 		}

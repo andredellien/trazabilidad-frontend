@@ -200,7 +200,7 @@ export default function Maquinas() {
 							disabled={cargando}
 							className="w-full bg-blue-600 text-white px-4 py-3 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							{cargando ? "Subiendo..." : "📤 Subir imagen"}
+							{cargando ? "Subiendo..." : "Subir imagen"}
 						</button>
 
 						<button
@@ -208,7 +208,7 @@ export default function Maquinas() {
 							disabled={!nombre || !imagenUrl}
 							className="w-full bg-[#007c64] text-white px-4 py-3 rounded hover:bg-[#006554] transition disabled:opacity-50 disabled:cursor-not-allowed"
 						>
-							💾 Guardar máquina
+							Guardar máquina	
 						</button>
 					</div>
 				</div>

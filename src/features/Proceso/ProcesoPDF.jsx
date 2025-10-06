@@ -45,7 +45,7 @@ export default function ProcesoPDF() {
 			pdf.addImage(imgData, "PNG", x, y, imgWidth, imgHeight);
 			pdf.save(`Proceso_${id}.pdf`);
 		} catch (error) {
-			console.error("❌ Error al generar PDF:", error);
+			console.error("Error al generar PDF:", error);
 			setModal({
 				isOpen: true,
 				title: "Error",

@@ -32,15 +32,15 @@ export default function LoteList() {
 		
 		switch (estadoLower) {
 			case 'certificado':
-				return <Chip label="✅ Certificado" color="success" variant="filled" size="small" />;
+				return <Chip label="Certificado" color="success" variant="filled" size="small" />;
 			case 'pendiente':
-				return <Chip label="⏳ Pendiente" color="warning" variant="filled" size="small" />;
+				return <Chip label="Pendiente" color="warning" variant="filled" size="small" />;
 			case 'en proceso':
-				return <Chip label="🔄 En Proceso" color="info" variant="filled" size="small" />;
+				return <Chip label="En Proceso" color="info" variant="filled" size="small" />;
 			case 'completado':
-				return <Chip label="✅ Completado" color="success" variant="filled" size="small" />;
+				return <Chip label="Completado" color="success" variant="filled" size="small" />;
 			case 'no certificado':
-				return <Chip label="❌ No Certificado" color="error" variant="filled" size="small" />;
+				return <Chip label="No Certificado" color="error" variant="filled" size="small" />;
 			default:
 				return <Chip label={estado || 'Sin estado'} color="default" variant="outlined" size="small" />;
 		}

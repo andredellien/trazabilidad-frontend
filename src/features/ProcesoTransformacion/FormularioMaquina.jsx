@@ -74,7 +74,7 @@ function FormularioMaquina() {
 			setModal({
 				isOpen: true,
 				title: "Resultado",
-				message: data.message + (data.cumple ? " ✅" : " ❌ No cumple estándares"),
+				message: data.message + (data.cumple ? " ✅" : " No cumple estándares"),
 				type: data.cumple ? "success" : "warning",
 				showConfirmButton: true,
 				onConfirm: () => navigate(`/proceso/${idLote}`)

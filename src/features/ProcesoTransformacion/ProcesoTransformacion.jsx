@@ -5,6 +5,7 @@ import { obtenerEstadoFormulario } from "./services/procesoService";
 import BackButton from "../../shared/components/BackButton";
 import api from "../../shared/services/api";
 import Modal from "../../shared/components/Modal";
+import { Button } from '@mui/material';
 
 export function ProcesoTransformacion() {
 	const { idLote } = useParams();
@@ -218,16 +219,19 @@ export function ProcesoTransformacion() {
 							})}
 						</div>
 
-						{procesoListo && (
-							<div className="text-center mt-10">
-								<button
-									onClick={finalizarProceso}
-									className="bg-blue-600 text-white px-6 py-3 rounded shadow hover:bg-blue-700 transition"
-								>
-									✅ Finalizar Proceso
-								</button>
-							</div>
-						)}
+                        {procesoListo && (
+                            <div className="text-center mt-10">
+                                <Button
+                                    onClick={finalizarProceso}
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    sx={{ minWidth: 160 }}
+                                >
+                                    Finalizar Proceso
+                                </Button>
+                            </div>
+                        )}
 					</>
 				)}
 			</div>

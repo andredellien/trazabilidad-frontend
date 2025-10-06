@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import Button from './Button';
+import { CheckCircle, XCircle, AlertTriangle, Info } from 'lucide-react';
 
 export default function Modal({ isOpen, onClose, onConfirm, title, message, type = 'info', showConfirmButton = false }) {
   useEffect(() => {
@@ -23,13 +24,13 @@ export default function Modal({ isOpen, onClose, onConfirm, title, message, type
   const getIcon = () => {
     switch (type) {
       case 'success':
-        return '✅';
+        return <CheckCircle className="w-6 h-6" aria-hidden="true" />;
       case 'error':
-        return '❌';
+        return null; // No icon in header for error
       case 'warning':
-        return '⚠️';
+        return <AlertTriangle className="w-6 h-6" aria-hidden="true" />;
       default:
-        return 'ℹ️';
+        return <Info className="w-6 h-6" aria-hidden="true" />;
     }
   };
 
@@ -64,14 +65,20 @@ export default function Modal({ isOpen, onClose, onConfirm, title, message, type
       <div className="modal animate-fade-in">
         <div className="modal-header">
           <div className="flex items-center gap-3">
-            <span className="text-2xl">{getIcon()}</span>
+            {getIcon() && (
+              <span className="text-2xl" aria-hidden="true">{getIcon()}</span>
+            )}
             <h3 className="modal-title">{title}</h3>
           </div>
           <button
             onClick={onClose}
             className="modal-close"
           >
-            ×
+            {type === 'error' ? (
+              <XCircle className="w-5 h-5" aria-hidden="true" />
+            ) : (
+              '×'
+            )}
           </button>
         </div>
         

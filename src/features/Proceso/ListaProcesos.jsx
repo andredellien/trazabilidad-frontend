@@ -88,13 +88,13 @@ export default function ListaProcesos() {
 
 			<div className="flex justify-between items-center mb-8">
 				<h2 className="text-3xl font-extrabold text-[#007c64]">
-					📂 Procesos de Transformación
+					Procesos de Transformación
 				</h2>
 				<button
 					onClick={() => navigate("/procesos/crear")}
 					className="bg-[#007c64] text-white px-5 py-2 rounded hover:bg-[#006554] transition"
 				>
-					➕ Crear proceso
+					Crear proceso
 				</button>
 			</div>
 
@@ -127,7 +127,7 @@ export default function ListaProcesos() {
 										onClick={() => navigate(`/procesos/${p.IdProceso}/editar`)}
 										className="text-sm bg-green-100 text-green-700 px-3 py-1 rounded hover:bg-green-200"
 									>
-										✏️ Editar
+										Editar
 									</button>
 									<button
 										onClick={() =>
@@ -135,19 +135,19 @@ export default function ListaProcesos() {
 										}
 										className="text-sm bg-purple-100 text-purple-700 px-3 py-1 rounded hover:bg-purple-200"
 									>
-										📋 Duplicar
+										Duplicar
 									</button>
 									<button
 										onClick={() => navigate(`/procesos/${p.IdProceso}/pdf`)}
 										className="text-sm bg-yellow-100 text-yellow-800 px-3 py-1 rounded hover:bg-yellow-200"
 									>
-										📄 Ver PDF
+										Ver PDF
 									</button>
 									<button
 										onClick={() => eliminarProceso(p.IdProceso)}
 										className="text-sm bg-red-100 text-red-700 px-3 py-1 rounded hover:bg-red-200"
 									>
-										🗑 Eliminar
+										Eliminar
 									</button>
 								</div>
 							</div>
