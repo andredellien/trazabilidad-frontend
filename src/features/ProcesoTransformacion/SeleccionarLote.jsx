@@ -35,7 +35,7 @@ function SeleccionarLote() {
 			<div className="max-w-6xl mx-auto">
 				<header className="mb-8 text-center">
 					<h1 className="text-3xl font-extrabold text-gray-800">
-						🚚 Gestión de Lotes Pendientes
+						Gestión de Lotes Pendientes
 					</h1>
 					<p className="text-gray-500 mt-2">
 						Selecciona un lote para iniciar su proceso de transformación.

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import BackButton from "../../shared/components/BackButton";
 import QRCode from "react-qr-code";
 
 export default function CertificadoQR() {
@@ -14,6 +15,7 @@ export default function CertificadoQR() {
 
 	return (
 		<div className="min-h-screen flex flex-col justify-center items-center bg-gray-50 p-6">
+			<BackButton label="Volver a Certificados" to="/Certificados" />
 			<div className="bg-white flex flex-col justify-center items-center p-6 rounded-xl shadow max-w-md w-full text-center">
 				<h2 className="text-xl font-bold mb-4 text-[#007c64]">
 					Código QR del Certificado

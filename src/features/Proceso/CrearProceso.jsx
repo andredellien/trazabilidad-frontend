@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { createProceso, getProcesoById } from "./services/proceso.service";
 import { getAllMaquinas } from "../Maquinas/services/maquinas.service";
 import Modal from "../../shared/components/Modal";
+import BackButton from "../../shared/components/BackButton";
 import useVariablesEstandar from "../VariablesEstandar/hooks/useVariablesEstandar";
 import { Select, MenuItem, InputLabel, FormControl, Box, TextField } from '@mui/material';
 
@@ -284,6 +285,7 @@ export default function CrearProceso() {
 				message={modal.message}
 				type={modal.type}
 			/>
+			<BackButton label="Volver a Procesos" to="/procesos" />
 
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Crear nuevo proceso

@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import BackButton from "../../shared/components/BackButton";
 import { getProcesoById } from "./services/proceso.service";
 import Modal from "../../shared/components/Modal";
 
@@ -65,6 +66,7 @@ export default function ProcesoPDF() {
 				message={modal.message}
 				type={modal.type}
 			/>
+			<BackButton label="Volver a Procesos" to="/procesos" />
 
 			<div style={{ textAlign: "right", marginBottom: "1rem" }}>
 				<button

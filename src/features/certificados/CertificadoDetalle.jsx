@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import api from "../../shared/services/api";
+import BackButton from "../../shared/components/BackButton";
 
 export default function CertificadoDetalle() {
 	const { idLote } = useParams();
@@ -79,6 +80,7 @@ export default function CertificadoDetalle() {
 
 	return (
 		<div className="min-h-screen  py-10 px-6">
+			<BackButton label="Volver a Certificados" to="/Certificados" />
 			<div className="text-center mb-6">
 				<button
 					onClick={descargarPDF}

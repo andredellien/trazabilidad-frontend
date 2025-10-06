@@ -105,7 +105,6 @@ export default function LoteList() {
 							<TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Cliente</TableCell>
 							<TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Fecha Creación</TableCell>
 							<TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Estado</TableCell>
-							<TableCell sx={{ color: 'white', fontWeight: 'bold' }}>Acciones</TableCell>
 						</TableRow>
 					</TableHead>
 					<TableBody>
@@ -159,20 +158,6 @@ export default function LoteList() {
 									{getEstadoChip(lote.Estado)}
 								</TableCell>
 								
-								<TableCell>
-									<Box sx={{ display: 'flex', gap: 1 }}>
-										<Tooltip title="Ver detalles">
-											<IconButton size="small" color="primary">
-												<VisibilityIcon />
-											</IconButton>
-										</Tooltip>
-										<Tooltip title="Editar lote">
-											<IconButton size="small" color="secondary">
-												<EditIcon />
-											</IconButton>
-										</Tooltip>
-									</Box>
-								</TableCell>
 							</TableRow>
 						))}
 					</TableBody>

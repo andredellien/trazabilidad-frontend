@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getProcesoById, updateProceso } from "./services/proceso.service";
 import Modal from "../../shared/components/Modal";
+import BackButton from "../../shared/components/BackButton";
 import useVariablesEstandar from "../VariablesEstandar/hooks/useVariablesEstandar";
 import { Select, MenuItem, InputLabel, FormControl, Box, TextField } from '@mui/material';
 
@@ -196,6 +197,8 @@ export default function EditarProceso() {
 				message={modal.message}
 				type={modal.type}
 			/>
+
+			<BackButton label="Volver a Procesos" to="/procesos" />
 
 			<h2 className="text-2xl font-bold text-[#007c64] mb-6">
 				Editar proceso #{id}

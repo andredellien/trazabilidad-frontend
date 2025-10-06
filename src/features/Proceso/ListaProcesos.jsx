@@ -70,7 +70,7 @@ export default function ListaProcesos() {
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white shadow rounded mt-8">
-			<BackButton />
+			
 			<DeleteConfirmDialog
 				open={!!deleteId}
 				onClose={() => setDeleteId(null)}

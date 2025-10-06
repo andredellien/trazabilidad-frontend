@@ -78,7 +78,6 @@ export default function ProveedoresPage() {
 
     return (
         <div className="p-6 max-w-7xl mx-auto">
-            <BackButton />
             <div className="text-center mb-8">
                 <h1 className="text-4xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
                     <FiTruck className="text-4xl" />

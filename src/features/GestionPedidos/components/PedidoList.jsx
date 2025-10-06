@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Button } from '@mui/material';
 
 export default function PedidoList({ pedidos, loading, error }) {
     const navigate = useNavigate();
@@ -39,39 +40,51 @@ export default function PedidoList({ pedidos, loading, error }) {
         switch (pedido.Estado) {
             case 'pendiente':
                 return (
-                    <button
+                    <Button
                         onClick={() => navigate('/solicitar-materia-prima')}
-                        className="btn-primary"
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{ minWidth: 120 }}
                     >
                         Solicitar Materia Prima
-                    </button>
+                    </Button>
                 );
             case 'materia prima solicitada':
                 return (
-                    <button
+                    <Button
                         onClick={() => navigate('/gestion-lotes')}
-                        className="btn-primary"
+                        variant="contained"
+                        color="primary"
+                        size="small"
+                        sx={{ minWidth: 120 }}
                     >
                         Crear Lote
-                    </button>
+                    </Button>
                 );
                 case 'en_proceso':
                     return (
-                        <button
+                        <Button
                             onClick={() => navigate('/seleccionar-lote')}
-                            className="btn-primary"
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{ minWidth: 120 }}
                         >
                             Certificar Lote
-                        </button>
+                        </Button>
                     );       
                     case 'En Proceso':
                     return (
-                        <button
+                        <Button
                             onClick={() => navigate('/seleccionar-lote')}
-                            className="btn-primary"
+                            variant="contained"
+                            color="primary"
+                            size="small"
+                            sx={{ minWidth: 120 }}
                         >
                             Certificar Lote
-                        </button>
+                        </Button>
                     );   
             default:
                 return null;

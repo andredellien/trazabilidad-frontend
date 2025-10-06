@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import MaquinaCard from "./components/MaquinaCard";
 import { obtenerEstadoFormulario } from "./services/procesoService";
+import BackButton from "../../shared/components/BackButton";
 import api from "../../shared/services/api";
 import Modal from "../../shared/components/Modal";
 
@@ -143,11 +144,11 @@ export function ProcesoTransformacion() {
 			/>
 
 			<div className="max-w-6xl mx-auto">
+				<BackButton label="Volver a Lotes Pendientes" to="/seleccionar-lote" />
 				<header className="text-center mb-10">
 					<h2 className="text-3xl font-extrabold text-gray-800 mb-2">
 						Proceso de Transformación – Lote #{idLote}
 					</h2>
-
 					{/* Mostrar selector si no hay proceso asignado */}
 					{!lote.IdProceso ? (
 						<div className="mt-4 max-w-sm mx-auto">
