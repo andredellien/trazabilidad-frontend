@@ -3,7 +3,7 @@ import { Button } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useNavigate } from 'react-router-dom';
 
-export default function BackButton({ label = 'Volver', to, sx, size = 'medium', variant = 'outlined', color = 'primary' }) {
+export default function BackButton({ label = 'Volver', to, sx, size = 'small', variant = 'contained', color = 'primary' }) {
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -12,7 +12,7 @@ export default function BackButton({ label = 'Volver', to, sx, size = 'medium', 
   };
 
   return (
-    <Button onClick={handleClick} startIcon={<ArrowBackIcon />} variant={variant} color={color} size={size} sx={{ mb: 2, ...sx }}>
+    <Button onClick={handleClick} startIcon={<ArrowBackIcon />} variant={variant} color={color} size={size} sx={{ mb: 2, minWidth: 120, ...sx }}>
       {label}
     </Button>
   );

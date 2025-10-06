@@ -184,7 +184,7 @@ export default function LoteForm({ onCreated }) {
 						{/* Sección de Información Básica */}
 						<Paper elevation={1} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
 							<Typography variant="h5" gutterBottom color="primary" fontWeight="600" sx={{ mb: 2 }}>
-									📋 Información del Lote
+									Información del Lote
 								</Typography>
 							<Divider sx={{ mb: 3 }} />
 							
@@ -241,19 +241,14 @@ export default function LoteForm({ onCreated }) {
 						<Paper elevation={1} sx={{ p: 3, mb: 4, borderRadius: 2 }}>
 							<Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
 								<Typography variant="h5" color="primary" fontWeight="600">
-										📦 Materias Primas Base
+										Materias Primas Base
 									</Typography>
 								<Button
 									variant="contained"
 										startIcon={<AddIcon />}
 										onClick={handleAddMateriaPrima}
 										disabled={loading}
-									sx={{ 
-										px: 3, 
-										py: 1.5,
-										borderRadius: 2,
-										fontWeight: 600
-									}}
+									size="small"
 								>
 									Agregar Materia Prima
 								</Button>
@@ -357,17 +352,8 @@ export default function LoteForm({ onCreated }) {
 								<Button
 									type="submit"
 									variant="contained"
-									size="large"
+									size="small"
 									disabled={loading || formData.MateriasPrimas.length === 0}
-								sx={{ 
-									minWidth: 250, 
-									py: 2,
-									px: 4,
-									borderRadius: 3,
-									fontSize: '1.1rem',
-									fontWeight: 600,
-									textTransform: 'none'
-								}}
 								>
 									{loading ? (
 										<>
@@ -375,7 +361,7 @@ export default function LoteForm({ onCreated }) {
 												Creando Lote...
 										</>
 									) : (
-										'🏭 Crear Lote'
+										'Crear Lote'
 									)}
 								</Button>
 						</Box>

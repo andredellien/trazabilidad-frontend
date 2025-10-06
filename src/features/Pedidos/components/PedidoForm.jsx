@@ -100,6 +100,7 @@ export default function PedidoForm({ onSubmit, loading }) {
                 type="submit"
                 disabled={loading}
                 className="mp-button"
+                size="small" 
             >
                 {loading ? "Creando..." : "Crear Pedido"}
             </button>

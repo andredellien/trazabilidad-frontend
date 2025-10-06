@@ -39,7 +39,7 @@ export default function GestionLotesPage() {
 		<div className="p-6 max-w-7xl mx-auto">
 			<div className="text-center mb-8">
 				<h1 className="text-4xl font-bold text-primary mb-4">
-					🏭 Gestión de Lotes
+					Gestión de Lotes
 				</h1>
 				<p className="text-lg text-secondary">
 					Administre la creación y seguimiento de lotes de producción
@@ -56,7 +56,7 @@ export default function GestionLotesPage() {
 						}`}
 						onClick={() => setTabValue(0)}
 					>
-						➕ Crear Lote
+						Crear Lote
 					</button>
 					<button
 						className={`flex-1 py-4 px-6 text-center font-semibold transition-colors ${
@@ -66,7 +66,7 @@ export default function GestionLotesPage() {
 						}`}
 						onClick={() => setTabValue(1)}
 					>
-						📋 Ver Lotes
+						Ver Lotes
 					</button>
 				</div>
 			</Card>

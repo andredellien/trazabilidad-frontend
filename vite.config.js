@@ -7,7 +7,7 @@ export default defineConfig({
 	server:{
 		allowedHosts: [
 			'traz-front.local',
-			'traz-back.local'
+			'http://localhost:3000/api'
 		]
 	},
 	plugins: [react(), tailwindcss()],

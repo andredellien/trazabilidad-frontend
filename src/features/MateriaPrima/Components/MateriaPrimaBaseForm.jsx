@@ -18,11 +18,16 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
+  const [cantidadError, setCantidadError] = useState('');
 
   const validate = () => {
+    setCantidadError('');
     if (!nombre.trim()) return 'El nombre es obligatorio';
     if (!unidad) return 'La unidad es obligatoria';
-    if (cantidad < 0) return 'La cantidad no puede ser negativa';
+    if (cantidad <= 0) {
+      setCantidadError('La cantidad debe ser mayor a 0');
+      return 'CANTIDAD_ERROR'; // Usar un identificador especial
+    }
     return '';
   };
 
@@ -31,9 +36,12 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
     setError('');
     setSuccess('');
     const validation = validate();
-    if (validation) {
+    if (validation && validation !== 'CANTIDAD_ERROR') {
       setError(validation);
       return;
+    }
+    if (validation === 'CANTIDAD_ERROR') {
+      return; // Solo mostrar el error debajo del input, no el Alert
     }
     setLoading(true);
     try {
@@ -52,6 +60,7 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
           Cantidad: nuevaCantidad
         });
         setSuccess(`Cantidad actualizada exitosamente. Total: ${nuevaCantidad} ${unidad}`);
+        setTimeout(() => setSuccess(''), 2000);
       } else {
         // Si no existe, crear nueva materia prima base
         await createMateriaPrimaBase({
@@ -60,6 +69,7 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
           Cantidad: cantidad
         });
         setSuccess('Materia prima base creada exitosamente');
+        setTimeout(() => setSuccess(''), 2000);
       }
       
       setNombre('');
@@ -105,12 +115,17 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
       <NumberStepper
         label="Cantidad inicial"
         value={cantidad}
-        onChange={(v) => setCantidad(v)}
+        onChange={(v) => {
+          setCantidad(v);
+          if (cantidadError) setCantidadError('');
+        }}
         min={0}
         step={0.01}
+        error={!!cantidadError}
+        helperText={cantidadError}
       />
       <Box mt={2} display="flex" justifyContent="center">
-        <Button type="submit" variant="contained" color="primary" disabled={loading} size="large" sx={{ minWidth: 120 }}>
+        <Button type="submit" variant="contained" color="primary" disabled={loading} size="small" sx={{ minWidth: 120 }}>
           {loading ? <CircularProgress size={24} /> : 'Crear'}
         </Button>
       </Box>

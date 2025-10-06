@@ -12,10 +12,14 @@ import axios from "axios";
 //    • En desarrollo usa localhost:3000
 //    • En producción pon VITE_API_URL en tu .env
 // ─────────────────────────────────────────────────────────────
-const baseURL = import.meta.env.VITE_API_URL || 'http://traz-back.local/api';
+const baseURL = import.meta.env.VITE_API_URL || 'http://http://localhost:3000/api/';
+
+// Debug: mostrar la URL que se está usando
+console.log('🔧 API Base URL:', baseURL);
+console.log('🔧 VITE_API_URL env var:', import.meta.env.VITE_API_URL);
 
 // La API back‑end expone todos los endpoints bajo /api
-// Ej.: traz-back.local/api/lote
+// Ej.: http://localhost:3000/api/api/lote
 const api = axios.create({
 	baseURL: baseURL,
 	timeout: 15000, // 15 segundos

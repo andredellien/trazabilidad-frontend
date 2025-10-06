@@ -59,8 +59,14 @@ export default function MateriaPrimaBaseList({ refresh, onShowLog }) {
                   <TableCell>{row.Unidad}</TableCell>
                   <TableCell align="right">{row.Cantidad}</TableCell>
                   <TableCell align="center">
-                    <Button variant="outlined" size="small" onClick={() => onShowLog && onShowLog(row)}>
-                      Ver Registros
+                    <Button 
+                      variant="contained" 
+                      color="primary" 
+                      size="small" 
+                      onClick={() => onShowLog && onShowLog(row)}
+                      sx={{ minWidth: 120 }}
+                    >
+                      Ver Registro
                     </Button>
                   </TableCell>
                 </TableRow>

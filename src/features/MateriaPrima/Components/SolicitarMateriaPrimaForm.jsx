@@ -168,7 +168,7 @@ export default function SolicitarMateriaPrimaForm({ onCreated }) {
         ))}
       </TextField>
       <Box mt={2} display="flex" justifyContent="center">
-        <Button type="submit" variant="contained" color="primary" disabled={loading} size="large" sx={{ minWidth: 120 }}>
+        <Button type="submit" variant="contained" color="primary" disabled={loading} size="small" sx={{ minWidth: 120 }}>
           {loading ? <CircularProgress size={24} /> : 'Solicitar'}
         </Button>
       </Box>
