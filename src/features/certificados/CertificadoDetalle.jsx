@@ -86,7 +86,7 @@ export default function CertificadoDetalle() {
 					onClick={descargarPDF}
 					className="bg-[#007c64] text-white px-6 py-2 rounded-md shadow hover:bg-[#006554] transition"
 				>
-					📥 Descargar en PDF
+					Descargar en PDF
 				</button>
 			</div>
 			<div

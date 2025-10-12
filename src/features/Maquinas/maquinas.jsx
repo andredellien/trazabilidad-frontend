@@ -139,6 +139,8 @@ export default function Maquinas() {
 				<Typography variant="h4" fontWeight={600}>
 					Gestión de Máquinas
 				</Typography>
+			</Box>
+			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
 				<Button
 					variant="contained"
 					startIcon={<AddIcon />}
@@ -148,13 +150,6 @@ export default function Maquinas() {
 					Crear Nueva Máquina
 				</Button>
 			</Box>
-
-			<Box sx={{ mb: 3 }}>
-				<Typography variant="body1" color="text.secondary">
-					Administra y registra las máquinas del sistema
-				</Typography>
-			</Box>
-
 			{/* Lista de máquinas - Diseño original */}
 			<div className="bg-white shadow rounded p-6">
 				<h3 className="text-xl font-semibold text-gray-800 mb-6">

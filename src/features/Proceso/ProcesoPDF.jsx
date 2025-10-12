@@ -80,7 +80,7 @@ export default function ProcesoPDF() {
 						cursor: "pointer",
 					}}
 				>
-					📄 Descargar PDF
+					Descargar PDF
 				</button>
 			</div>
 

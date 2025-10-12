@@ -1,147 +1,161 @@
 import React, { useState } from "react";
+import { Box, Container, Button, Typography } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
 import useOperadores from "./hooks/useOperadores";
 import useAuth from "../Auth/hooks/useAuth";
 import OperadoresList from "./components/OperadoresList";
+import { ModalForm } from "../../shared/components";
 import Modal from "../../shared/components/Modal";
-import Button from "../../shared/components/Button";
-import Alert from "../../shared/components/Alert";
-import Input from "../../shared/components/Input";
-import Select from "../../shared/components/Select";
-import Card from "../../shared/components/Card";
 
 export default function UsuariosPage() {
 	const { user } = useAuth();
 	const { createUser, error, loading, fetchOperadores, operadores, maquinas, asignarMaquinas } = useOperadores();
+	const [modalOpen, setModalOpen] = useState(false);
 	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
+	const [actionError, setActionError] = useState('');
+	const [success, setSuccess] = useState('');
 
-	const handleSubmit = async (e) => {
-		e.preventDefault();
-		const formData = new FormData(e.target);
-		const data = {
-			Nombre: formData.get("nombre"),
-			Cargo: formData.get("cargo"),
-			Usuario: formData.get("usuario"),
-			Password: formData.get("password"),
-		};
+	const handleOpenModal = () => {
+		setModalOpen(true);
+		setActionError('');
+		setSuccess('');
+	};
 
-		if (data.Password !== formData.get("confirmPassword")) {
-			setModal({
-				isOpen: true,
-				title: "Error de validación",
-				message: "Las contraseñas no coinciden",
-				type: "error"
-			});
-			return;
-		}
+	const handleCloseModal = () => {
+		setModalOpen(false);
+		setActionError('');
+		setSuccess('');
+	};
 
+	const handleSubmit = async (formData) => {
 		try {
-			await createUser(data);
-			e.target.reset();
-			await fetchOperadores();
-			setModal({
-				isOpen: true,
-				title: "Éxito",
-				message: "Usuario creado correctamente",
-				type: "success"
-			});
+			await createUser(formData);
+			setSuccess('Usuario creado correctamente');
+			setTimeout(() => {
+				setSuccess('');
+				handleCloseModal();
+				fetchOperadores();
+			}, 2000);
 		} catch (error) {
 			console.error("Error al crear usuario:", error);
-			setModal({
-				isOpen: true,
-				title: "Error",
-				message: "Error al crear el usuario",
-				type: "error"
-			});
+			setActionError(error.message || "Error al crear el usuario");
 		}
 	};
 
+	const validateForm = (formData) => {
+		const errors = {};
+		if (!formData.Nombre?.trim()) {
+			errors.Nombre = 'El nombre es obligatorio';
+		}
+		if (!formData.Cargo) {
+			errors.Cargo = 'El cargo es obligatorio';
+		}
+		if (!formData.Usuario?.trim()) {
+			errors.Usuario = 'El usuario es obligatorio';
+		}
+		if (!formData.Password) {
+			errors.Password = 'La contraseña es obligatoria';
+		}
+		if (!formData.confirmPassword) {
+			errors.confirmPassword = 'Confirmar contraseña es obligatorio';
+		}
+		if (formData.Password && formData.confirmPassword && formData.Password !== formData.confirmPassword) {
+			errors.confirmPassword = 'Las contraseñas no coinciden';
+		}
+		return errors;
+	};
+
+	const fields = [
+		{
+			name: 'Nombre',
+			label: 'Nombre completo',
+			type: 'text',
+			required: true,
+			autoFocus: true
+		},
+		{
+			name: 'Cargo',
+			label: 'Cargo',
+			type: 'select',
+			required: true,
+			options: [
+				{ value: "admin", label: "Administrador" },
+				{ value: "operador", label: "Operador" },
+				{ value: "cliente", label: "Cliente" }
+			]
+		},
+		{
+			name: 'Usuario',
+			label: 'Usuario',
+			type: 'text',
+			required: true
+		},
+		{
+			name: 'Password',
+			label: 'Contraseña',
+			type: 'password',
+			required: true
+		},
+		{
+			name: 'confirmPassword',
+			label: 'Confirmar Contraseña',
+			type: 'password',
+			required: true
+		}
+	];
+
 	return (
-		<div className="p-6 max-w-7xl mx-auto">
-			<div className="text-center mb-8">
-				<h1 className="text-4xl font-bold text-primary mb-4">
-					👥 Gestión de Usuarios
-				</h1>
-				<p className="text-lg text-secondary">
+		<Container maxWidth={false} sx={{ py: 4 }}>
+			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				<Typography variant="h4" fontWeight={600}>
+					Gestión de Usuarios
+				</Typography>
+			</Box>
+
+			<Box sx={{ mb: 3 }}>
+				<Typography variant="body1" color="text.secondary">
 					Administre usuarios y operadores del sistema
-				</p>
-			</div>
+				</Typography>
+			</Box>
+			<Box sx={{ mb: 3, display: 'flex',justifyContent: 'flex-end', alignItems: 'center' }}>
+				<Button
+					variant="contained"
+					startIcon={<AddIcon />}
+					onClick={handleOpenModal}
+					size="small"
+				>
+					Crear Nuevo Usuario
+				</Button>
+			</Box>
+			{/* Lista de operadores */}
+			<OperadoresList 
+				operadores={operadores}
+				maquinas={maquinas}
+				loading={loading}
+				error={error}
+				asignarMaquinas={asignarMaquinas}
+			/>
 
-			<div className="space-y-8">
-				{/* Formulario de creación */}
-				<Card title="Crear Nuevo Usuario">
-					<form onSubmit={handleSubmit} className="space-y-4">
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<Input
-								id="nombre"
-								name="nombre"
-								label="Nombre completo"
-								type="text"
-								required
-							/>
-
-							<Select
-								id="cargo"
-								name="cargo"
-								label="Cargo"
-								required
-								placeholder="Seleccione un cargo"
-								options={[
-									{ value: "admin", label: "Administrador" },
-									{ value: "operador", label: "Operador" },
-									{ value: "cliente", label: "Cliente" }
-								]}
-							/>
-						</div>
-
-						<div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-							<Input
-								id="usuario"
-								name="usuario"
-								label="Usuario"
-								type="text"
-								required
-							/>
-
-							<Input
-								id="password"
-								name="password"
-								label="Contraseña"
-								type="password"
-								required
-							/>
-						</div>
-
-						<Input
-							id="confirmPassword"
-							name="confirmPassword"
-							label="Confirmar Contraseña"
-							type="password"
-							required
-						/>
-
-						{error && <Alert type="error">{error}</Alert>}
-
-						<Button
-							type="submit"
-							disabled={loading}
-							loading={loading}
-							fullWidth
-							size="lg"
-						>
-							{loading ? "Creando..." : "Crear Usuario"}
-						</Button>
-					</form>
-				</Card>
-
-				{/* Lista de operadores */}
-				<OperadoresList 
-					operadores={operadores}
-					maquinas={maquinas}
-					loading={loading}
-					error={error}
-					asignarMaquinas={asignarMaquinas}
-				/>
-			</div>
+			<ModalForm
+				isOpen={modalOpen}
+				onClose={handleCloseModal}
+				title="Crear Nuevo Usuario"
+				fields={fields}
+				onSubmit={handleSubmit}
+				loading={loading}
+				error={actionError}
+				success={success}
+				initialValues={{ 
+					Nombre: '', 
+					Cargo: '', 
+					Usuario: '', 
+					Password: '', 
+					confirmPassword: '' 
+				}}
+				validate={validateForm}
+				submitButtonText="Crear Usuario"
+				maxWidth="sm"
+			/>
 
 			<Modal
 				isOpen={modal.isOpen}
@@ -151,6 +165,6 @@ export default function UsuariosPage() {
 				type={modal.type}
 				showConfirmButton={modal.showConfirmButton}
 			/>
-		</div>
+		</Container>
 	);
 } 

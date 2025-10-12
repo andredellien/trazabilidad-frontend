@@ -113,7 +113,7 @@ export default function ProveedorList({ proveedores, onUpdate, onDelete, onCreat
     return (
         <Box>
             <Box display="flex" justifyContent="flex-end" mb={2}>
-                <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleCreate}>
+                <Button variant="contained" color="primary" startIcon={<AddIcon />} onClick={handleCreate} size="small">
                     Nuevo Proveedor
                 </Button>
             </Box>

@@ -141,7 +141,7 @@ export default function VariablesEstandarPage() {
         Administre las variables estándar que luego podrá seleccionar al crear procesos.
       </Typography>
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-        <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenNew}>
+        <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenNew} size="small">
           Nueva Variable
         </Button>
       </Box>

@@ -58,13 +58,13 @@ export default function Certificados() {
 										onClick={() => navigate(`/certificado/${lote.IdLote}`)}
 										className="bg-[#007c64] text-white text-sm px-4 py-2 rounded hover:bg-[#006554]"
 									>
-										📄 Certificado
+										Certificado
 									</button>
 									<button
 										onClick={() => navigate(`/certificado/${lote.IdLote}/qr`)}
 										className="bg-[#5A6865] text-white text-sm px-4 py-2 rounded hover:bg-[#5A6865]"
 									>
-										📲 Generar QR
+										Generar QR
 									</button>
 								</div>
 							</div>

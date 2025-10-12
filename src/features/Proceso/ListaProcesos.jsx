@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmDialog from "../../shared/components/DeleteConfirmDialog";
-import BackButton from "../../shared/components/BackButton";
+import { Add as AddIcon } from '@mui/icons-material';
+import { FiUploadCloud } from "react-icons/fi";
+import { Box, Container, Button, Typography, Grid, Card, CardMedia, CardContent, Alert, CircularProgress } from '@mui/material';
 import { getAllProcesos, getProcesoById, deleteProceso } from "./services/proceso.service";
-import Modal from "../../shared/components/Modal";
 
 export default function ListaProcesos() {
 	const [procesos, setProcesos] = useState([]);
@@ -86,17 +87,19 @@ export default function ListaProcesos() {
 				message="Esta acción eliminará el proceso de forma permanente."
 			/>
 
-			<div className="flex justify-between items-center mb-8">
-				<h2 className="text-3xl font-extrabold text-[#007c64]">
+			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				<Typography variant="h4" fontWeight={600}>
 					Procesos de Transformación
-				</h2>
-				<button
+				</Typography>
+				<Button
+					variant="contained"
+					startIcon={<AddIcon />}
 					onClick={() => navigate("/procesos/crear")}
-					className="bg-[#007c64] text-white px-5 py-2 rounded hover:bg-[#006554] transition"
+					size="small"
 				>
-					Crear proceso
-				</button>
-			</div>
+					Crear Proceso
+				</Button>
+			</Box>
 
 			{procesos.length === 0 ? (
 				<p className="text-gray-500 text-center">
