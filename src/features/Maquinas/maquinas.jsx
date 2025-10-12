@@ -1,20 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi"; // para ícono visual
-import { getAllMaquinas, createMaquina } from "./services/maquinas.service";
-import api from "../../shared/services/api";
+import { getAllMaquinas, createMaquina, uploadMaquinaImage } from "./services/maquinas.service";
+import { Box, Container, Button, Typography, Grid, Card, CardMedia, CardContent, Alert, CircularProgress } from '@mui/material';
+import { Add as AddIcon } from '@mui/icons-material';
+import { ModalForm } from '../../shared/components';
 import Modal from "../../shared/components/Modal";
 
 export default function Maquinas() {
 	const [maquinas, setMaquinas] = useState([]);
-	const [nombre, setNombre] = useState("");
-	const [imagen, setImagen] = useState(null);
-	const [imagenUrl, setImagenUrl] = useState("");
-	const [cargando, setCargando] = useState(false);
+	const [refresh, setRefresh] = useState(0);
+	const [modalOpen, setModalOpen] = useState(false);
+	const [loading, setLoading] = useState(false);
+	const [error, setError] = useState('');
+	const [success, setSuccess] = useState('');
+	const [uploadingImage, setUploadingImage] = useState(false);
 	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
 
 	useEffect(() => {
 		cargarMaquinas();
-	}, []);
+	}, [refresh]);
 
 	const cargarMaquinas = async () => {
 		try {
@@ -31,91 +35,97 @@ export default function Maquinas() {
 		}
 	};
 
-	const subirImagen = async (archivo) => {
-		if (!archivo) return;
-		const formData = new FormData();
-		formData.append("imagen", archivo);
-		setCargando(true);
+	const handleCreated = () => setRefresh(r => r + 1);
 
+	const handleOpenModal = () => {
+		setModalOpen(true);
+		setError('');
+		setSuccess('');
+	};
+
+	const handleCloseModal = () => {
+		setModalOpen(false);
+		setError('');
+		setSuccess('');
+	};
+
+	const handleImageUpload = async (file) => {
+		if (!file) return null;
+		
+		setUploadingImage(true);
 		try {
-			const response = await api.post("/maquinas/upload", formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data'
-				}
-			});
-			setImagenUrl(response.data.imageUrl);
-			setImagen(archivo);
+			const response = await uploadMaquinaImage(file);
+			return response.imageUrl;
 		} catch (error) {
 			console.error("Error al subir imagen:", error);
-			setModal({
-				isOpen: true,
-				title: "Error",
-				message: "Error al subir la imagen",
-				type: "error"
-			});
+			throw new Error("Error al subir la imagen");
 		} finally {
-			setCargando(false);
+			setUploadingImage(false);
 		}
 	};
 
-	// Maneja la selección de archivo desde el input oculto
-	const manejarSeleccionArchivo = (e) => {
-		const archivo = e.target.files[0];
-		if (archivo) {
-			subirImagen(archivo);
-		}
-	};
-
-	// Maneja la selección de archivo desde el botón
-	const manejarClickBotonSubir = () => {
-		const input = document.createElement('input');
-		input.type = 'file';
-		input.accept = 'image/*';
-		input.onchange = (e) => {
-			const archivo = e.target.files[0];
-			if (archivo) {
-				subirImagen(archivo);
-			}
-		};
-		input.click();
-	};
-
-	const guardarMaquina = async () => {
-		if (!nombre || !imagenUrl) {
-			setModal({
-				isOpen: true,
-				title: "Campos incompletos",
-				message: "Por favor completa todos los campos",
-				type: "warning"
-			});
-			return;
-		}
-
+	const handleSubmit = async (formData) => {
+		setLoading(true);
+		setError('');
+		setSuccess('');
+		
 		try {
-			await createMaquina({ nombre, imagenUrl });
-			setModal({
-				isOpen: true,
-				title: "Éxito",
-				message: "Máquina guardada",
-				type: "success"
+			let imagenUrl = formData.imagenUrl;
+			
+			// Si hay un archivo de imagen, subirlo primero
+			if (formData.imagenFile) {
+				imagenUrl = await handleImageUpload(formData.imagenFile);
+			}
+
+			await createMaquina({ 
+				nombre: formData.nombre.trim(), 
+				imagenUrl 
 			});
-			setNombre("");
-			setImagen(null);
-			setImagenUrl("");
-			cargarMaquinas();
-		} catch (error) {
-			console.error("Error al guardar máquina:", error);
-			setModal({
-				isOpen: true,
-				title: "Error",
-				message: "Error al guardar la máquina",
-				type: "error"
-			});
+			
+			setSuccess('Máquina creada exitosamente');
+			setTimeout(() => {
+				setSuccess('');
+				handleCloseModal();
+				handleCreated();
+			}, 2000);
+		} catch (err) {
+			setError(err.response?.data?.message || err.message || 'Error al crear la máquina');
+		} finally {
+			setLoading(false);
 		}
 	};
+
+	const validateForm = (formData) => {
+		const errors = {};
+		if (!formData.nombre?.trim()) {
+			errors.nombre = 'El nombre es obligatorio';
+		}
+		if (!formData.imagenFile) {
+			errors.imagenFile = 'La imagen es obligatoria';
+		}
+		return errors;
+	};
+
+	const fields = [
+		{
+			name: 'nombre',
+			label: 'Nombre de la máquina',
+			type: 'text',
+			required: true,
+			autoFocus: true,
+			placeholder: 'Ej: Balanza automática'
+		},
+		{
+			name: 'imagenFile',
+			label: 'Imagen de la máquina',
+			type: 'file',
+			required: true,
+			accept: 'image/*'
+		}
+	];
 
 	return (
-		<div className="p-4 min-h-screen bg-secondary">
+		<Container maxWidth={false} sx={{ py: 4 }}>
 			<Modal
 				isOpen={modal.isOpen}
 				onClose={() => setModal({ isOpen: false })}
@@ -125,96 +135,27 @@ export default function Maquinas() {
 				showConfirmButton={modal.showConfirmButton}
 			/>
 
-			{/* Header */}
-			<div className="mb-6">
-				<h2 className="text-3xl font-bold text-[#007c64]">
+			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+				<Typography variant="h4" fontWeight={600}>
 					Gestión de Máquinas
-				</h2>
-				<p className="text-secondary mt-2">
+				</Typography>
+				<Button
+					variant="contained"
+					startIcon={<AddIcon />}
+					onClick={handleOpenModal}
+					size="small"
+				>
+					Crear Nueva Máquina
+				</Button>
+			</Box>
+
+			<Box sx={{ mb: 3 }}>
+				<Typography variant="body1" color="text.secondary">
 					Administra y registra las máquinas del sistema
-				</p>
-			</div>
+				</Typography>
+			</Box>
 
-			{/* Fila 1: Formulario de creación - 2 columnas */}
-			<div className="grid grid-cols-2 gap-6 mb-8">
-				{/* Columna 1: Datos de la máquina */}
-				<div className="bg-white shadow rounded p-6">
-					<h3 className="text-lg font-semibold text-gray-800 mb-4">
-						Información de la Máquina
-					</h3>
-					
-					<div className="mb-4">
-						<label className="block font-medium text-gray-700 mb-2">
-							Nombre de la máquina
-						</label>
-						<input
-							type="text"
-							placeholder="Ej: Balanza automática"
-							value={nombre}
-							onChange={(e) => setNombre(e.target.value)}
-							className="w-full border p-3 rounded focus:outline-none focus:ring-2 focus:ring-[#007c64]"
-						/>
-					</div>
-
-					{imagenUrl && (
-						<div>
-							<label className="block font-medium text-gray-700 mb-2">
-								Previsualización
-							</label>
-							<div className="flex justify-center">
-								<img
-									src={imagenUrl}
-									alt="Preview"
-									className="w-48 h-48 object-contain rounded border shadow bg-white"
-								/>
-							</div>
-						</div>
-					)}
-				</div>
-
-				{/* Columna 2: Carga de imagen */}
-				<div className="bg-white shadow rounded p-6">
-					<h3 className="text-lg font-semibold text-gray-800 mb-4">
-						Imagen de la Máquina
-					</h3>
-
-					<label className="flex flex-col items-center justify-center p-8 border-2 border-dashed border-gray-400 rounded cursor-pointer hover:bg-gray-100 mb-4">
-						<FiUploadCloud className="text-5xl text-gray-500 mb-3" />
-						<p className="text-gray-600 text-center">
-							{cargando ? "Subiendo imagen..." : 
-							 imagen ? `Imagen cargada: ${imagen.name}` : 
-							 "Haz clic para seleccionar y subir una imagen"}
-						</p>
-						<input
-							type="file"
-							accept="image/*"
-							className="hidden"
-							onChange={manejarSeleccionArchivo}
-							disabled={cargando}
-						/>
-					</label>
-
-					<div className="space-y-3">
-						<button
-							onClick={manejarClickBotonSubir}
-							disabled={cargando}
-							className="w-full bg-blue-600 text-white px-4 py-3 rounded hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							{cargando ? "Subiendo..." : "Subir imagen"}
-						</button>
-
-						<button
-							onClick={guardarMaquina}
-							disabled={!nombre || !imagenUrl}
-							className="w-full bg-[#007c64] text-white px-4 py-3 rounded hover:bg-[#006554] transition disabled:opacity-50 disabled:cursor-not-allowed"
-						>
-							Guardar máquina	
-						</button>
-					</div>
-				</div>
-			</div>
-
-			{/* Fila 2: Máquinas registradas - 3 columnas iguales */}
+			{/* Lista de máquinas - Diseño original */}
 			<div className="bg-white shadow rounded p-6">
 				<h3 className="text-xl font-semibold text-gray-800 mb-6">
 					Máquinas registradas ({maquinas.length})
@@ -229,7 +170,7 @@ export default function Maquinas() {
 							No hay máquinas registradas
 						</p>
 						<p className="text-gray-400">
-							Agrega tu primera máquina usando el formulario de arriba
+							Agrega tu primera máquina usando el botón "Crear Nueva Máquina"
 						</p>
 					</div>
 				) : (
@@ -259,6 +200,21 @@ export default function Maquinas() {
 					</div>
 				)}
 			</div>
-		</div>
+
+			<ModalForm
+				isOpen={modalOpen}
+				onClose={handleCloseModal}
+				title="Crear Nueva Máquina"
+				fields={fields}
+				onSubmit={handleSubmit}
+				loading={loading || uploadingImage}
+				error={error}
+				success={success}
+				initialValues={{ nombre: '', imagenFile: null }}
+				validate={validateForm}
+				submitButtonText="Crear Máquina"
+				maxWidth="sm"
+			/>
+		</Container>
 	);
 }

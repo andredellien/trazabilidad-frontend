@@ -28,8 +28,8 @@ export default function Sidebar({ onCollapse }) {
 		{
 			title: "Inicio",
 			links: [
-				{ to: "/dashboard", label: "Dashboard", icon: <FiTruck />, admin:true},
-				{ to: "/dashboard-cliente", label: "Dashboard Cliente", icon: <FiTruck />, cliente:true},
+				{ to: "/dashboard", label: "Panel de Control", icon: <FiTruck />, admin:true},
+				{ to: "/dashboard-cliente", label: "Panel del Cliente", icon: <FiTruck />, cliente:true},
 			],
 		},
 		{

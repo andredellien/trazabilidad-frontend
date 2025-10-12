@@ -68,7 +68,7 @@ export default function LoteStats({ lotes }) {
   return (
     <Box sx={{ mb: 4 }}>
       <Typography variant="h6" gutterBottom color="primary" fontWeight="bold">
-        📊 Estadísticas de Lotes
+        Estadísticas de Lotes
       </Typography>
       
       <Grid container spacing={3}>

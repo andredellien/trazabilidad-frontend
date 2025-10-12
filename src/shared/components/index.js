@@ -7,6 +7,7 @@ export { default as Card } from './Card';
 export { default as Table } from './Table';
 export { default as Badge } from './Badge';
 export { default as Modal } from './Modal';
+export { default as ModalForm } from './ModalForm';
 export { default as Layout } from './layout';
 export { default as Sidebar } from './sidebar';
 export { default as ProtectedRoute } from './ProtectedRoute';

@@ -14,73 +14,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   CircularProgress,
   Alert
 } from '@mui/material';
 import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { ModalForm } from '../../shared/components';
 import useVariablesEstandar from './hooks/useVariablesEstandar';
-
-function VariableFormDialog({ open, onClose, onSave, initialData }) {
-  const [form, setForm] = useState({ Nombre: '', Unidad: '', Descripcion: '' });
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    if (initialData) setForm(initialData);
-    else setForm({ Nombre: '', Unidad: '', Descripcion: '' });
-  }, [initialData, open]);
-
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleSubmit = () => {
-    if (!form.Nombre.trim()) {
-      setError('El nombre es obligatorio');
-      return;
-    }
-    setError('');
-    onSave(form);
-  };
-
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle>{initialData ? 'Editar Variable' : 'Nueva Variable'}</DialogTitle>
-      <DialogContent>
-        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-        <TextField
-          label="Nombre"
-          name="Nombre"
-          value={form.Nombre}
-          onChange={handleChange}
-          fullWidth
-          required
-          margin="normal"
-        />
-        <TextField
-          label="Unidad"
-          name="Unidad"
-          value={form.Unidad}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Descripción"
-          name="Descripcion"
-          value={form.Descripcion}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancelar</Button>
-        <Button onClick={handleSubmit} variant="contained">Guardar</Button>
-      </DialogActions>
-    </Dialog>
-  );
-}
 
 export default function VariablesEstandarPage() {
   const {
@@ -93,11 +32,12 @@ export default function VariablesEstandarPage() {
     deleteVariableEstandar
   } = useVariablesEstandar();
 
-  const [dialogOpen, setDialogOpen] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
   const [editData, setEditData] = useState(null);
   const [deleteId, setDeleteId] = useState(null);
   const [actionLoading, setActionLoading] = useState(false);
   const [actionError, setActionError] = useState('');
+  const [success, setSuccess] = useState('');
 
   useEffect(() => {
     fetchVariables();
@@ -105,26 +45,46 @@ export default function VariablesEstandarPage() {
 
   const handleOpenNew = () => {
     setEditData(null);
-    setDialogOpen(true);
+    setModalOpen(true);
+    setActionError('');
+    setSuccess('');
   };
 
   const handleOpenEdit = (variable) => {
     setEditData(variable);
-    setDialogOpen(true);
+    setModalOpen(true);
+    setActionError('');
+    setSuccess('');
   };
 
-  const handleSave = async (data) => {
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setEditData(null);
+    setActionError('');
+    setSuccess('');
+  };
+
+  const handleSubmit = async (formData) => {
     setActionLoading(true);
     setActionError('');
+    setSuccess('');
+    
     try {
       if (editData) {
-        await updateVariableEstandar(editData.IdVariableEstandar, data);
+        await updateVariableEstandar(editData.IdVariableEstandar, formData);
+        setSuccess('Variable estándar actualizada exitosamente');
       } else {
-        await createVariableEstandar(data);
+        await createVariableEstandar(formData);
+        setSuccess('Variable estándar creada exitosamente');
       }
-      setDialogOpen(false);
+      
+      setTimeout(() => {
+        setSuccess('');
+        handleCloseModal();
+        fetchVariables(); // Refrescar la lista
+      }, 2000);
     } catch (err) {
-      setActionError(err.response?.data?.message || 'Error al guardar');
+      setActionError(err.response?.data?.message || 'Error al guardar la variable estándar');
     } finally {
       setActionLoading(false);
     }
@@ -142,6 +102,35 @@ export default function VariablesEstandarPage() {
       setActionLoading(false);
     }
   };
+
+  const validateForm = (formData) => {
+    const errors = {};
+    if (!formData.Nombre?.trim()) {
+      errors.Nombre = 'El nombre es obligatorio';
+    }
+    return errors;
+  };
+
+  const fields = [
+    {
+      name: 'Nombre',
+      label: 'Nombre',
+      type: 'text',
+      required: true,
+      autoFocus: true
+    },
+    {
+      name: 'Unidad',
+      label: 'Unidad',
+      type: 'text'
+    },
+    {
+      name: 'Descripcion',
+      label: 'Descripción',
+      type: 'textarea',
+      rows: 3
+    }
+  ];
 
   return (
     <Box sx={{ maxWidth: 700, mx: 'auto', py: 4 }}>
@@ -201,12 +190,20 @@ export default function VariablesEstandarPage() {
           </TableBody>
         </Table>
       </Paper>
-      {/* Dialogo de alta/edición */}
-      <VariableFormDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onSave={handleSave}
-        initialData={editData}
+      {/* ModalForm para crear/editar variables */}
+      <ModalForm
+        isOpen={modalOpen}
+        onClose={handleCloseModal}
+        title={editData ? 'Editar Variable Estándar' : 'Nueva Variable Estándar'}
+        fields={fields}
+        onSubmit={handleSubmit}
+        loading={actionLoading}
+        error={actionError}
+        success={success}
+        initialValues={editData || { Nombre: '', Unidad: '', Descripcion: '' }}
+        validate={validateForm}
+        submitButtonText={editData ? 'Actualizar' : 'Crear'}
+        maxWidth="sm"
       />
       {/* Dialogo de confirmación de borrado */}
       <Dialog open={!!deleteId} onClose={() => setDeleteId(null)}>

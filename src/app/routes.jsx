@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import DashboardPage from "../features/Dashboard/DashboardPage";
-import MateriaPrimaPage from "../features/MateriaPrima/MateriaPrimaPage";
 import LotePage from "../features/GestionLotes/GestionLotesPage";
 import CodigoQRPage from "../features/CodigoQR/CodigoQRPage";
 import LoginForm from "../features/Auth/components/LoginForm";

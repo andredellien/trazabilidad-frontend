@@ -84,7 +84,7 @@ export default function MateriaPrimaBaseForm({ onCreated }) {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%', p: 1, boxShadow: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
+    <Box component="form" onSubmit={handleSubmit} sx={{ maxWidth: 400, mx: 'auto', p: 3, boxShadow: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
       <Typography variant="h5" mb={2} fontWeight={600} align="center">
         Crear Materia Prima Base
       </Typography>
