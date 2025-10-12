@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, Alert, Button } from '@mui/material';
+import { StandardList } from '../../../shared/components';
 import { getAllMateriasPrimas } from '../services/materiaPrima.service';
 
 export default function RecepcionMateriaPrimaList({ onRecepcionar, refresh }) {
@@ -25,51 +25,53 @@ export default function RecepcionMateriaPrimaList({ onRecepcionar, refresh }) {
     // eslint-disable-next-line
   }, [refresh]);
 
+  // Configuración de columnas para StandardList
+  const columns = [
+    { key: 'Nombre', label: 'Nombre', align: 'left' },
+    { key: 'Cantidad', label: 'Cantidad', align: 'right', type: 'number' },
+    { key: 'Unidad', label: 'Unidad', align: 'center' },
+    { key: 'Proveedor', label: 'Proveedor', align: 'left' },
+    { key: 'FechaRecepcion', label: 'Fecha Solicitud', align: 'center', type: 'date' },
+    { key: 'actions', label: 'Acción', align: 'center', type: 'actions' }
+  ];
+
+  // Configuración de acciones
+  const actions = [
+    {
+      type: 'view',
+      tooltip: 'Recepcionar',
+      label: 'Recepcionar'
+    }
+  ];
+
+  // Manejar acciones
+  const handleAction = (actionType, row) => {
+    if (actionType === 'view' && onRecepcionar) {
+      onRecepcionar(row);
+    }
+  };
+
+  // Asegurarse de que data sea siempre un array
+  const safeData = Array.isArray(data) ? data : [];
+
   return (
-    <Box sx={{ maxWidth: 900, mx: 'auto', mt: 4 }}>
-      <Typography variant="h6" mb={2} fontWeight={600} align="center">
-        Recepción de Materia Prima (Solicitudes Pendientes)
-      </Typography>
-      {loading ? (
-        <Box display="flex" justifyContent="center" my={4}><CircularProgress /></Box>
-      ) : error ? (
-        <Alert severity="error">{error}</Alert>
-      ) : (
-        <Paper elevation={2}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Cantidad</TableCell>
-                <TableCell>Unidad</TableCell>
-                <TableCell>Proveedor</TableCell>
-                <TableCell>Fecha Solicitud</TableCell>
-                <TableCell align="center">Acción</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">No hay solicitudes pendientes.</TableCell>
-                </TableRow>
-              ) : data.map(row => (
-                <TableRow key={row.IdMateriaPrima}>
-                  <TableCell>{row.Nombre}</TableCell>
-                  <TableCell>{row.Cantidad}</TableCell>
-                  <TableCell>{row.Unidad}</TableCell>
-                  <TableCell>{row.Proveedor}</TableCell>
-                  <TableCell>{row.FechaRecepcion ? new Date(row.FechaRecepcion).toLocaleDateString() : '-'}</TableCell>
-                  <TableCell align="center">
-                    <Button variant="contained" color="primary" size="small" onClick={() => onRecepcionar(row)}>
-                      Recepcionar
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      )}
-    </Box>
+    <StandardList
+      data={safeData}
+      columns={columns}
+      actions={actions}
+      loading={loading}
+      error={error}
+      title="Recepción de Materia Prima (Solicitudes Pendientes)"
+      emptyMessage="No hay solicitudes pendientes"
+      onAction={handleAction}
+      showSearch={false}
+      sx={{ 
+        width: '100%', 
+        p: 3, 
+        boxShadow: 3, 
+        borderRadius: 2, 
+        bgcolor: 'background.paper' 
+      }}
+    />
   );
 } 

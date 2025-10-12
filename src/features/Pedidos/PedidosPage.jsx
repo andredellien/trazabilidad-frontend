@@ -119,8 +119,8 @@ export default function PedidosPage() {
     );
 
     return (
-        <Container maxWidth={false} sx={{ py: 4 }}>
-            <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Box sx={{ mb: 3 }}>
                 <Typography variant="h4" fontWeight={600}>
                     Mis Pedidos
                 </Typography>

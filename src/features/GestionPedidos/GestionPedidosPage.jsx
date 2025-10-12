@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Box, Container, Typography } from '@mui/material';
 import useUser from '../Auth/hooks/useUser';
 import usePedidos from './hooks/usePedidos';
 import PedidoList from './components/PedidoList';
@@ -17,25 +18,35 @@ export default function GestionPedidosPage() {
 
     if (user?.Cargo !== 'admin') {
         return (
-            <div className="container mx-auto px-4">
-                <div className="error-container">
-                    No tienes permisos para acceder a esta sección
-                </div>
-            </div>
+            <Container maxWidth="lg" sx={{ py: 4 }}>
+                <Box sx={{ p: 3, textAlign: 'center' }}>
+                    <Typography variant="h6" color="error">
+                        No tienes permisos para acceder a esta sección
+                    </Typography>
+                </Box>
+            </Container>
         );
     }
 
     return (
-        <div className="container mx-auto px-4">
-            <div className="space-y-8">
-                <h1 className="text-2xl font-bold mb-6">Gestión de Pedidos</h1>
-                
-                <PedidoList 
-                    pedidos={pedidos}
-                    loading={loading}
-                    error={error}
-                />
-            </div>
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="h4" fontWeight={600}>
+                    Gestión de Pedidos
+                </Typography>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="body1" color="text.secondary">
+                    Administra y gestiona todos los pedidos del sistema
+                </Typography>
+            </Box>
+            
+            <PedidoList 
+                pedidos={pedidos}
+                loading={loading}
+                error={error}
+            />
 
             <Modal
                 isOpen={modal.isOpen}
@@ -45,6 +56,6 @@ export default function GestionPedidosPage() {
                 type={modal.type}
                 showConfirmButton={modal.showConfirmButton}
             />
-        </div>
+        </Container>
     );
 } 

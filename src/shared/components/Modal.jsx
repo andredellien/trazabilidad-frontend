@@ -26,7 +26,7 @@ export default function Modal({ isOpen, onClose, onConfirm, title, message, type
       case 'success':
         return <CheckCircle className="w-6 h-6" aria-hidden="true" />;
       case 'error':
-        return null; // No icon in header for error
+        return null;
       case 'warning':
         return <AlertTriangle className="w-6 h-6" aria-hidden="true" />;
       default:
@@ -74,11 +74,7 @@ export default function Modal({ isOpen, onClose, onConfirm, title, message, type
             onClick={onClose}
             className="modal-close"
           >
-            {type === 'error' ? (
-              <XCircle className="w-5 h-5" aria-hidden="true" />
-            ) : (
-              '×'
-            )}
+            {type === 'error' ? (<XCircle className="w-6 h-6" aria-hidden="true" />) : ('x')}
           </button>
         </div>
         

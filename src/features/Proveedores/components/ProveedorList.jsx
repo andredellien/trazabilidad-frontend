@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Tooltip, Button, Box, Typography } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
-import { ModalForm } from "../../../shared/components";
+import { Button, Box } from "@mui/material";
+import { Add as AddIcon } from "@mui/icons-material";
+import { StandardList, ModalForm } from "../../../shared/components";
 
 export default function ProveedorList({ proveedores, onUpdate, onDelete, onCreate }) {
     const [selectedProveedor, setSelectedProveedor] = useState(null);
@@ -110,6 +110,40 @@ export default function ProveedorList({ proveedores, onUpdate, onDelete, onCreat
         }
     ];
 
+    // Configuración de columnas para StandardList
+    const columns = [
+        { key: 'IdProveedor', label: 'ID', align: 'center' },
+        { key: 'Nombre', label: 'Nombre', align: 'left' },
+        { key: 'Contacto', label: 'Contacto', align: 'left' },
+        { key: 'Telefono', label: 'Teléfono', align: 'left' },
+        { key: 'Email', label: 'Email', align: 'left' },
+        { key: 'Direccion', label: 'Dirección', align: 'left' },
+        { key: 'actions', label: 'Acciones', align: 'center', type: 'actions' }
+    ];
+
+    // Configuración de acciones
+    const actions = [
+        {
+            type: 'edit',
+            tooltip: 'Editar proveedor',
+            label: 'Editar'
+        },
+        {
+            type: 'delete',
+            tooltip: 'Eliminar proveedor',
+            label: 'Eliminar'
+        }
+    ];
+
+    // Manejar acciones
+    const handleAction = (actionType, row) => {
+        if (actionType === 'edit') {
+            handleEdit(row);
+        } else if (actionType === 'delete') {
+            onDelete(row.IdProveedor);
+        }
+    };
+
     return (
         <Box>
             <Box display="flex" justifyContent="flex-end" mb={2}>
@@ -117,45 +151,23 @@ export default function ProveedorList({ proveedores, onUpdate, onDelete, onCreat
                     Nuevo Proveedor
                 </Button>
             </Box>
-            <Paper sx={{ width: '100%', overflowX: 'auto' }}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Nombre</TableCell>
-                            <TableCell>Contacto</TableCell>
-                            <TableCell>Teléfono</TableCell>
-                            <TableCell>Email</TableCell>
-                            <TableCell>Dirección</TableCell>
-                            <TableCell align="center">Acciones</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {proveedores.map((proveedor) => (
-                            <TableRow key={proveedor.IdProveedor} hover>
-                                <TableCell>{proveedor.IdProveedor}</TableCell>
-                                <TableCell>{proveedor.Nombre}</TableCell>
-                                <TableCell>{proveedor.Contacto || "-"}</TableCell>
-                                <TableCell>{proveedor.Telefono || "-"}</TableCell>
-                                <TableCell>{proveedor.Email || "-"}</TableCell>
-                                <TableCell>{proveedor.Direccion || "-"}</TableCell>
-                                <TableCell align="center">
-                                    <Tooltip title="Editar">
-                                        <IconButton color="primary" onClick={() => handleEdit(proveedor)}>
-                                            <EditIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                    <Tooltip title="Eliminar">
-                                        <IconButton color="error" onClick={() => onDelete(proveedor.IdProveedor)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </Paper>
+            
+            <StandardList
+                data={proveedores}
+                columns={columns}
+                actions={actions}
+                title=""
+                emptyMessage="No hay proveedores registrados"
+                onAction={handleAction}
+                showSearch={false}
+                sx={{ 
+                    width: '100%', 
+                    p: 3, 
+                    boxShadow: 3, 
+                    borderRadius: 2, 
+                    bgcolor: 'background.paper' 
+                }}
+            />
 
             <ModalForm
                 isOpen={showForm}

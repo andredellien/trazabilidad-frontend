@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { getLotesAlmacenados } from "../services/lotes.service";
 import { getAlmacenajesByLote } from "../services/almacenaje.service";
-import { Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Tooltip, Button, Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography, CircularProgress } from "@mui/material";
-import { Visibility as VisibilityIcon } from "@mui/icons-material";
+import { Button, Dialog, DialogTitle, DialogContent, DialogActions, Box, Typography } from "@mui/material";
+import { StandardList } from '../../../shared/components';
 import { formatDate } from '../../../shared/utils/formatDate';
 
 const LotesAlmacenadosSection = () => {
@@ -41,41 +41,53 @@ const LotesAlmacenadosSection = () => {
     }
   };
 
+  // Configuración de columnas para StandardList
+  const columns = [
+    { key: 'IdLote', label: 'ID', align: 'center' },
+    { key: 'Nombre', label: 'Nombre', align: 'left' },
+    { key: 'FechaCreacion', label: 'Fecha', align: 'center', type: 'date' },
+    { key: 'NombreCliente', label: 'Cliente', align: 'left' },
+    { key: 'actions', label: 'Acción', align: 'center', type: 'actions' }
+  ];
+
+  // Configuración de acciones
+  const actions = [
+    {
+      type: 'view',
+      tooltip: 'Ver almacenajes',
+      label: 'Ver'
+    }
+  ];
+
+  // Manejar acciones
+  const handleAction = (actionType, row) => {
+    if (actionType === 'view') {
+      handleSelectLote(row);
+    }
+  };
+
   return (
     <Box>
-      <Typography variant="h5" fontWeight="bold" mb={2}>Lotes Almacenados</Typography>
-      {loading && <Box display="flex" justifyContent="center" my={2}><CircularProgress /></Box>}
-      {error && <Typography color="error" mb={2}>{error}</Typography>}
-      <Paper sx={{ width: '100%', overflowX: 'auto', mb: 2 }}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>ID</TableCell>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Fecha</TableCell>
-              <TableCell>Cliente</TableCell>
-              <TableCell align="center">Acción</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {lotes.map((lote) => (
-              <TableRow key={lote.IdLote} hover>
-                <TableCell>{lote.IdLote}</TableCell>
-                <TableCell>{lote.Nombre}</TableCell>
-                <TableCell>{formatDate(lote.FechaCreacion)}</TableCell>
-                <TableCell>{lote.NombreCliente}</TableCell>
-                <TableCell align="center">
-                  <Tooltip title="Ver almacenajes">
-                    <IconButton color="primary" onClick={() => handleSelectLote(lote)}>
-                      <VisibilityIcon />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Paper>
+      <StandardList
+        data={lotes}
+        columns={columns}
+        actions={actions}
+        loading={loading}
+        error={error}
+        title="Lotes Almacenados"
+        emptyMessage="No hay lotes almacenados"
+        onAction={handleAction}
+        showSearch={false}
+        sx={{ 
+          width: '100%', 
+          p: 3, 
+          boxShadow: 3, 
+          borderRadius: 2, 
+          bgcolor: 'background.paper',
+          mb: 2
+        }}
+      />
+
       <Dialog open={showModal && !!selectedLote} onClose={() => setShowModal(false)} maxWidth="sm" fullWidth>
         <DialogTitle>Almacenajes para Lote #{selectedLote?.IdLote}</DialogTitle>
         <DialogContent>

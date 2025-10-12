@@ -18,7 +18,7 @@ export default function useProveedores() {
             setProveedores(data);
             setError(null);
         } catch (err) {
-            setError("Error al cargar proveedores");
+            setError("No se pudo conectar con el servidor. Verifique su conexión a internet e intente nuevamente.");
             console.error("Error en fetchProveedores:", err);
         } finally {
             setLoading(false);

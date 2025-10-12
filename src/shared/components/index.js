@@ -11,3 +11,4 @@ export { default as ModalForm } from './ModalForm';
 export { default as Layout } from './layout';
 export { default as Sidebar } from './sidebar';
 export { default as ProtectedRoute } from './ProtectedRoute';
+export { default as StandardList } from './StandardList';

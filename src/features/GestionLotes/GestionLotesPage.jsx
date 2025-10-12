@@ -192,18 +192,15 @@ export default function GestionLotesPage() {
 
 	return (
 		<Container maxWidth="lg" sx={{ py: 4 }}>
-			<div className="text-center mb-8">
-				<h1 className="text-4xl font-bold text-primary mb-4">
-					Gestión de Lotes
-				</h1>
-				<p className="text-lg text-secondary">
-					Administre la creación y seguimiento de lotes de producción
-				</p>
-			</div>
-
-			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+			<Box sx={{ mb: 3 }}>
 				<Typography variant="h4" fontWeight={600}>
-					Lotes de Producción
+					Gestión de Lotes
+				</Typography>
+			</Box>
+
+			<Box sx={{ mb: 3 }}>
+				<Typography variant="body1" color="text.secondary">
+					Administre la creación y seguimiento de lotes de producción
 				</Typography>
 			</Box>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, Alert, Chip } from '@mui/material';
+import { StandardList } from '../../../shared/components';
 import { getAllMateriasPrimas } from '../services/materiaPrima.service';
 
 export default function SolicitudesMateriaPrimaList({ refresh }) {
@@ -26,49 +26,35 @@ export default function SolicitudesMateriaPrimaList({ refresh }) {
     // eslint-disable-next-line
   }, [refresh]);
 
+  // Configuración de columnas para StandardList
+  const columns = [
+    { key: 'Nombre', label: 'Nombre', align: 'left' },
+    { key: 'Cantidad', label: 'Cantidad', align: 'right', type: 'number' },
+    { key: 'Unidad', label: 'Unidad', align: 'center' },
+    { key: 'Proveedor', label: 'Proveedor', align: 'left' },
+    { key: 'FechaRecepcion', label: 'Fecha Solicitud', align: 'center', type: 'date' },
+    { key: 'Estado', label: 'Estado', align: 'center', type: 'status' }
+  ];
+
+  // Asegurarse de que data sea siempre un array
+  const safeData = Array.isArray(data) ? data : [];
+
   return (
-    <Box sx={{ maxWidth: 800, mx: 'auto', mt: 4 }}>
-      <Typography variant="h6" mb={2} fontWeight={600} align="center">
-        Solicitudes de Materia Prima (Pendientes)
-      </Typography>
-      {loading ? (
-        <Box display="flex" justifyContent="center" my={4}><CircularProgress /></Box>
-      ) : error ? (
-        <Alert severity="error">{error}</Alert>
-      ) : (
-        <Paper elevation={2}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Cantidad</TableCell>
-                <TableCell>Unidad</TableCell>
-                <TableCell>Proveedor</TableCell>
-                <TableCell>Fecha Solicitud</TableCell>
-                <TableCell>Estado</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {data.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center">No hay solicitudes pendientes.</TableCell>
-                </TableRow>
-              ) : data.map(row => (
-                <TableRow key={row.IdMateriaPrima}>
-                  <TableCell>{row.Nombre}</TableCell>
-                  <TableCell>{row.Cantidad}</TableCell>
-                  <TableCell>{row.Unidad}</TableCell>
-                  <TableCell>{row.Proveedor}</TableCell>
-                  <TableCell>{row.FechaRecepcion ? new Date(row.FechaRecepcion).toLocaleDateString() : '-'}</TableCell>
-                  <TableCell>
-                    <Chip label={row.Estado} color="warning" size="small" />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      )}
-    </Box>
+    <StandardList
+      data={safeData}
+      columns={columns}
+      loading={loading}
+      error={error}
+      title="Solicitudes de Materia Prima (Pendientes)"
+      emptyMessage="No hay solicitudes pendientes"
+      showSearch={false}
+      sx={{ 
+        width: '100%', 
+        p: 3, 
+        boxShadow: 3, 
+        borderRadius: 2, 
+        bgcolor: 'background.paper' 
+      }}
+    />
   );
 } 

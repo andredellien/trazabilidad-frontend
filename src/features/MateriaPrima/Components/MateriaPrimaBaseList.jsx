@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Paper, Table, TableHead, TableRow, TableCell, TableBody, CircularProgress, Alert, Button } from '@mui/material';
+import { StandardList } from '../../../shared/components';
 import { getAllMateriaPrimaBase } from '../services/materiaPrima.service';
 
 export default function MateriaPrimaBaseList({ refresh, onShowLog }) {
@@ -25,56 +25,51 @@ export default function MateriaPrimaBaseList({ refresh, onShowLog }) {
     // eslint-disable-next-line
   }, [refresh]);
 
+  // Configuración de columnas para StandardList
+  const columns = [
+    { key: 'Nombre', label: 'Nombre', align: 'left' },
+    { key: 'Unidad', label: 'Unidad', align: 'center' },
+    { key: 'Cantidad', label: 'Cantidad', align: 'right', type: 'number' },
+    { key: 'actions', label: 'Registros', align: 'center', type: 'actions' }
+  ];
+
+  // Configuración de acciones
+  const actions = [
+    {
+      type: 'view',
+      tooltip: 'Ver Registro',
+      label: 'Ver Registro'
+    }
+  ];
+
+  // Manejar acciones
+  const handleAction = (actionType, row) => {
+    if (actionType === 'view' && onShowLog) {
+      onShowLog(row);
+    }
+  };
+
   // Asegurarse de que data sea siempre un array
   const safeData = Array.isArray(data) ? data : [];
 
   return (
-    <Box sx={{ width: '100%', p: 3, boxShadow: 3, borderRadius: 2, bgcolor: 'background.paper' }}>
-      <Typography variant="h5" mb={2} fontWeight={600} align="center">
-        Materias Primas Base Registradas
-      </Typography>
-      {loading ? (
-        <Box display="flex" justifyContent="center" my={4}><CircularProgress /></Box>
-      ) : error ? (
-        <Alert severity="error">{error}</Alert>
-      ) : (
-        <Paper elevation={0} sx={{ boxShadow: 'none', bgcolor: 'transparent', width: '100%' }}>
-          <Table sx={{ width: '100%' }}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Nombre</TableCell>
-                <TableCell>Unidad</TableCell>
-                <TableCell align="right">Cantidad</TableCell>
-                <TableCell align="center">Registros</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {safeData.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">No hay materias primas base registradas.</TableCell>
-                </TableRow>
-              ) : safeData.map(row => (
-                <TableRow key={row.IdMateriaPrimaBase}>
-                  <TableCell>{row.Nombre}</TableCell>
-                  <TableCell>{row.Unidad}</TableCell>
-                  <TableCell align="right">{row.Cantidad}</TableCell>
-                  <TableCell align="center">
-                    <Button 
-                      variant="contained" 
-                      color="primary" 
-                      size="small" 
-                      onClick={() => onShowLog && onShowLog(row)}
-                      sx={{ minWidth: 120 }}
-                    >
-                      Ver Registro
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </Paper>
-      )}
-    </Box>
+    <StandardList
+      data={safeData}
+      columns={columns}
+      actions={actions}
+      loading={loading}
+      error={error}
+      title="Materias Primas Base Registradas"
+      emptyMessage="No hay materias primas base registradas"
+      onAction={handleAction}
+      showSearch={false}
+      sx={{ 
+        width: '100%', 
+        p: 3, 
+        boxShadow: 3, 
+        borderRadius: 2, 
+        bgcolor: 'background.paper' 
+      }}
+    />
   );
 } 

@@ -2,12 +2,9 @@ import React, { useState } from "react";
 import useProveedores from "../hooks/useProveedores";
 import ProveedorList from "../components/ProveedorList";
 import { toast } from "react-toastify";
-import { FiTruck } from "react-icons/fi";
+import { Container, Box, Typography } from "@mui/material";
 import Alert from "../../../shared/components/Alert";
-import Card from "../../../shared/components/Card";
 import DeleteConfirmDialog from "../../../shared/components/DeleteConfirmDialog";
-import BackButton from "../../../shared/components/BackButton";
-import "../styles/Proveedores.css";
 
 export default function ProveedoresPage() {
     const {
@@ -24,19 +21,21 @@ export default function ProveedoresPage() {
 
     if (loading) {
         return (
-            <div className="flex justify-center items-center min-h-screen">
-                <div className="text-primary text-lg">Cargando proveedores...</div>
-            </div>
+            <Container maxWidth="lg" sx={{ py: 4 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 200 }}>
+                    <Typography>Cargando proveedores...</Typography>
+                </Box>
+            </Container>
         );
     }
 
     if (error) {
         return (
-            <div className="p-6">
+            <Container maxWidth="lg" sx={{ py: 4 }}>
                 <Alert type="error" title="Error">
                     {error}
                 </Alert>
-            </div>
+            </Container>
         );
     }
 
@@ -77,25 +76,26 @@ export default function ProveedoresPage() {
     };
 
     return (
-        <div className="p-6 max-w-7xl mx-auto">
-            <div className="text-center mb-8">
-                <h1 className="text-4xl font-bold text-primary mb-4 flex items-center justify-center gap-3">
-                    <FiTruck className="text-4xl" />
+        <Container maxWidth="lg" sx={{ py: 4 }}>
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="h4" fontWeight={600}>
                     Gestión de Proveedores
-                </h1>
-                <p className="text-lg text-secondary">
+                </Typography>
+            </Box>
+
+            <Box sx={{ mb: 3 }}>
+                <Typography variant="body1" color="text.secondary">
                     Administre la información de sus proveedores
-                </p>
-            </div>
+                </Typography>
+            </Box>
             
-            <Card>
-                <ProveedorList
-                    proveedores={proveedores}
-                    onUpdate={handleUpdateProveedor}
-                    onDelete={handleDeleteProveedor}
-                    onCreate={handleCreateProveedor}
-                />
-            </Card>
+            <ProveedorList
+                proveedores={proveedores}
+                onUpdate={handleUpdateProveedor}
+                onDelete={handleDeleteProveedor}
+                onCreate={handleCreateProveedor}
+            />
+            
             <DeleteConfirmDialog
                 open={!!deleteId}
                 onClose={() => setDeleteId(null)}
@@ -105,6 +105,6 @@ export default function ProveedoresPage() {
                 message="Esta acción eliminará el proveedor de forma permanente."
                 confirmLabel="Eliminar"
             />
-        </div>
+        </Container>
     );
 } 

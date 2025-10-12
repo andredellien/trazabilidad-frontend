@@ -2,23 +2,17 @@ import React, { useEffect, useState } from 'react';
 import {
   Box,
   Typography,
-  Paper,
-  Table,
-  TableHead,
-  TableRow,
-  TableCell,
-  TableBody,
   Button,
-  IconButton,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
   CircularProgress,
-  Alert
+  Alert,
+  Container
 } from '@mui/material';
-import { Add as AddIcon, Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { ModalForm } from '../../shared/components';
+import { Add as AddIcon } from '@mui/icons-material';
+import { StandardList, ModalForm } from '../../shared/components';
 import useVariablesEstandar from './hooks/useVariablesEstandar';
 
 export default function VariablesEstandarPage() {
@@ -132,64 +126,79 @@ export default function VariablesEstandarPage() {
     }
   ];
 
+  // Configuración de columnas para StandardList
+  const columns = [
+    { key: 'Nombre', label: 'Nombre', align: 'left' },
+    { key: 'Unidad', label: 'Unidad', align: 'center' },
+    { key: 'Descripcion', label: 'Descripción', align: 'left' },
+    { key: 'actions', label: 'Acciones', align: 'center', type: 'actions' }
+  ];
+
+  // Configuración de acciones
+  const actions = [
+    {
+      type: 'edit',
+      tooltip: 'Editar variable estándar',
+      label: 'Editar'
+    },
+    {
+      type: 'delete',
+      tooltip: 'Eliminar variable estándar',
+      label: 'Eliminar'
+    }
+  ];
+
+  // Manejar acciones
+  const handleAction = (actionType, row) => {
+    if (actionType === 'edit') {
+      handleOpenEdit(row);
+    } else if (actionType === 'delete') {
+      setDeleteId(row.IdVariableEstandar);
+    }
+  };
+
   return (
-    <Box sx={{ maxWidth: 700, mx: 'auto', py: 4 }}>
-      <Typography variant="h4" fontWeight={700} color="primary" align="center" gutterBottom>
-        Variables Estándar
-      </Typography>
-      <Typography variant="body1" color="text.secondary" align="center" sx={{ mb: 3 }}>
-        Administre las variables estándar que luego podrá seleccionar al crear procesos.
-      </Typography>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h4" fontWeight={600}>
+          Variables Estándar
+        </Typography>
+      </Box>
+
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="body1" color="text.secondary">
+          Administre las variables estándar que luego podrá seleccionar al crear procesos
+        </Typography>
+      </Box>
+
       <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
         <Button variant="contained" startIcon={<AddIcon />} onClick={handleOpenNew} size="small">
           Nueva Variable
         </Button>
       </Box>
+
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {actionError && <Alert severity="error" sx={{ mb: 2 }}>{actionError}</Alert>}
-      <Paper elevation={2}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Nombre</TableCell>
-              <TableCell>Unidad</TableCell>
-              <TableCell>Descripción</TableCell>
-              <TableCell align="center">Acciones</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {loading ? (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  <CircularProgress size={28} />
-                </TableCell>
-              </TableRow>
-            ) : variables.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={4} align="center">
-                  No hay variables registradas.
-                </TableCell>
-              </TableRow>
-            ) : (
-              variables.map(variable => (
-                <TableRow key={variable.IdVariableEstandar}>
-                  <TableCell>{variable.Nombre}</TableCell>
-                  <TableCell>{variable.Unidad}</TableCell>
-                  <TableCell>{variable.Descripcion}</TableCell>
-                  <TableCell align="center">
-                    <IconButton color="primary" onClick={() => handleOpenEdit(variable)}>
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => setDeleteId(variable.IdVariableEstandar)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
-      </Paper>
+
+      <StandardList
+        data={variables}
+        columns={columns}
+        actions={actions}
+        loading={loading}
+        error={error}
+        title=""
+        emptyMessage="No hay variables registradas"
+        onAction={handleAction}
+        showSearch={false}
+        sx={{ 
+          width: '100%', 
+          p: 3, 
+          boxShadow: 3, 
+          borderRadius: 2, 
+          bgcolor: 'background.paper' 
+        }}
+      />
+
       {/* ModalForm para crear/editar variables */}
       <ModalForm
         isOpen={modalOpen}
@@ -205,6 +214,7 @@ export default function VariablesEstandarPage() {
         submitButtonText={editData ? 'Actualizar' : 'Crear'}
         maxWidth="sm"
       />
+
       {/* Dialogo de confirmación de borrado */}
       <Dialog open={!!deleteId} onClose={() => setDeleteId(null)}>
         <DialogTitle>¿Eliminar variable estándar?</DialogTitle>
@@ -218,6 +228,6 @@ export default function VariablesEstandarPage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Box>
+    </Container>
   );
 } 

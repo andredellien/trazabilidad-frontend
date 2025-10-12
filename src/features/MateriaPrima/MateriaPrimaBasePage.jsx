@@ -130,7 +130,7 @@ export default function MateriaPrimaBasePage() {
   ];
 
   return (
-    <Container maxWidth={false} sx={{ py: 4 }}>
+    <Container maxWidth="lg" sx={{ py: 4 }}>
       <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Typography variant="h4" fontWeight={600}>
           Gestión de Materias Primas Base
