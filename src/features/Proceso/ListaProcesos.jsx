@@ -1,15 +1,37 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import DeleteConfirmDialog from "../../shared/components/DeleteConfirmDialog";
-import { Add as AddIcon } from '@mui/icons-material';
+import { Add as AddIcon } from "@mui/icons-material";
 import { FiUploadCloud } from "react-icons/fi";
-import { Box, Container, Button, Typography, Grid, Card, CardMedia, CardContent, Alert, CircularProgress } from '@mui/material';
-import { getAllProcesos, getProcesoById, deleteProceso } from "./services/proceso.service";
+import {
+	Box,
+	Container,
+	Button,
+	Typography,
+	Grid,
+	Card,
+	CardMedia,
+	CardContent,
+	Alert,
+	CircularProgress,
+} from "@mui/material";
+import {
+	getAllProcesos,
+	getProcesoById,
+	deleteProceso,
+} from "./services/proceso.service";
 
 export default function ListaProcesos() {
 	const [procesos, setProcesos] = useState([]);
 	const [detalles, setDetalles] = useState({});
-	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false, id: null });
+	const [modal, setModal] = useState({
+		isOpen: false,
+		title: "",
+		message: "",
+		type: "info",
+		showConfirmButton: false,
+		id: null,
+	});
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -25,7 +47,7 @@ export default function ListaProcesos() {
 					isOpen: true,
 					title: "Error",
 					message: "Error al cargar los procesos",
-					type: "error"
+					type: "error",
 				});
 			}
 		};
@@ -47,7 +69,7 @@ export default function ListaProcesos() {
 					isOpen: true,
 					title: "Error",
 					message: "Error al cargar el detalle del proceso",
-					type: "error"
+					type: "error",
 				});
 			}
 		}
@@ -71,7 +93,6 @@ export default function ListaProcesos() {
 
 	return (
 		<div className="max-w-6xl mx-auto p-6 bg-white shadow rounded mt-8">
-			
 			<DeleteConfirmDialog
 				open={!!deleteId}
 				onClose={() => setDeleteId(null)}
@@ -87,8 +108,21 @@ export default function ListaProcesos() {
 				message="Esta acción eliminará el proceso de forma permanente."
 			/>
 
-			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-				<Typography variant="h4" fontWeight={600}>
+			<Box
+				sx={{
+					mb: 3,
+					display: "flex",
+					flexDirection: { xs: "column", md: "row" },
+					justifyContent: { xs: "center", md: "space-between" },
+					alignItems: { xs: "center", md: "center" },
+					gap: 2,
+				}}
+			>
+				<Typography
+					variant="h4"
+					fontWeight={600}
+					sx={{ textAlign: { xs: "center", md: "left" } }}
+				>
 					Procesos de Transformación
 				</Typography>
 				<Button
@@ -96,6 +130,7 @@ export default function ListaProcesos() {
 					startIcon={<AddIcon />}
 					onClick={() => navigate("/procesos/crear")}
 					size="small"
+					sx={{ width: { xs: "100%", md: "auto" } }}
 				>
 					Crear Proceso
 				</Button>
@@ -112,7 +147,7 @@ export default function ListaProcesos() {
 							key={p.IdProceso}
 							className="border rounded-lg shadow-sm bg-gray-50 hover:shadow transition"
 						>
-							<div className="flex flex-col md:flex-row justify-between items-start md:items-center p-4 gap-4">
+							<div className="flex flex-col xs:flex-row justify-between items-start xs:items-center p-4 gap-4">
 								<div>
 									<h3 className="text-xl font-semibold text-gray-800">
 										{p.Nombre}
@@ -158,7 +193,7 @@ export default function ListaProcesos() {
 							{/* Detalle expandido */}
 							{detalles[p.IdProceso] && (
 								<div className="p-4 pt-0 pb-5">
-									<div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+									<div className="grid grid-cols-1 xs:grid-cols-2 lg:grid-cols-3 gap-4">
 										{detalles[p.IdProceso].Maquinas.map((m) => (
 											<div
 												key={m.IdMaquina}

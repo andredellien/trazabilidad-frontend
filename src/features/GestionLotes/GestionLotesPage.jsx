@@ -1,45 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import LoteList from './components/LoteList';
-import LoteStats from './components/LoteStats';
-import useLotes from './hooks/useLotes';
-import Card from '../../shared/components/Card';
-import Button from '../../shared/components/Button';
-import { ModalForm } from '../../shared/components';
-import { createLote } from './services/lotes.service';
-import { getAllMateriaPrimaBase } from '../MateriaPrima/services/materiaPrima.service';
-import { getAllPedidos } from '../Pedidos/services/pedido.service';
-import { Box, Typography, Container, CircularProgress, Button as MuiButton } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import './styles/Lotes.css';
+import React, { useState, useEffect } from "react";
+import LoteList from "./components/LoteList";
+import LoteStats from "./components/LoteStats";
+import useLotes from "./hooks/useLotes";
+import Card from "../../shared/components/Card";
+import Button from "../../shared/components/Button";
+import { ModalForm } from "../../shared/components";
+import { createLote } from "./services/lotes.service";
+import { getAllMateriaPrimaBase } from "../MateriaPrima/services/materiaPrima.service";
+import { getAllPedidos } from "../Pedidos/services/pedido.service";
+import {
+	Box,
+	Typography,
+	Container,
+	CircularProgress,
+	Button as MuiButton,
+} from "@mui/material";
+import { Add as AddIcon } from "@mui/icons-material";
+import "./styles/Lotes.css";
 
 export default function GestionLotesPage() {
 	const [refreshList, setRefreshList] = useState(0);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [loadingData, setLoadingData] = useState(true);
-	const [error, setError] = useState('');
-	const [success, setSuccess] = useState('');
-	
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
+
 	// Datos para los selects
 	const [materiasPrimasBase, setMateriasPrimasBase] = useState([]);
 	const [pedidos, setPedidos] = useState([]);
-	
+
 	const { data: lotes } = useLotes();
 
 	const handleLoteCreated = () => {
-		setRefreshList(prev => prev + 1);
+		setRefreshList((prev) => prev + 1);
 	};
 
 	const handleOpenModal = () => {
 		setModalOpen(true);
-		setError('');
-		setSuccess('');
+		setError("");
+		setSuccess("");
 	};
 
 	const handleCloseModal = () => {
 		setModalOpen(false);
-		setError('');
-		setSuccess('');
+		setError("");
+		setSuccess("");
 	};
 
 	// Cargar datos iniciales
@@ -49,12 +55,12 @@ export default function GestionLotesPage() {
 			try {
 				const [materiasRes, pedidosRes] = await Promise.all([
 					getAllMateriaPrimaBase(),
-					getAllPedidos()
+					getAllPedidos(),
 				]);
 				setMateriasPrimasBase(Array.isArray(materiasRes) ? materiasRes : []);
 				setPedidos(Array.isArray(pedidosRes) ? pedidosRes : []);
 			} catch (err) {
-				setError('Error al cargar datos iniciales');
+				setError("Error al cargar datos iniciales");
 			} finally {
 				setLoadingData(false);
 			}
@@ -64,31 +70,31 @@ export default function GestionLotesPage() {
 
 	const handleSubmit = async (formData) => {
 		setLoading(true);
-		setError('');
-		setSuccess('');
-		
+		setError("");
+		setSuccess("");
+
 		try {
 			const loteData = {
 				Nombre: formData.Nombre,
-				FechaCreacion: new Date().toISOString().split('T')[0],
-				Estado: 'Pendiente',
+				FechaCreacion: new Date().toISOString().split("T")[0],
+				Estado: "Pendiente",
 				IdProceso: null,
 				IdPedido: formData.IdPedido ? parseInt(formData.IdPedido) : null,
 				MateriasPrimas: formData.MateriasPrimas.map((mp) => ({
 					IdMateriaPrimaBase: parseInt(mp.IdMateriaPrimaBase),
-					Cantidad: parseFloat(mp.Cantidad)
-				}))
+					Cantidad: parseFloat(mp.Cantidad),
+				})),
 			};
 
 			await createLote(loteData);
-			setSuccess('Lote creado exitosamente');
+			setSuccess("Lote creado exitosamente");
 			setTimeout(() => {
-				setSuccess('');
+				setSuccess("");
 				handleCloseModal();
 				handleLoteCreated();
 			}, 2000);
 		} catch (err) {
-			setError(err.response?.data?.message || 'Error al crear el lote');
+			setError(err.response?.data?.message || "Error al crear el lote");
 		} finally {
 			setLoading(false);
 		}
@@ -97,87 +103,93 @@ export default function GestionLotesPage() {
 	const validateForm = (formData) => {
 		const errors = {};
 		if (!formData.Nombre?.trim()) {
-			errors.Nombre = 'El nombre del lote es obligatorio';
+			errors.Nombre = "El nombre del lote es obligatorio";
 		}
 		if (!formData.MateriasPrimas || formData.MateriasPrimas.length === 0) {
-			errors.MateriasPrimas = 'Debe agregar al menos una materia prima';
+			errors.MateriasPrimas = "Debe agregar al menos una materia prima";
 		} else {
 			formData.MateriasPrimas.forEach((mp, index) => {
 				if (!mp.IdMateriaPrimaBase) {
-					errors[`MateriasPrimas[${index}].IdMateriaPrimaBase`] = 'Debe seleccionar una materia prima base';
+					errors[`MateriasPrimas[${index}].IdMateriaPrimaBase`] =
+						"Debe seleccionar una materia prima base";
 				}
 				if (!mp.Cantidad || mp.Cantidad <= 0) {
-					errors[`MateriasPrimas[${index}].Cantidad`] = 'La cantidad debe ser mayor a 0';
+					errors[`MateriasPrimas[${index}].Cantidad`] =
+						"La cantidad debe ser mayor a 0";
 				}
 			});
 		}
 		return errors;
 	};
 
-	const pedidosFiltrados = pedidos.filter(p => p.Estado === 'pendiente' || p.Estado === 'materia prima solicitada');
+	const pedidosFiltrados = pedidos.filter(
+		(p) => p.Estado === "pendiente" || p.Estado === "materia prima solicitada"
+	);
 
 	const fields = [
 		{
-			name: 'Nombre',
-			label: 'Nombre del Lote',
-			type: 'text',
+			name: "Nombre",
+			label: "Nombre del Lote",
+			type: "text",
 			required: true,
-			placeholder: 'Ej: Lote de producción #001'
+			placeholder: "Ej: Lote de producción #001",
 		},
 		{
-			name: 'IdPedido',
-			label: 'Pedido Asociado',
-			type: 'select',
+			name: "IdPedido",
+			label: "Pedido Asociado",
+			type: "select",
 			required: false,
 			options: [
-				{ value: '', label: 'Sin pedido asociado' },
-				...pedidosFiltrados.map(pedido => ({
+				{ value: "", label: "Sin pedido asociado" },
+				...pedidosFiltrados.map((pedido) => ({
 					value: pedido.IdPedido,
-					label: `Pedido #${pedido.IdPedido} - ${pedido.Descripcion || "Sin descripción"}`
-				}))
-			]
-		}
+					label: `Pedido #${pedido.IdPedido} - ${
+						pedido.Descripcion || "Sin descripción"
+					}`,
+				})),
+			],
+		},
 	];
 
 	const dynamicLists = [
 		{
-			name: 'MateriasPrimas',
-			title: 'Materias Primas Base',
-			addButtonText: 'Agregar Materia Prima',
+			name: "MateriasPrimas",
+			title: "Materias Primas Base",
+			addButtonText: "Agregar Materia Prima",
 			customSpacing: {
-				minHeight: 'auto',
+				minHeight: "auto",
 				containerSx: {
-					flexDirection: 'column',
+					flexDirection: "column",
 					gap: 2,
-					padding: 2
+					padding: 2,
 				},
 				fieldSx: {
-					width: '100%',
-					marginBottom: 1
+					width: "100%",
+					marginBottom: 1,
 				},
-				deleteButtonPadding: '0px'
+				deleteButtonPadding: "0px",
 			},
 			fields: [
 				{
-					name: 'IdMateriaPrimaBase',
-					label: 'Materia Prima Base',
-					type: 'select',
+					name: "IdMateriaPrimaBase",
+					label: "Materia Prima Base",
+					type: "select",
 					width: 1,
-					options: materiasPrimasBase.map(mp => ({
+					options: materiasPrimasBase.map((mp) => ({
 						value: mp.IdMateriaPrimaBase,
-						label: `${mp.Nombre} (${mp.Unidad})`
-					}))
+						label: `${mp.Nombre} (${mp.Unidad})`,
+					})),
 				},
 				{
-					name: 'Cantidad',
-					label: 'Cantidad',
-					type: 'number',
+					name: "Cantidad",
+					label: "Cantidad",
+					type: "number",
 					width: 1,
 					min: 0,
-					step: 0.01
-				}
-			]
-		}
+					step: 0.01,
+				},
+			],
+		},
 	];
 
 	if (loadingData) {
@@ -210,14 +222,23 @@ export default function GestionLotesPage() {
 			</Box>
 
 			{/* Botón Crear Lote */}
-			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end' }}>
-				<MuiButton 
-					onClick={handleOpenModal} 
-					startIcon={<AddIcon />} 
-					variant="contained" 
-					color="primary" 
-					size="small" 
-					sx={{ mb: 2, minWidth: 120 }}
+			<Box
+				sx={{
+					mb: 3,
+					display: "flex",
+					flexDirection: { xs: "column", md: "row" },
+					justifyContent: { xs: "center", md: "flex-end" },
+					alignItems: { xs: "center", md: "center" },
+					gap: 2,
+				}}
+			>
+				<MuiButton
+					onClick={handleOpenModal}
+					startIcon={<AddIcon />}
+					variant="contained"
+					color="primary"
+					size="small"
+					sx={{ mb: 2, minWidth: 120, width: { xs: "100%", md: "auto" } }}
 				>
 					Crear Lote
 				</MuiButton>
@@ -238,10 +259,10 @@ export default function GestionLotesPage() {
 				loading={loading}
 				error={error}
 				success={success}
-				initialValues={{ 
-					Nombre: '', 
-					IdPedido: '', 
-					MateriasPrimas: [] 
+				initialValues={{
+					Nombre: "",
+					IdPedido: "",
+					MateriasPrimas: [],
 				}}
 				validate={validateForm}
 				submitButtonText="Crear Lote"

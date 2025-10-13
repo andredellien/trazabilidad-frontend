@@ -1,9 +1,24 @@
 import React, { useEffect, useState } from "react";
 import { FiUploadCloud } from "react-icons/fi"; // para ícono visual
-import { getAllMaquinas, createMaquina, uploadMaquinaImage } from "./services/maquinas.service";
-import { Box, Container, Button, Typography, Grid, Card, CardMedia, CardContent, Alert, CircularProgress } from '@mui/material';
-import { Add as AddIcon } from '@mui/icons-material';
-import { ModalForm } from '../../shared/components';
+import {
+	getAllMaquinas,
+	createMaquina,
+	uploadMaquinaImage,
+} from "./services/maquinas.service";
+import {
+	Box,
+	Container,
+	Button,
+	Typography,
+	Grid,
+	Card,
+	CardMedia,
+	CardContent,
+	Alert,
+	CircularProgress,
+} from "@mui/material";
+import { Add as AddIcon } from "@mui/icons-material";
+import { ModalForm } from "../../shared/components";
 import Modal from "../../shared/components/Modal";
 
 export default function Maquinas() {
@@ -11,10 +26,16 @@ export default function Maquinas() {
 	const [refresh, setRefresh] = useState(0);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [loading, setLoading] = useState(false);
-	const [error, setError] = useState('');
-	const [success, setSuccess] = useState('');
+	const [error, setError] = useState("");
+	const [success, setSuccess] = useState("");
 	const [uploadingImage, setUploadingImage] = useState(false);
-	const [modal, setModal] = useState({ isOpen: false, title: "", message: "", type: "info", showConfirmButton: false });
+	const [modal, setModal] = useState({
+		isOpen: false,
+		title: "",
+		message: "",
+		type: "info",
+		showConfirmButton: false,
+	});
 
 	useEffect(() => {
 		cargarMaquinas();
@@ -30,28 +51,28 @@ export default function Maquinas() {
 				isOpen: true,
 				title: "Error",
 				message: "Error al cargar las máquinas",
-				type: "error"
+				type: "error",
 			});
 		}
 	};
 
-	const handleCreated = () => setRefresh(r => r + 1);
+	const handleCreated = () => setRefresh((r) => r + 1);
 
 	const handleOpenModal = () => {
 		setModalOpen(true);
-		setError('');
-		setSuccess('');
+		setError("");
+		setSuccess("");
 	};
 
 	const handleCloseModal = () => {
 		setModalOpen(false);
-		setError('');
-		setSuccess('');
+		setError("");
+		setSuccess("");
 	};
 
 	const handleImageUpload = async (file) => {
 		if (!file) return null;
-		
+
 		setUploadingImage(true);
 		try {
 			const response = await uploadMaquinaImage(file);
@@ -66,30 +87,34 @@ export default function Maquinas() {
 
 	const handleSubmit = async (formData) => {
 		setLoading(true);
-		setError('');
-		setSuccess('');
-		
+		setError("");
+		setSuccess("");
+
 		try {
 			let imagenUrl = formData.imagenUrl;
-			
+
 			// Si hay un archivo de imagen, subirlo primero
 			if (formData.imagenFile) {
 				imagenUrl = await handleImageUpload(formData.imagenFile);
 			}
 
-			await createMaquina({ 
-				nombre: formData.nombre.trim(), 
-				imagenUrl 
+			await createMaquina({
+				nombre: formData.nombre.trim(),
+				imagenUrl,
 			});
-			
-			setSuccess('Máquina creada exitosamente');
+
+			setSuccess("Máquina creada exitosamente");
 			setTimeout(() => {
-				setSuccess('');
+				setSuccess("");
 				handleCloseModal();
 				handleCreated();
 			}, 2000);
 		} catch (err) {
-			setError(err.response?.data?.message || err.message || 'Error al crear la máquina');
+			setError(
+				err.response?.data?.message ||
+					err.message ||
+					"Error al crear la máquina"
+			);
 		} finally {
 			setLoading(false);
 		}
@@ -98,30 +123,30 @@ export default function Maquinas() {
 	const validateForm = (formData) => {
 		const errors = {};
 		if (!formData.nombre?.trim()) {
-			errors.nombre = 'El nombre es obligatorio';
+			errors.nombre = "El nombre es obligatorio";
 		}
 		if (!formData.imagenFile) {
-			errors.imagenFile = 'La imagen es obligatoria';
+			errors.imagenFile = "La imagen es obligatoria";
 		}
 		return errors;
 	};
 
 	const fields = [
 		{
-			name: 'nombre',
-			label: 'Nombre de la máquina',
-			type: 'text',
+			name: "nombre",
+			label: "Nombre de la máquina",
+			type: "text",
 			required: true,
 			autoFocus: true,
-			placeholder: 'Ej: Balanza automática'
+			placeholder: "Ej: Balanza automática",
 		},
 		{
-			name: 'imagenFile',
-			label: 'Imagen de la máquina',
-			type: 'file',
+			name: "imagenFile",
+			label: "Imagen de la máquina",
+			type: "file",
 			required: true,
-			accept: 'image/*'
-		}
+			accept: "image/*",
+		},
 	];
 
 	return (
@@ -135,17 +160,29 @@ export default function Maquinas() {
 				showConfirmButton={modal.showConfirmButton}
 			/>
 
-			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-				<Typography variant="h4" fontWeight={600}>
+			<Box
+				sx={{
+					mb: 3,
+					display: "flex",
+					flexDirection: { xs: "column", md: "row" },
+					justifyContent: { xs: "center", md: "space-between" },
+					alignItems: { xs: "center", md: "center" },
+					gap: 2,
+				}}
+			>
+				<Typography
+					variant="h4"
+					fontWeight={600}
+					sx={{ textAlign: { xs: "center", md: "left" } }}
+				>
 					Gestión de Máquinas
 				</Typography>
-			</Box>
-			<Box sx={{ mb: 3, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
 				<Button
 					variant="contained"
 					startIcon={<AddIcon />}
 					onClick={handleOpenModal}
 					size="small"
+					sx={{ width: { xs: "100%", md: "auto" } }}
 				>
 					Crear Nueva Máquina
 				</Button>
@@ -155,21 +192,19 @@ export default function Maquinas() {
 				<h3 className="text-xl font-semibold text-gray-800 mb-6">
 					Máquinas registradas ({maquinas.length})
 				</h3>
-				
+
 				{maquinas.length === 0 ? (
 					<div className="text-center py-12">
 						<div className="text-gray-400 mb-4">
 							<FiUploadCloud className="text-6xl mx-auto mb-3" />
 						</div>
-						<p className="text-gray-500 text-lg">
-							No hay máquinas registradas
-						</p>
+						<p className="text-gray-500 text-lg">No hay máquinas registradas</p>
 						<p className="text-gray-400">
 							Agrega tu primera máquina usando el botón "Crear Nueva Máquina"
 						</p>
 					</div>
 				) : (
-					<div className="grid grid-cols-3 gap-6">
+					<div className="grid xs:grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
 						{maquinas.map((m) => (
 							<div
 								key={m.IdMaquina}
@@ -205,7 +240,7 @@ export default function Maquinas() {
 				loading={loading || uploadingImage}
 				error={error}
 				success={success}
-				initialValues={{ nombre: '', imagenFile: null }}
+				initialValues={{ nombre: "", imagenFile: null }}
 				validate={validateForm}
 				submitButtonText="Crear Máquina"
 				maxWidth="sm"

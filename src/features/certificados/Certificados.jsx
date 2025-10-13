@@ -10,7 +10,7 @@ export default function Certificados() {
 		const cargar = async () => {
 			try {
 				const data = await getAllCertificados();
-				console.log(data)
+				console.log(data);
 				setLotes(data);
 			} catch (error) {
 				console.error("Error al cargar certificados:", error);
@@ -22,8 +22,8 @@ export default function Certificados() {
 
 	return (
 		<div className="min-h-screen p-6">
-			<div className="max-w-6xl mx-auto">
-				<header className="mb-8 text-center">
+			<div className="max-w-6xl ">
+				<header className="mb-8 xs:text-center md:text-left">
 					<h1 className="text-3xl font-extrabold text-gray-800">
 						Certificados de Calidad
 					</h1>
@@ -37,7 +37,7 @@ export default function Certificados() {
 						No hay lotes certificados.
 					</p>
 				) : (
-					<div className="grid grid-cols-3 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+					<div className="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
 						{lotes.map((lote) => (
 							<div
 								key={lote.IdLote}
@@ -53,7 +53,7 @@ export default function Certificados() {
 									<strong>Fecha de Creacion:</strong>{" "}
 									{new Date(lote.FechaCreacion).toLocaleDateString()}
 								</p>
-								<div className="mt-4 flex justify-between gap-2">
+								<div className="mt-4 flex xs:flex-col sm:flex-row justify-between gap-2">
 									<button
 										onClick={() => navigate(`/certificado/${lote.IdLote}`)}
 										className="bg-[#007c64] text-white text-sm px-4 py-2 rounded hover:bg-[#006554]"
