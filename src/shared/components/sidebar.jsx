@@ -201,7 +201,7 @@ export default function Sidebar({ onCollapse }) {
 					position: "fixed",
 					top: 0,
 					left: isMobile ? (isOpen ? 0 : "-220px") : 0,
-					width: isMobile ? "220px" : collapsed ? "60px" : "220px",
+					width: isMobile ? "220px" : collapsed ? "75px" : "220px",
 					background: "#007c64",
 					color: "white",
 					height: "100vh",
